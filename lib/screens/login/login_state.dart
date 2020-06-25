@@ -4,15 +4,52 @@ import 'package:meta/meta.dart';
 
 @immutable
 abstract class LoginState extends Equatable {
-  LoginState([List props = const []]) : super(props);
+  LoginState();
 }
 
-class InitialLoginState extends LoginState {}
-class NavToRegister extends LoginState {}
+//initialState
 
-class LoggingIn extends LoginState {}
+class LoginInitialState extends LoginState {
+  @override
+  List<Object> get props => [];
+}
 
+class LoggedOut extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class LoginInProgress extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class AuthorizationSuccess extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class GettingUserData extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class LoginNoFilter extends LoginState {
+  final User user;
+  LoginNoFilter(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
+//final state
 class LoggedIn extends LoginState {
   final User user;
-  LoggedIn(this.user) : super([user]);
+  LoggedIn(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
+class NavToRegister extends LoginState {
+  @override
+  List<Object> get props => [];
 }

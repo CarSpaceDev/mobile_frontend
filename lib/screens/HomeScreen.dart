@@ -2,7 +2,7 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 
-import 'login/LoginInitialScreen.dart';
+import 'login/LoginBlocHandler.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
           onPressed: () async {
             await _authService.logOut();
             Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (BuildContext context) => LoginInitialScreen()));
+                builder: (BuildContext context) => LoginBlocHandler()));
           },
           icon: Icon(Icons.exit_to_app),
         ),

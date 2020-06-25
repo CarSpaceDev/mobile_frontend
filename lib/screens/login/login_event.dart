@@ -3,10 +3,49 @@ import 'package:meta/meta.dart';
 
 @immutable
 abstract class LoginEvent extends Equatable {
-  LoginEvent([List props = const []]) : super(props);
+  LoginEvent();
 }
 
-class NavRegisterEvent extends LoginEvent {}
-class LoginFacebook extends LoginEvent {}
-class LoginGoogle extends LoginEvent {}
-class Logout extends LoginEvent {}
+class LoginAppleEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class LoginFacebookEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class LoginGoogleEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class LogoutEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class LoggedInEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class NoSessionEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class GettingUserDataEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class AuthorizationSuccessEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+class NavigateToRegisterEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}

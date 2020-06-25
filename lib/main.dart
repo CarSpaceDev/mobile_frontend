@@ -1,5 +1,6 @@
-import 'package:carspace/screens/login/LoginInitialScreen.dart';
+import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -10,10 +11,7 @@ import 'model/GlobalData.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-await SystemChrome.setPreferredOrientations([
-  DeviceOrientation.portraitUp,
-  DeviceOrientation.portraitDown
-]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(CarSpaceApp());
 }
 
@@ -38,15 +36,11 @@ class GlobalDataHandler extends StatelessWidget {
       child: Provider(
         create: (_) => ApiService.create(),
         dispose: (_, ApiService service) => service.client.dispose(),
-        child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: themeData,
-            home: LoginInitialScreen()),
+        child: Provider<AuthService>(
+          create: (_) => AuthService(),
+          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: LoginBlocHandler()),
+        ),
       ),
     );
   }
 }
-
-
-
-
