@@ -3,10 +3,23 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'bloc.dart';
 
-class LandingScreen extends StatelessWidget {
+class LandingScreen extends StatefulWidget {
+  @override
+  _LandingScreenState createState() => _LandingScreenState();
+}
+
+class _LandingScreenState extends State<LandingScreen> {
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController(text: "");
+    _passwordController = TextEditingController(text: "");
+  }
   @override
   Widget build(BuildContext context) {
     final loginBloc = BlocProvider.of<LoginBloc>(context);
@@ -25,7 +38,7 @@ class LandingScreen extends StatelessWidget {
               backgroundColor: Colors.white,
               isDismissible: true,
               context: context,
-              builder: (BuildContext context) {
+              builder: (context) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
@@ -39,8 +52,61 @@ class LandingScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: SizeConfig.textMultiplier * 3.25),
+                          ),TextField(
+                              controller: _emailController,
+                              style: TextStyle(
+                                  fontFamily: "Champagne & Limousines",
+                                  color: Colors.black,
+                                  fontSize: 20),
+                              decoration: InputDecoration(
+                                  hintText: "enter email",
+                                  hintStyle: TextStyle(
+                                      fontFamily: "Champagne & Limousines",
+                                      fontSize: 20,
+                                      color: Colors.black),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ))),
+                          TextField(
+                              controller: _passwordController,
+                              style: TextStyle(
+                                  fontFamily: "Champagne & Limousines",
+                                  color: Colors.black,
+                                  fontSize: 20),
+                              decoration: InputDecoration(
+                                  hintText: "enter password",
+                                  hintStyle: TextStyle(
+                                      fontFamily: "Champagne & Limousines",
+                                      fontSize: 20,
+                                      color: Colors.black),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ))),
+                          FlatButton(
+                            onPressed: () {
+                              loginBloc.dispatch(
+                                  LogInEmailEvent(
+                                      email: _emailController.text,
+                                      password: _passwordController.text));
+                            },
+                            color: themeData.secondaryHeaderColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            child: Container(
+                              width: SizeConfig.widthMultiplier * 50,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Login',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: SizeConfig.textMultiplier * 2.5),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          LogInWithEmail(),
                           FlatButton.icon(
                             color: themeData.secondaryHeaderColor,
                             shape: RoundedRectangleBorder(
@@ -190,85 +256,5 @@ class LandingContent extends StatelessWidget {
     print('Navigate to registration');
     final loginBloc = BlocProvider.of<LoginBloc>(context);
     loginBloc.dispatch(NavigateToRegisterEvent());
-  }
-}
-
-class LogInWithEmail extends StatefulWidget {
-  LogInWithEmail({Key key}) : super(key: key);
-
-  @override
-  _LogInWithEmailState createState() => _LogInWithEmailState();
-}
-
-class _LogInWithEmailState extends State<LogInWithEmail> {
-  TextEditingController _emailController;
-  TextEditingController _passwordController;
-
-  @override
-  void initState() {
-    super.initState();
-    _emailController = TextEditingController(text: "");
-    _passwordController = TextEditingController(text: "");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [
-      TextField(
-          controller: _emailController,
-          style: TextStyle(
-              fontFamily: "Champagne & Limousines",
-              color: Colors.black,
-              fontSize: 20),
-          decoration: InputDecoration(
-              hintText: "enter email",
-              hintStyle: TextStyle(
-                  fontFamily: "Champagne & Limousines",
-                  fontSize: 20,
-                  color: Colors.black),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ))),
-      TextField(
-          controller: _passwordController,
-          style: TextStyle(
-              fontFamily: "Champagne & Limousines",
-              color: Colors.black,
-              fontSize: 20),
-          decoration: InputDecoration(
-              hintText: "enter password",
-              hintStyle: TextStyle(
-                  fontFamily: "Champagne & Limousines",
-                  fontSize: 20,
-                  color: Colors.black),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ))),
-      FlatButton(
-        onPressed: () {
-          Provider.of<LoginBloc>(context, listen: false).dispatch(
-              LogInEmailEvent(
-                  email: _emailController.text,
-                  password: _passwordController.text));
-        },
-        color: themeData.secondaryHeaderColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          width: SizeConfig.widthMultiplier * 50,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                'Login',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: SizeConfig.textMultiplier * 2.5),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ]);
   }
 }

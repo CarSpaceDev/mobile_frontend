@@ -22,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (event is LoggedInEvent) {
       User user = await authService.currentUser();
       yield AuthorizationSuccess();
-      user = await getUserDataFromApi(user);
+//      user = await getUserDataFromApi(user);
       yield LoggedIn(user);
     }
     if (event is LoginGoogleEvent) {
@@ -30,17 +30,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = await authService.loginGoogle();
       if (user != null) {
         yield AuthorizationSuccess();
-        user = await getUserDataFromApi(user);
+        print("Logged in");
+//        user = await getUserDataFromApi(user);
         yield LoggedIn(user);
       } else
         yield LoggedOut();
-    } else if (event is LogInEmailEvent) {
+    }
+    if (event is LogInEmailEvent) {
       yield LoginInProgress();
-      User user =
-          await authService.signInWithEmail(event.email, event.password);
+      User user = await authService.signInWithEmail(event.email, event.password);
+      print(user.toJson());
+      print(user != null);
       if (user != null) {
         yield AuthorizationSuccess();
-        user = await getUserDataFromApi(user);
+//        user = await getUserDataFromApi(user);
+        print("Logged in!!!!");
         yield LoggedIn(user);
       } else
         yield LoggedOut();
@@ -49,8 +53,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   getUserDataFromApi(User user) async {
     try {
-      final response =
-          await apiService.requestUserInfo(user.jwt, user.toJson());
+      final response = await apiService.requestUserInfo(user.jwt, user.toJson());
       if (response.statusCode == 201) {
         print('Decoding the response body');
         print(response.body.toString());

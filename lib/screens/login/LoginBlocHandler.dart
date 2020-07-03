@@ -30,6 +30,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
             else
               loginBloc.dispatch(NoSessionEvent());
           } else if (state is LoggedIn) {
+            print("Logged in");
             Provider.of<GlobalData>(context, listen: false).user = state.user;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
