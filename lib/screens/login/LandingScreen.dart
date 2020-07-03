@@ -24,82 +24,84 @@ class LandingScreen extends StatelessWidget {
               isDismissible: true,
               context: context,
               builder: (BuildContext context) {
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                        height: SizeConfig.heightMultiplier * 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Text(
-                              'Login',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
-                            ),
-                            TextFormField(
-                              initialValue: 'Username / Phone Number',
-                              textAlign: TextAlign.left,
-                            ),
-                            TextFormField(
-                              initialValue: 'Password',
-                              textAlign: TextAlign.left,
-                            ),
-                            FlatButton(
-                              onPressed: () {
-                                Provider.of<LoginBloc>(context).dispatch(LoginGoogleEvent());
-                              },
-                              color: themeData.secondaryHeaderColor,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              child: Container(
-                                width: SizeConfig.widthMultiplier * 50,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(
-                                      'Login',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                return SafeArea(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                          height: SizeConfig.heightMultiplier * 50,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                'Login',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
+                              ),
+                              TextFormField(
+                                initialValue: 'Username / Phone Number',
+                                textAlign: TextAlign.left,
+                              ),
+                              TextFormField(
+                                initialValue: 'Password',
+                                textAlign: TextAlign.left,
+                              ),
+                              FlatButton(
+                                onPressed: () {
+                                  Provider.of<LoginBloc>(context).dispatch(LoginGoogleEvent());
+                                },
+                                color: themeData.secondaryHeaderColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                child: Container(
+                                  width: SizeConfig.widthMultiplier * 50,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(
+                                        'Login',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            FlatButton.icon(
-                              color: themeData.secondaryHeaderColor,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              onPressed: () {
-                                loginBloc.dispatch(LoginGoogleEvent());
-                              },
-                              icon: Icon(
-                                FontAwesomeIcons.google,
-                                color: Colors.white,
-                              ),
-                              label: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Text(
-                                  'Login with Google',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                              FlatButton.icon(
+                                color: themeData.secondaryHeaderColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                onPressed: () {
+                                  loginBloc.dispatch(LoginGoogleEvent());
+                                },
+                                icon: Icon(
+                                  FontAwesomeIcons.google,
+                                  color: Colors.white,
+                                ),
+                                label: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Login with Google',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                  ),
                                 ),
                               ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: FlatButton(
-                                onPressed: () => {},
-                                child: Text(
-                                  'New to CarSpace? Sign up',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: SizeConfig.textMultiplier * 2,
-                                      fontWeight: FontWeight.bold),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: FlatButton(
+                                  onPressed: () => {},
+                                  child: Text(
+                                    'New to CarSpace? Sign up',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: SizeConfig.textMultiplier * 2,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        )),
+                            ],
+                          )),
+                    ),
                   ),
                 );
               }),

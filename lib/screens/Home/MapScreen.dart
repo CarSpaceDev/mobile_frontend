@@ -27,11 +27,9 @@ class _MapScreenState extends State<MapScreen> {
     });
     _setMarkerIcon();
     location.onLocationChanged.listen((location) async {
-      if (_markers.length > 1) {
-        print("ClearingMarkers");
-        _markers.clear();
-      }
+      print("Updating location : ["+location.latitude.toString()+','+location.longitude.toString()+']');
       setState(() {
+        _markers.clear();
         _markers.add(
           Marker(
               markerId: MarkerId("0"),
@@ -62,22 +60,16 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(1, 1),
-                zoom: 16.0,
-              ),
-              markers: _markers,
-            ),
-          ),
-        ],
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: GoogleMap(
+        onMapCreated: _onMapCreated,
+        initialCameraPosition: CameraPosition(
+          target: LatLng(1, 1),
+          zoom: 16.0,
+        ),
+        markers: _markers,
       ),
     );
   }

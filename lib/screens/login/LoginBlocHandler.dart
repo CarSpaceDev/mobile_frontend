@@ -34,7 +34,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
             Provider.of<GlobalData>(context, listen: false).user = state.user;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (BuildContext context) => MapScreen(),
+                builder: (BuildContext context) => HomeScreen(),
               ),
             );
           }
