@@ -20,17 +20,29 @@ class AuthService {
       return User.fromAuthService(user, token);
   }
 
+  Future signInWithEmail(String email, String password) async {
+    try {
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final token = await _getJWT(result.user);
+//      print(token);
+      final User currentUser = _userFromResult(result.user, token);
+      return currentUser;
+    } catch (e) {
+      print(e.message);
+      return null;
+    }
+  }
+
   currentUser() async {
     try {
       var user = await _auth.currentUser();
       if (user != null) {
         var token = await _getJWT(user);
         return User.fromAuthService(user, token);
-      }
-      else
+      } else
         return null;
-    }
-    catch (e){
+    } catch (e) {
       print(e);
       return null;
     }
@@ -42,9 +54,9 @@ class AuthService {
       //trigger the login dialog
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       final GoogleSignInAccount googleSignInAccount =
-      await _googleSignIn.signIn();
+          await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+          await googleSignInAccount.authentication;
       final AuthCredential credential = GoogleAuthProvider.getCredential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,

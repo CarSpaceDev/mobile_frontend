@@ -19,7 +19,9 @@ class LandingScreen extends StatelessWidget {
         child: FlatButton(
           onPressed: () => showModalBottomSheet(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50))),
               backgroundColor: Colors.white,
               isDismissible: true,
               context: context,
@@ -34,39 +36,15 @@ class LandingScreen extends StatelessWidget {
                           Text(
                             'Login',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: SizeConfig.textMultiplier * 3.25),
                           ),
-                          TextFormField(
-                            initialValue: 'Username / Phone Number',
-                            textAlign: TextAlign.left,
-                          ),
-                          TextFormField(
-                            initialValue: 'Password',
-                            textAlign: TextAlign.left,
-                          ),
-                          FlatButton(
-                            onPressed: () {
-                              Provider.of<LoginBloc>(context).dispatch(LoginGoogleEvent());
-                            },
-                            color: themeData.secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            child: Container(
-                              width: SizeConfig.widthMultiplier * 50,
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Text(
-                                    'Login',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          LogInWithEmail(),
                           FlatButton.icon(
                             color: themeData.secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
                             onPressed: () {
                               loginBloc.dispatch(LoginGoogleEvent());
                             },
@@ -79,7 +57,9 @@ class LandingScreen extends StatelessWidget {
                               child: Text(
                                 'Login with Google',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: SizeConfig.textMultiplier * 2.5),
                               ),
                             ),
                           ),
@@ -104,10 +84,14 @@ class LandingScreen extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: new TextStyle(
-                  fontFamily: "Champagne & Limousines", color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
+                  fontFamily: "Champagne & Limousines",
+                  color: Colors.white,
+                  fontSize: SizeConfig.textMultiplier * 2),
               children: <TextSpan>[
                 TextSpan(text: 'Already have an account? '),
-                TextSpan(text: 'Log In', style: new TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: 'Log In',
+                    style: new TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -159,7 +143,9 @@ class LandingContent extends StatelessWidget {
                           ),
                           TextSpan(
                             text: "...because your parking matters",
-                            style: TextStyle(fontSize: SizeConfig.textMultiplier * 2, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: SizeConfig.textMultiplier * 2,
+                                color: Colors.white),
                           )
                         ],
                       ),
@@ -173,7 +159,8 @@ class LandingContent extends StatelessWidget {
                   navigateToRegistration(context);
                 },
                 color: themeData.secondaryHeaderColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
                 child: Container(
                   width: SizeConfig.widthMultiplier * 60,
                   height: SizeConfig.heightMultiplier * 6,
@@ -182,7 +169,9 @@ class LandingContent extends StatelessWidget {
                       "Get Started",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: SizeConfig.textMultiplier * 2.5, fontWeight: FontWeight.bold, color: Colors.white),
+                          fontSize: SizeConfig.textMultiplier * 2.5,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -201,5 +190,85 @@ class LandingContent extends StatelessWidget {
     print('Navigate to registration');
     final loginBloc = BlocProvider.of<LoginBloc>(context);
     loginBloc.dispatch(NavigateToRegisterEvent());
+  }
+}
+
+class LogInWithEmail extends StatefulWidget {
+  LogInWithEmail({Key key}) : super(key: key);
+
+  @override
+  _LogInWithEmailState createState() => _LogInWithEmailState();
+}
+
+class _LogInWithEmailState extends State<LogInWithEmail> {
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController(text: "");
+    _passwordController = TextEditingController(text: "");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      TextField(
+          controller: _emailController,
+          style: TextStyle(
+              fontFamily: "Champagne & Limousines",
+              color: Colors.black,
+              fontSize: 20),
+          decoration: InputDecoration(
+              hintText: "enter email",
+              hintStyle: TextStyle(
+                  fontFamily: "Champagne & Limousines",
+                  fontSize: 20,
+                  color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ))),
+      TextField(
+          controller: _passwordController,
+          style: TextStyle(
+              fontFamily: "Champagne & Limousines",
+              color: Colors.black,
+              fontSize: 20),
+          decoration: InputDecoration(
+              hintText: "enter password",
+              hintStyle: TextStyle(
+                  fontFamily: "Champagne & Limousines",
+                  fontSize: 20,
+                  color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ))),
+      FlatButton(
+        onPressed: () {
+          Provider.of<LoginBloc>(context, listen: false).dispatch(
+              LogInEmailEvent(
+                  email: _emailController.text,
+                  password: _passwordController.text));
+        },
+        color: themeData.secondaryHeaderColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          width: SizeConfig.widthMultiplier * 50,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                'Login',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: SizeConfig.textMultiplier * 2.5),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
   }
 }

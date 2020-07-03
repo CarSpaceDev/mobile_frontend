@@ -34,12 +34,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedIn(user);
       } else
         yield LoggedOut();
+    } else if (event is LogInEmailEvent) {
+      yield LoginInProgress();
+      User user =
+          await authService.signInWithEmail(event.email, event.password);
+      if (user != null) {
+        yield AuthorizationSuccess();
+        user = await getUserDataFromApi(user);
+        yield LoggedIn(user);
+      } else
+        yield LoggedOut();
     }
   }
 
   getUserDataFromApi(User user) async {
     try {
-      final response = await apiService.requestUserInfo(user.jwt, user.toJson());
+      final response =
+          await apiService.requestUserInfo(user.jwt, user.toJson());
       if (response.statusCode == 201) {
         print('Decoding the response body');
         print(response.body.toString());

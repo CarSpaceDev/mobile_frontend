@@ -45,7 +45,18 @@ class AuthorizationSuccessEvent extends LoginEvent {
   @override
   List<Object> get props => [];
 }
+
 class NavigateToRegisterEvent extends LoginEvent {
   @override
   List<Object> get props => [];
+}
+
+class LogInEmailEvent extends LoginEvent {
+  final String email;
+  final String password;
+
+  LogInEmailEvent({this.email, this.password});
+
+  @override
+  List<Object> get props => [email, password];
 }
