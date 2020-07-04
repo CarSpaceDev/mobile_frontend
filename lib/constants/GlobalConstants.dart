@@ -8,17 +8,16 @@ class StringConstants {
 }
 
 final ThemeData themeData = new ThemeData(
-    fontFamily: 'Champagne & Limousines',
-    brightness: Brightness.light,
-    primarySwatch: MaterialColor(AppColors.indigo[900].value, AppColors.indigo),
-    primaryColor: Colors.indigo[1000],
-    primaryColorBrightness: Brightness.dark,
-    accentColor: Colors.indigo[900],
-    accentColorBrightness: Brightness.light,
-    secondaryHeaderColor: Color(0xFF534bae),
-    visualDensity: VisualDensity.adaptivePlatformDensity,
+  fontFamily: 'Champagne & Limousines',
+  brightness: Brightness.light,
+  primarySwatch: MaterialColor(AppColors.indigo[900].value, AppColors.indigo),
+  primaryColor: Colors.indigo[1000],
+  primaryColorBrightness: Brightness.dark,
+  accentColor: Colors.indigo[900],
+  accentColorBrightness: Brightness.light,
+  secondaryHeaderColor: Color(0xFF534bae),
+  visualDensity: VisualDensity.adaptivePlatformDensity,
 );
-
 
 class AppColors {
   AppColors._(); // this basically makes it so you can instantiate this class
