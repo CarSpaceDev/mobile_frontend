@@ -25,7 +25,6 @@ abstract class ApiService extends ChopperService {
   Future<Response> requestInitData();
 
 
-
   static ApiService create() {
     final client = ChopperClient(
         baseUrl: StringConstants.kApiUrl,

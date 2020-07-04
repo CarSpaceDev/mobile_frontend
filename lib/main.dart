@@ -1,4 +1,4 @@
-import 'package:carspace/screens/login/LoginBlocHandler.dart';
+import 'package:carspace/screens/Initialization/InitializationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ class GlobalDataHandler extends StatelessWidget {
         dispose: (_, ApiService service) => service.client.dispose(),
         child: Provider<AuthService>(
           create: (_) => AuthService(),
-          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: LoginBlocHandler()),
+          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: InitializationBlocHandler()),
         ),
       ),
     );
