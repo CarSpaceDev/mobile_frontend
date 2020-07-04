@@ -1,5 +1,4 @@
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/screens/Home/MapScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -35,7 +34,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
             Provider.of<GlobalData>(context, listen: false).user = state.user;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (BuildContext context) => MapScreen(),
+                builder: (BuildContext context) => HomeScreen(),
               ),
             );
           }

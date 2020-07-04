@@ -18,6 +18,7 @@ class _MapScreenState extends State<MapScreen> {
   Location location = Location();
   Set<Marker> _markers = HashSet<Marker>();
   BitmapDescriptor _markerIcon;
+  bool viewCentered;
 
   @override
   void initState() {
@@ -40,14 +41,20 @@ class _MapScreenState extends State<MapScreen> {
               }),
         );
       });
-      mapController?.moveCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(location.latitude, location.longitude),
-            zoom: 18.0,
+      if (viewCentered==null) {
+        print("view is not centered");
+        mapController?.moveCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(location.latitude, location.longitude),
+              zoom: 16.0,
+            ),
           ),
-        ),
-      );
+        );
+        setState(() {
+          viewCentered = true;
+        });
+      }
     });
   }
 
