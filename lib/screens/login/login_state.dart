@@ -53,3 +53,13 @@ class NavToRegister extends LoginState {
   @override
   List<Object> get props => [];
 }
+
+class LogInEmailState extends LoginState {
+  final String email;
+  final String password;
+
+  LogInEmailState({this.email, this.password});
+
+  @override
+  List<Object> get props => [email, password];
+}
