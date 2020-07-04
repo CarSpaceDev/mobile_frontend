@@ -127,24 +127,32 @@ class _LandingScreenState extends State<LandingScreen> {
                                     color: Colors.white,
                                     fontSize: SizeConfig.textMultiplier * 2.5),
                               ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: FlatButton(
-                              onPressed: () => {},
-                              child: Text(
-                                'New to CarSpace? Sign up',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: SizeConfig.textMultiplier * 2,
-                                    fontWeight: FontWeight.bold),
+                              label: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Text(
+                                  'Login with Google',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      )),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: FlatButton(
+                                onPressed: () => {},
+                                child: Text(
+                                  'New to CarSpace? Sign up',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: SizeConfig.textMultiplier * 2,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
                 );
               }),
           child: RichText(
@@ -172,6 +180,8 @@ class LandingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage("assets/login_screen_assets/bg.png"),
@@ -181,20 +191,58 @@ class LandingContent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Center(
-          child: Column(
-            children: <Widget>[
-              Spacer(flex: 1),
-              Flexible(
-                flex: 3,
-                child: Column(
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/logo/CarSpace.png',
-                      width: SizeConfig.imageSizeMultiplier * 27.5,
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: <Widget>[
+                Spacer(flex: 1),
+                Flexible(
+                  flex: 6,
+                  child: Column(
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/logo/CarSpace.png',
+                        width: SizeConfig.imageSizeMultiplier * 27.5,
+                      ),
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                              fontFamily: 'Champagne & Limousines',
+                              color: Colors.white,
+                              fontSize: SizeConfig.textMultiplier * 2),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: "CarSpace\n",
+                              style: TextStyle(
+                                  fontSize: SizeConfig.textMultiplier * 5,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: "...because your parking matters",
+                              style: TextStyle(fontSize: SizeConfig.textMultiplier * 2, color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Spacer(flex: 1),
+                FlatButton(
+                  onPressed: () {
+                    navigateToRegistration(context);
+                  },
+                  color: themeData.secondaryHeaderColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Container(
+                    width: SizeConfig.widthMultiplier * 60,
+                    height: SizeConfig.heightMultiplier * 6,
+                    child: Center(
+                      child: Text(
+                        "Get Started",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                             fontFamily: 'Champagne & Limousines',
                             color: Colors.white,
@@ -241,11 +289,11 @@ class LandingContent extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              SizedBox.fromSize(
-                size: Size.fromHeight(kToolbarHeight),
-              ),
-            ],
+                SizedBox.fromSize(
+                  size: Size.fromHeight(kToolbarHeight),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,6 +9,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="CarSpace"
         android:icon="@mipmap/launcher_icon">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyActXaJmZ251hnenQ6Qjnoui-tcyct9qZ4"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
