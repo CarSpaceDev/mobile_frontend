@@ -1,4 +1,5 @@
 //import 'package:apple_sign_in/apple_sign_in.dart';
+import 'package:carspace/services/DevTools.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:carspace/model/User.dart';
@@ -10,7 +11,7 @@ class AuthService {
 //  Future<bool> get appleSignInAvailable => AppleSignIn.isAvailable();
 
   AuthService() {
-    print('AuthService is initialized');
+    devLog("AuthServiceInit",'AuthService is initialized');
   }
   //UserObject transformation
   User _userFromResult(FirebaseUser user, String token) {

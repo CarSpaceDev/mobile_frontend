@@ -3,7 +3,8 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'bloc.dart';
+
+import 'login_bloc.dart';
 
 class LandingScreen extends StatefulWidget {
   @override
@@ -23,7 +24,6 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loginBloc = BlocProvider.of<LoginBloc>(context);
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       extendBodyBehindAppBar: true,
@@ -75,7 +75,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         FlatButton(
                           onPressed: () {
                             Navigator.of(context).pop();
-                            loginBloc.dispatch(
+                            context.bloc<LoginBloc>().add(
                                 LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
                           },
                           color: themeData.secondaryHeaderColor,
@@ -99,7 +99,7 @@ class _LandingScreenState extends State<LandingScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           onPressed: () {
                             Navigator.of(context).pop();
-                            loginBloc.dispatch(LoginGoogleEvent());
+                            context.bloc<LoginBloc>().add(LoginGoogleEvent());
                           },
                           icon: Icon(
                             FontAwesomeIcons.google,
@@ -225,7 +225,6 @@ class LandingContent extends StatelessWidget {
 
   navigateToRegistration(BuildContext context) {
     print('Navigate to registration');
-    final loginBloc = BlocProvider.of<LoginBloc>(context);
-    loginBloc.dispatch(NavigateToRegisterEvent());
+    context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
   }
 }

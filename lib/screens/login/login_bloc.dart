@@ -1,31 +1,35 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/services/ApiService.dart';
-import './bloc.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:equatable/equatable.dart';
 
-final AuthService authService = AuthService();
-final ApiService apiService = ApiService.create();
+part 'login_event.dart';
+part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  @override
-  LoginState get initialState => LoginInitialState();
-
+  LoginBloc() : super(LoginInitialState());
+  final AuthService authService = AuthService();
+  final ApiService apiService = ApiService.create();
   @override
   Stream<LoginState> mapEventToState(
     LoginEvent event,
   ) async* {
-    if (event is NoSessionEvent) {
+    if (event is LoginStartEvent){
+      yield LoginStartState();
+    }
+    else if (event is NoSessionEvent) {
       yield LoggedOut();
     }
-    if (event is LoggedInEvent) {
+    else if (event is LoggedInEvent) {
       User user = await authService.currentUser();
       yield AuthorizationSuccess();
 //      user = await getUserDataFromApi(user);
       yield LoggedIn(user);
     }
-    if (event is LoginGoogleEvent) {
+    else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
       User user = await authService.loginGoogle();
       if (user != null) {
@@ -36,7 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else
         yield LoggedOut();
     }
-    if (event is LogInEmailEvent) {
+    else if (event is LogInEmailEvent) {
       yield LoginInProgress();
       User user = await authService.signInWithEmail(event.email, event.password);
       print(user.toJson());
