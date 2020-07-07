@@ -1,15 +1,13 @@
-import 'package:carspace/model/User.dart';
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+part of 'login_bloc.dart';
 
-@immutable
 abstract class LoginState extends Equatable {
-  LoginState();
+  const LoginState();
 }
-
-//initialState
-
 class LoginInitialState extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+class LoginStartState extends LoginState {
   @override
   List<Object> get props => [];
 }

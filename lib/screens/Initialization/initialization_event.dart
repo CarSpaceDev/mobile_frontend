@@ -1,9 +1,16 @@
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+part of 'initialization_bloc.dart';
 
 @immutable
 abstract class InitializationEvent extends Equatable {
-  InitializationEvent();
+  const InitializationEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class BeginInitEvent extends InitializationEvent {
+  @override
+  List<Object> get props => [];
 }
 
 class ReadyEvent extends InitializationEvent {

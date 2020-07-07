@@ -1,3 +1,4 @@
+import 'package:carspace/services/DevTools.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -28,7 +29,7 @@ class _MapScreenState extends State<MapScreen> {
     });
     _setMarkerIcon();
     location.onLocationChanged.listen((location) async {
-      print("Updating location : ["+location.latitude.toString()+','+location.longitude.toString()+']');
+      devLog("LocationUpdate","Updating location : ["+location.latitude.toString()+','+location.longitude.toString()+']');
       setState(() {
         _markers.clear();
         _markers.add(
@@ -42,7 +43,7 @@ class _MapScreenState extends State<MapScreen> {
         );
       });
       if (viewCentered==null) {
-        print("view is not centered");
+        devLog("ViewNotCentered","view is not centered");
         mapController?.moveCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(

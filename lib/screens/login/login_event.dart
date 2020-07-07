@@ -1,9 +1,13 @@
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+part of 'login_bloc.dart';
 
-@immutable
 abstract class LoginEvent extends Equatable {
-  LoginEvent();
+  const LoginEvent();
+}
+
+
+class LoginStartEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
 }
 
 class LoginAppleEvent extends LoginEvent {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class StringConstants {
+  static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
   static const kApiUrl = "http://192.168.101.8:3000";
   static const loremIpsum =
