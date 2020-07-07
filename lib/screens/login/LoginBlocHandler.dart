@@ -15,49 +15,43 @@ class LoginBlocHandler extends StatefulWidget {
 }
 
 class _LoginBlocHandlerState extends State<LoginBlocHandler> {
-  final loginBloc = LoginBloc();
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      bloc: loginBloc,
-      child: BlocListener(
-        bloc: loginBloc,
-        listener: (BuildContext context, LoginState state) async {
-          if (state is LoginInitialState) {
-            var currentUser = await Provider.of<AuthService>(context, listen: false).currentUser();
-            if (currentUser != null)
-              loginBloc.dispatch(LoggedInEvent());
-            else
-              loginBloc.dispatch(NoSessionEvent());
-          } else if (state is LoggedIn) {
-            print("Logged in");
-            Provider.of<GlobalData>(context, listen: false).user = state.user;
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (BuildContext context) => HomeScreen(),
-              ),
-            );
-          }
-        },
-        child: BlocBuilder(
-            bloc: loginBloc,
-            builder: (BuildContext context, LoginState state) {
-              if (state is LoggedOut) {
-                return LandingScreen();
-              } else if (state is LoginInProgress) {
-                return LoadingScreen(
-                  prompt: 'Logging in',
-                );
-              } else if (state is AuthorizationSuccess) {
-                return LoadingScreen(
-                  prompt: 'Getting user data',
-                );
-              }
-              return LoadingScreen(
-                prompt: 'Checking for sessions',
-              );
-            }),
-      ),
+      lazy: false,
+      create: (BuildContext context) => LoginBloc(),
+      child: BlocConsumer<LoginBloc, LoginState>(listener: (context, state) async {
+        if (state is LoginInitialState) {
+          var currentUser = await Provider.of<AuthService>(context, listen: false).currentUser();
+          if (currentUser != null)
+            context.bloc<LoginBloc>().add(LoggedInEvent());
+          else
+            context.bloc<LoginBloc>().add(NoSessionEvent());
+        } else if (state is LoggedIn) {
+          print("Logged in");
+          Provider.of<GlobalData>(context, listen: false).user = state.user;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (BuildContext context) => HomeScreen(),
+            ),
+          );
+        }
+      }, builder: (context, state) {
+        if (state is LoggedOut) {
+          return LandingScreen();
+        } else if (state is LoginInProgress) {
+          return LoadingScreen(
+            prompt: 'Logging in',
+          );
+        } else if (state is AuthorizationSuccess) {
+          return LoadingScreen(
+            prompt: 'Getting user data',
+          );
+        }
+        return LoadingScreen(
+          prompt: 'Checking for sessions',
+        );
+      }),
     );
   }
 }

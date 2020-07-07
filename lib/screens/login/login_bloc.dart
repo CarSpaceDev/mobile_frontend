@@ -9,7 +9,8 @@ final AuthService authService = AuthService();
 final ApiService apiService = ApiService.create();
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  @override
+
+  LoginBloc() : super(null);
   LoginState get initialState => LoginInitialState();
 
   @override

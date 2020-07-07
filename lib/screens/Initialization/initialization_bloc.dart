@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import './bloc.dart';
 
 class InitializationBloc extends Bloc<InitializationEvent, InitializationState> {
-  @override
+  InitializationBloc() : super(null);
   InitializationState get initialState => InitialState();
 
   @override
