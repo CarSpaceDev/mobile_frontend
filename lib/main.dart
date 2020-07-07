@@ -12,6 +12,8 @@ import 'model/GlobalData.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
+      .copyWith(systemNavigationBarColor: Colors.indigo[900], statusBarColor: Colors.indigo[900]));
   runApp(CarSpaceApp());
 }
 
