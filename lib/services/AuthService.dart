@@ -21,19 +21,7 @@ class AuthService {
       return User.fromAuthService(user, token);
   }
 
-  Future signInWithEmail(String email, String password) async {
-    try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      final token = await _getJWT(result.user);
-//      print(token);
-      final User currentUser = _userFromResult(result.user, token);
-      return currentUser;
-    } catch (e) {
-      print(e.message);
-      return null;
-    }
-  }
+
 
   currentUser() async {
     try {
@@ -45,6 +33,20 @@ class AuthService {
         return null;
     } catch (e) {
       print(e);
+      return null;
+    }
+  }
+
+  Future signInWithEmail(String email, String password) async {
+    try {
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final token = await _getJWT(result.user);
+//      print(token);
+      final User currentUser = _userFromResult(result.user, token);
+      return currentUser;
+    } catch (e) {
+      print(e.message);
       return null;
     }
   }

@@ -30,6 +30,7 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
           var result = await apiService.requestInitData();
           if (result.statusCode == 200) {
             globalData.eula = result.body['eula'];
+            devLog("EULA", globalData.eula);
             context.bloc<InitializationBloc>().add(ReadyEvent());
           } else {
             devLog("InitError",'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +

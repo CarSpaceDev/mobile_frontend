@@ -20,7 +20,8 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => LoginBloc(),
-      child: BlocConsumer<LoginBloc, LoginState>(listener: (context, state) async {
+      child: BlocConsumer<LoginBloc, LoginState>(
+          listener: (context, state) async {
         if (state is LoginStartState) {
           var currentUser = await Provider.of<AuthService>(context, listen: false).currentUser();
           if (currentUser != null)
