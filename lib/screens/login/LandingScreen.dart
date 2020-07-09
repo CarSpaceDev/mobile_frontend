@@ -31,94 +31,9 @@ class _LandingScreenState extends State<LandingScreen> {
       bottomNavigationBar: BottomAppBar(
         color: Color(0x00),
         child: FlatButton(
-          onPressed: () => showModalBottomSheet(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
-              backgroundColor: Colors.white,
-              isDismissible: true,
-              context: context,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    height: SizeConfig.heightMultiplier * 50,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Text(
-                          'Login',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
-                        ),
-                        TextField(
-                          controller: _emailController,
-                          style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
-                          decoration: InputDecoration(
-                            hintText: "enter email",
-                            hintStyle:
-                                TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        TextField(
-                            controller: _passwordController,
-                            style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
-                            decoration: InputDecoration(
-                                hintText: "enter password",
-                                hintStyle:
-                                    TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ))),
-                        FlatButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            context.bloc<LoginBloc>().add(
-                                LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
-                          },
-                          color: themeData.secondaryHeaderColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          child: Container(
-                            width: SizeConfig.widthMultiplier * 50,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Text(
-                                  'Login with Google',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        FlatButton.icon(
-                          color: themeData.secondaryHeaderColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            context.bloc<LoginBloc>().add(LoginGoogleEvent());
-                          },
-                          icon: Icon(
-                            FontAwesomeIcons.google,
-                            color: Colors.white,
-                          ),
-                          label: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              'Login with Google',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+          onPressed: () {
+            openBottomModal(context.bloc<LoginBloc>());
+          },
           child: RichText(
             text: TextSpan(
               style: new TextStyle(
@@ -133,6 +48,96 @@ class _LandingScreenState extends State<LandingScreen> {
       ),
       body: LandingContent(),
     );
+  }
+
+  openBottomModal(LoginBloc loginBloc) {
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+        backgroundColor: Colors.white,
+        isDismissible: true,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              height: SizeConfig.heightMultiplier * 50,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    'Login',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
+                  ),
+                  TextField(
+                    controller: _emailController,
+                    style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
+                    decoration: InputDecoration(
+                      hintText: "enter email",
+                      hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    controller: _passwordController,
+                    style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
+                    decoration: InputDecoration(
+                      hintText: "enter password",
+                      hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                    },
+                    color: themeData.secondaryHeaderColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    child: Container(
+                      width: SizeConfig.widthMultiplier * 50,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'Login with Email/Password',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  FlatButton.icon(
+                    color: themeData.secondaryHeaderColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      loginBloc.add(LoginGoogleEvent());
+                    },
+                    icon: Icon(
+                      FontAwesomeIcons.google,
+                      color: Colors.white,
+                    ),
+                    label: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        'Login with Google',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 
