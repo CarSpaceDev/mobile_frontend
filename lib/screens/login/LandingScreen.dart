@@ -37,10 +37,14 @@ class _LandingScreenState extends State<LandingScreen> {
           child: RichText(
             text: TextSpan(
               style: new TextStyle(
-                  fontFamily: "Champagne & Limousines", color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
+                  fontFamily: "Champagne & Limousines",
+                  color: Colors.white,
+                  fontSize: SizeConfig.textMultiplier * 2),
               children: <TextSpan>[
                 TextSpan(text: 'Already have an account? '),
-                TextSpan(text: 'Log In', style: new TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: 'Log In',
+                    style: new TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -53,7 +57,8 @@ class _LandingScreenState extends State<LandingScreen> {
   openBottomModal(LoginBloc loginBloc) {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50), topRight: Radius.circular(50))),
         backgroundColor: Colors.white,
         isDismissible: true,
         context: context,
@@ -68,14 +73,22 @@ class _LandingScreenState extends State<LandingScreen> {
                   Text(
                     'Login',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: SizeConfig.textMultiplier * 3.25),
                   ),
                   TextField(
                     controller: _emailController,
-                    style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
+                    style: TextStyle(
+                        fontFamily: "Champagne & Limousines",
+                        color: Colors.black,
+                        fontSize: 20),
                     decoration: InputDecoration(
                       hintText: "enter email",
-                      hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
+                      hintStyle: TextStyle(
+                          fontFamily: "Champagne & Limousines",
+                          fontSize: 20,
+                          color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -83,10 +96,16 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                   TextField(
                     controller: _passwordController,
-                    style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
+                    style: TextStyle(
+                        fontFamily: "Champagne & Limousines",
+                        color: Colors.black,
+                        fontSize: 20),
                     decoration: InputDecoration(
                       hintText: "enter password",
-                      hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.black),
+                      hintStyle: TextStyle(
+                          fontFamily: "Champagne & Limousines",
+                          fontSize: 20,
+                          color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -95,10 +114,13 @@ class _LandingScreenState extends State<LandingScreen> {
                   FlatButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                      loginBloc.add(LogInEmailEvent(
+                          email: _emailController.text,
+                          password: _passwordController.text));
                     },
                     color: themeData.secondaryHeaderColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     child: Container(
                       width: SizeConfig.widthMultiplier * 50,
                       child: Center(
@@ -107,7 +129,9 @@ class _LandingScreenState extends State<LandingScreen> {
                           child: Text(
                             'Login with Email/Password',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: SizeConfig.textMultiplier * 2.5),
                           ),
                         ),
                       ),
@@ -115,7 +139,8 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                   FlatButton.icon(
                     color: themeData.secondaryHeaderColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     onPressed: () {
                       Navigator.of(context).pop();
                       loginBloc.add(LoginGoogleEvent());
@@ -129,7 +154,9 @@ class _LandingScreenState extends State<LandingScreen> {
                       child: Text(
                         'Login with Google',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: SizeConfig.textMultiplier * 2.5),
                       ),
                     ),
                   ),
@@ -186,7 +213,9 @@ class LandingContent extends StatelessWidget {
                             ),
                             TextSpan(
                               text: "...because your parking matters",
-                              style: TextStyle(fontSize: SizeConfig.textMultiplier * 2, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: SizeConfig.textMultiplier * 2,
+                                  color: Colors.white),
                             )
                           ],
                         ),
@@ -194,10 +223,11 @@ class LandingContent extends StatelessWidget {
                       Spacer(flex: 1),
                       FlatButton(
                         onPressed: () {
-                          navigateToRegistration(context);
+                          navigateToEula(context);
                         },
                         color: themeData.secondaryHeaderColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
                         child: Container(
                           width: SizeConfig.widthMultiplier * 60,
                           height: SizeConfig.heightMultiplier * 6,
@@ -228,8 +258,13 @@ class LandingContent extends StatelessWidget {
     );
   }
 
-  navigateToRegistration(BuildContext context) {
+  navigateToEu(BuildContext context) {
     print('Navigate to registration');
     context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
+  }
+
+  navigateToEula(BuildContext context) {
+    print('Navigate to Eula');
+    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
   }
 }
