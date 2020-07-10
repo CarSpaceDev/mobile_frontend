@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'login_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -24,6 +26,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: AppBar(
+        leading: IconButton(
+          color: Colors.white,
+          onPressed: () {
+            navigateToEula(context);
+          },
+          icon: Icon(Icons.arrow_back_ios),
+        ),
         centerTitle: true,
         title: Text(
           "Register Account",
@@ -193,5 +202,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         );
       },
     );
+  }
+
+  navigateToEula(BuildContext context) {
+    print('Navigate to Eula');
+    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
   }
 }
