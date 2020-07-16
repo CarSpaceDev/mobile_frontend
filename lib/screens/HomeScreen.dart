@@ -3,8 +3,6 @@ import 'package:carspace/screens/Home/MapScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'login/LoginBlocHandler.dart';
-import 'package:provider/provider.dart';
-import 'package:carspace/model/GlobalData.dart';
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();

@@ -1,5 +1,4 @@
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/screens/Home/MapScreen.dart';
 import 'package:carspace/screens/login/EulaScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
