@@ -4,7 +4,6 @@ abstract class LoginEvent extends Equatable {
   const LoginEvent();
 }
 
-
 class LoginStartEvent extends LoginEvent {
   @override
   List<Object> get props => [];
@@ -51,6 +50,16 @@ class AuthorizationSuccessEvent extends LoginEvent {
 }
 
 class NavigateToRegisterEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToEulaEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToLandingPageEvent extends LoginEvent {
   @override
   List<Object> get props => [];
 }

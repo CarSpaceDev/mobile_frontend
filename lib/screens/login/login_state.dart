@@ -3,10 +3,12 @@ part of 'login_bloc.dart';
 abstract class LoginState extends Equatable {
   const LoginState();
 }
+
 class LoginInitialState extends LoginState {
   @override
   List<Object> get props => [];
 }
+
 class LoginStartState extends LoginState {
   @override
   List<Object> get props => [];
@@ -48,6 +50,16 @@ class LoggedIn extends LoginState {
 }
 
 class NavToRegister extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class NavToEula extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+class NavToLandingPage extends LoginState {
   @override
   List<Object> get props => [];
 }

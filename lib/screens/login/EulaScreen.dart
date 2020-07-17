@@ -1,5 +1,7 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'login_bloc.dart';
 
 class EulaScreen extends StatefulWidget {
   @override
@@ -22,12 +24,12 @@ class _EulaScreenState extends State<EulaScreen> {
       bottomNavigationBar: BottomAppBar(
         color: themeData.backgroundColor,
         child: Container(
-          height: MediaQuery.of(context).size.height *.1,
+          height: MediaQuery.of(context).size.height * .1,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               FlatButton(
-                onPressed: () => {},
+                onPressed: () => {navigateToLandingPage(context)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -37,7 +39,7 @@ class _EulaScreenState extends State<EulaScreen> {
                 ),
               ),
               FlatButton(
-                onPressed: () => {},
+                onPressed: () => {navigateToRegistration(context)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -91,5 +93,15 @@ class _EulaScreenState extends State<EulaScreen> {
         ),
       ),
     );
+  }
+
+  navigateToRegistration(BuildContext context) {
+    print('Navigate to registration');
+    context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
+  }
+
+  navigateToLandingPage(BuildContext context) {
+    print('Navigate to registration');
+    context.bloc<LoginBloc>().add(NavigateToLandingPageEvent());
   }
 }
