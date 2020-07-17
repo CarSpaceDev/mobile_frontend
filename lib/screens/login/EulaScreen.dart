@@ -74,7 +74,7 @@ class _EulaScreenState extends State<EulaScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Text(
-                            StringConstants.loremIpsum,
+                            "loremwhatever",
                             style: TextStyle(
                               fontSize: 16.0,
                               color: Colors.black87,
