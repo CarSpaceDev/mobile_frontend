@@ -1,6 +1,7 @@
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/screens/Home/MapScreen.dart';
+import 'package:carspace/screens/login/EulaScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
+import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +21,12 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => LoginBloc(),
-      child: BlocConsumer<LoginBloc, LoginState>(
-          listener: (context, state) async {
+      child:
+          BlocConsumer<LoginBloc, LoginState>(listener: (context, state) async {
         if (state is LoginStartState) {
-          var currentUser = await Provider.of<AuthService>(context, listen: false).currentUser();
+          var currentUser =
+              await Provider.of<AuthService>(context, listen: false)
+                  .currentUser();
           if (currentUser != null)
             context.bloc<LoginBloc>().add(LoggedInEvent());
           else
@@ -48,7 +51,13 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           );
         } else if (state is LoggedOut) {
           return LandingScreen();
-        } else if (state is LoggedIn) return HomeScreen();
+        } else if (state is LoggedIn)
+          return HomeScreen();
+        else if (state is NavToEula)
+          return EulaScreen();
+        else if (state is NavToRegister)
+          return RegistrationScreen();
+        else if (state is NavToLandingPage) return LandingScreen();
         return LoadingScreen(
           prompt: 'Checking for sessions',
         );
