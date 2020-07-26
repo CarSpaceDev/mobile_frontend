@@ -38,7 +38,13 @@ class _MapScreenState extends State<MapScreen> {
     });
     _setMarkerIcon();
     location.onLocationChanged.listen((location) async {
-      devLog("LocationUpdate","Updating location : ["+location.latitude.toString()+','+location.longitude.toString()+']');
+      devLog(
+          "LocationUpdate",
+          "Updating location : [" +
+              location.latitude.toString() +
+              ',' +
+              location.longitude.toString() +
+              ']');
       setState(() {
         currentLocation = LatLng(location.latitude, location.longitude);
         _markers.clear();
@@ -52,8 +58,8 @@ class _MapScreenState extends State<MapScreen> {
               }),
         );
       });
-      if (viewCentered==null) {
-        devLog("ViewNotCentered","view is not centered");
+      if (viewCentered == null) {
+        devLog("ViewNotCentered", "view is not centered");
         mapController?.moveCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
@@ -77,99 +83,100 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     if (workingMap)
       return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Stack(
-        children: [
-          GoogleMap(
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(1, 1),
-            zoom: 16.0,
-          ),
-          markers: _markers,
-        ), Positioned(
-            bottom: SizeConfig.widthMultiplier * 5,
-            left: SizeConfig.widthMultiplier * 5,
-            child: FloatingActionButton(
-              backgroundColor: themeData.secondaryHeaderColor,
-              onPressed: (){
-                mapController?.moveCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: currentLocation,
-                    zoom: 16.0,
-                  ),
-                ),
-              );
-                },
-              elevation: 3,
-              child: Icon(Icons.center_focus_strong),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: [
+            GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(1, 1),
+                zoom: 16.0,
+              ),
+              markers: _markers,
             ),
-          ),
-          Positioned(
-            top: 16,
-            child: PreferredSize(
-              preferredSize: Size(MediaQuery.of(context).size.width, 53),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                color: Colors.transparent,
-                child: searchBar(context),
+            Positioned(
+              bottom: SizeConfig.widthMultiplier * 5,
+              left: SizeConfig.widthMultiplier * 5,
+              child: FloatingActionButton(
+                backgroundColor: themeData.secondaryHeaderColor,
+                onPressed: () {
+                  mapController?.moveCamera(
+                    CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                        target: currentLocation,
+                        zoom: 16.0,
+                      ),
+                    ),
+                  );
+                },
+                elevation: 3,
+                child: Icon(Icons.center_focus_strong),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            Positioned(
+              top: 16,
+              child: PreferredSize(
+                preferredSize: Size(MediaQuery.of(context).size.width, 53),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.transparent,
+                  child: searchBar(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     else
-    return PlacePicker(
-      apiKey: StringConstants.kGmapsApiKey,
-      useCurrentLocation: true,
-      //usePlaceDetailSearch: true,
-      onPlacePicked: (result) {
-        selectedPlace = result;
-        Navigator.of(context).pop();
-        setState(() {});
-      },
-      //forceSearchOnZoomChanged: true,
-      //automaticallyImplyAppBarLeading: false,
-      //autocompleteLanguage: "ko",
-      //region: 'au',
-      //selectInitialPosition: true,
-      // selectedPlaceWidgetBuilder: (_, selectedPlace, state, isSearchBarFocused) {
-      //   print("state: $state, isSearchBarFocused: $isSearchBarFocused");
-      //   return isSearchBarFocused
-      //       ? Container()
-      //       : FloatingCard(
-      //           bottomPosition: 0.0,    // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-      //           leftPosition: 0.0,
-      //           rightPosition: 0.0,
-      //           width: 500,
-      //           borderRadius: BorderRadius.circular(12.0),
-      //           child: state == SearchingState.Searching
-      //               ? Center(child: CircularProgressIndicator())
-      //               : RaisedButton(
-      //                   child: Text("Pick Here"),
-      //                   onPressed: () {
-      //                     // IMPORTANT: You MUST manage selectedPlace data yourself as using this build will not invoke onPlacePicker as
-      //                     //            this will override default 'Select here' Button.
-      //                     print("do something with [selectedPlace] data");
-      //                     Navigator.of(context).pop();
-      //                   },
-      //                 ),
-      //         );
-      // },
-      // pinBuilder: (context, state) {
-      //   if (state == PinState.Idle) {
-      //     return Icon(Icons.favorite_border);
-      //   } else {
-      //     return Icon(Icons.favorite);
-      //   }
-      // },
-    );
+      return PlacePicker(
+        apiKey: StringConstants.kGmapsApiKey,
+        useCurrentLocation: true,
+        //usePlaceDetailSearch: true,
+        onPlacePicked: (result) {
+          selectedPlace = result;
+          Navigator.of(context).pop();
+          setState(() {});
+        },
+        //forceSearchOnZoomChanged: true,
+        //automaticallyImplyAppBarLeading: false,
+        //autocompleteLanguage: "ko",
+        //region: 'au',
+        //selectInitialPosition: true,
+        // selectedPlaceWidgetBuilder: (_, selectedPlace, state, isSearchBarFocused) {
+        //   print("state: $state, isSearchBarFocused: $isSearchBarFocused");
+        //   return isSearchBarFocused
+        //       ? Container()
+        //       : FloatingCard(
+        //           bottomPosition: 0.0,    // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
+        //           leftPosition: 0.0,
+        //           rightPosition: 0.0,
+        //           width: 500,
+        //           borderRadius: BorderRadius.circular(12.0),
+        //           child: state == SearchingState.Searching
+        //               ? Center(child: CircularProgressIndicator())
+        //               : RaisedButton(
+        //                   child: Text("Pick Here"),
+        //                   onPressed: () {
+        //                     // IMPORTANT: You MUST manage selectedPlace data yourself as using this build will not invoke onPlacePicker as
+        //                     //            this will override default 'Select here' Button.
+        //                     print("do something with [selectedPlace] data");
+        //                     Navigator.of(context).pop();
+        //                   },
+        //                 ),
+        //         );
+        // },
+        // pinBuilder: (context, state) {
+        //   if (state == PinState.Idle) {
+        //     return Icon(Icons.favorite_border);
+        //   } else {
+        //     return Icon(Icons.favorite);
+        //   }
+        // },
+      );
   }
 
 //  @override
@@ -223,9 +230,9 @@ class _MapScreenState extends State<MapScreen> {
 
   void _setMarkerIcon() async {
     _markerIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
+        ImageConfiguration(size: Size(10, 10)),
+        'assets/launcher_icon/pushpin.png');
   }
-
 
   searchBar(BuildContext context) {
     return Row(
@@ -243,10 +250,16 @@ class _MapScreenState extends State<MapScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32),
           child: TextField(
             controller: _searchController,
-            style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
+            style: TextStyle(
+                fontFamily: "Champagne & Limousines",
+                color: Colors.black,
+                fontSize: 20),
             decoration: InputDecoration(
               hintText: "Enter destination",
-              hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 18, color: Colors.black),
+              hintStyle: TextStyle(
+                  fontFamily: "Champagne & Limousines",
+                  fontSize: 18,
+                  color: Colors.black),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),
               ),

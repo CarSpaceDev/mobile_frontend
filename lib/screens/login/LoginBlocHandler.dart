@@ -1,7 +1,10 @@
 import 'package:carspace/model/GlobalData.dart';
 import 'package:carspace/screens/login/EulaScreen.dart';
+import 'package:carspace/screens/login/GoogleEula.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
+import 'package:carspace/screens/login/ReturnScreen.dart';
+import 'package:carspace/screens/login/TestScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +22,7 @@ class LoginBlocHandler extends StatefulWidget {
 class _LoginBlocHandlerState extends State<LoginBlocHandler> {
   @override
   Widget build(BuildContext context) {
+    var globalData = Provider.of<GlobalData>(context, listen: false);
     return BlocProvider(
       create: (BuildContext context) => LoginBloc(),
       child:
@@ -32,6 +36,9 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           else
             context.bloc<LoginBloc>().add(NoSessionEvent());
         } else if (state is LoggedIn) {
+          print("Logged in");
+          Provider.of<GlobalData>(context, listen: false).user = state.user;
+        } else if (state is GoogleToEulaState) {
           print("Logged in");
           Provider.of<GlobalData>(context, listen: false).user = state.user;
         }
@@ -53,11 +60,25 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           return LandingScreen();
         } else if (state is LoggedIn)
           return HomeScreen();
+        else if (state is GoogleToEulaState)
+          return GoogleEula();
         else if (state is NavToEula)
           return EulaScreen();
         else if (state is NavToRegister)
           return RegistrationScreen();
-        else if (state is NavToLandingPage) return LandingScreen();
+        else if (state is NavToTestPage) {
+          globalData.heldEmail = state.email;
+          globalData.heldFirstName = state.firstName;
+          globalData.heldLastName = state.lastName;
+          return TestScreen();
+        } else if (state is NavToLandingPage)
+          return LandingScreen();
+        else if (state is NavToReturnScreen) {
+          globalData.heldEmail = state.email;
+          globalData.heldFirstName = state.firstName;
+          globalData.heldLastName = state.lastName;
+          return ReturnScreen();
+        }
         return LoadingScreen(
           prompt: 'Checking for sessions',
         );

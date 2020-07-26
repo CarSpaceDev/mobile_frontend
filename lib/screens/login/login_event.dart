@@ -59,7 +59,26 @@ class NavigateToEulaEvent extends LoginEvent {
   List<Object> get props => [];
 }
 
+class LoggedInGoogleFromEulaEvent extends LoginEvent {
+  final User user;
+  LoggedInGoogleFromEulaEvent(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
+class LoggedInEulaToGoogle extends LoginEvent {
+  final User user;
+  LoggedInEulaToGoogle(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
 class NavigateToLandingPageEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToReturnScreen extends LoginEvent {
   @override
   List<Object> get props => [];
 }
@@ -72,4 +91,15 @@ class LogInEmailEvent extends LoginEvent {
 
   @override
   List<Object> get props => [email, password];
+}
+
+class SubmitRegistrationEvent extends LoginEvent {
+  final _email;
+  final _firstName;
+  final _lastName;
+
+  SubmitRegistrationEvent(this._email, this._firstName, this._lastName);
+
+  @override
+  List<Object> get props => [_email, _firstName, _lastName];
 }
