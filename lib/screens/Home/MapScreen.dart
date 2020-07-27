@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/services/DevTools.dart';
@@ -26,6 +28,7 @@ class _MapScreenState extends State<MapScreen> {
   LatLng currentLocation;
   TextEditingController _searchController;
 
+  StreamSubscription<LocationData> locationSubscription;
   bool workingMap = true;
 
   PickResult selectedPlace;
@@ -37,7 +40,7 @@ class _MapScreenState extends State<MapScreen> {
       _mapStyle = string;
     });
     _setMarkerIcon();
-    location.onLocationChanged.listen((location) async {
+    locationSubscription = location.onLocationChanged.listen((location) async {
       devLog(
           "LocationUpdate",
           "Updating location : [" +
@@ -73,6 +76,12 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    locationSubscription.cancel();
+    super.dispose();
   }
 
   void _onMapCreated(GoogleMapController controller) {
