@@ -1,5 +1,8 @@
+import 'package:carspace/model/GlobalData.dart';
+import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:provider/provider.dart';
 import 'login_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,10 +15,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   TextEditingController _verifyPasswordController;
+  TextEditingController _firstNameController;
+  TextEditingController _lastNameController;
 
   @override
   void initState() {
     super.initState();
+    _firstNameController = TextEditingController(text: "");
+    _lastNameController = TextEditingController(text: "");
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
     _verifyPasswordController = TextEditingController(text: "");
@@ -23,6 +30,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _firstNameController = TextEditingController(
+        text: Provider.of<GlobalData>(context).heldFirstName);
+    _lastNameController = TextEditingController(
+        text: Provider.of<GlobalData>(context).heldLastName);
+    _emailController =
+        TextEditingController(text: Provider.of<GlobalData>(context).heldEmail);
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: AppBar(
@@ -68,6 +81,36 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     color: Colors.white),
               ),
               SizedBox(height: 35.0),
+              TextField(
+                  controller: _firstNameController,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20),
+                  decoration: InputDecoration(
+                      hintText: "first name",
+                      hintStyle: TextStyle(
+                          fontFamily: "Champagne & Limousines",
+                          fontSize: 20,
+                          color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ))),
+              TextField(
+                  controller: _lastNameController,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20),
+                  decoration: InputDecoration(
+                      hintText: "last name",
+                      hintStyle: TextStyle(
+                          fontFamily: "Champagne & Limousines",
+                          fontSize: 20,
+                          color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ))),
               TextField(
                   controller: _emailController,
                   style: TextStyle(
@@ -143,7 +186,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           } else if (_emailController.text.isNotEmpty) {
             if (!validateEmail(_emailController.text)) {
               _showDialog('Enter a valid email address');
-            }
+            } else
+              testSubmit(context);
           }
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
@@ -207,5 +251,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   navigateToEula(BuildContext context) {
     print('Navigate to Eula');
     context.bloc<LoginBloc>().add(NavigateToEulaEvent());
+  }
+
+  testSubmit(BuildContext context) {
+    print('testSubmit');
+    context.bloc<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
+        _firstNameController.text, _lastNameController.text));
   }
 }

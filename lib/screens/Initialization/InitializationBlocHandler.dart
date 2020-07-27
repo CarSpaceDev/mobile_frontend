@@ -12,7 +12,8 @@ import 'initialization_bloc.dart';
 
 class InitializationBlocHandler extends StatefulWidget {
   @override
-  _InitializationBlocHandlerState createState() => _InitializationBlocHandlerState();
+  _InitializationBlocHandlerState createState() =>
+      _InitializationBlocHandlerState();
 }
 
 class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
@@ -22,7 +23,8 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
     var apiService = Provider.of<ApiService>(context, listen: false);
     return BlocProvider(
       create: (BuildContext context) => InitializationBloc(),
-      child: BlocConsumer<InitializationBloc, InitializationState>(listener: (context, state) async {
+      child: BlocConsumer<InitializationBloc, InitializationState>(
+          listener: (context, state) async {
         //listener is only called once for each state change
         // (NOT including the initial state) unlike builder in BlocBuilder and is a void function.
         if (state is BeginInitState) {
@@ -33,8 +35,10 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
             devLog("EULA", globalData.eula);
             context.bloc<InitializationBloc>().add(ReadyEvent());
           } else {
-            devLog("InitError",'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
-                result.statusCode.toString());
+            devLog(
+                "InitError",
+                'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
+                    result.statusCode.toString());
             context.bloc<InitializationBloc>().add(ErrorEvent());
           }
         }
@@ -48,7 +52,8 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
           return LoginBlocHandler();
         else if (state is ErrorState)
           return ErrorScreen(
-            prompt: 'There has been an error in getting needed resources.\n Please try again later.',
+            prompt:
+                'There has been an error in getting needed resources.\n Please try again later.',
           );
         return LoadingScreen(
           prompt: 'Getting latest resources',
