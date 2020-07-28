@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
   bool workingMap = true;
   List<dynamic> lotsInRadius;
   bool lotsMarked = false;
-  int selectedIndex;
+  int selectedIndex = 0;
   PickResult selectedPlace;
   StreamSubscription<LocationData> locationSubscription;
   @override
