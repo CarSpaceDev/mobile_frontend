@@ -35,6 +35,10 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
 
+  @Post(path: '/resource/lot/from-radius')
+  Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
+
+
   static ApiService create() {
     final client = ChopperClient(
         baseUrl: StringConstants.kApiUrl,

@@ -56,4 +56,12 @@ class _$ApiService extends ApiService {
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> findLotsFromRadius(Map<String, dynamic> body) {
+    final $url = '/resource/lot/from-radius';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
 }

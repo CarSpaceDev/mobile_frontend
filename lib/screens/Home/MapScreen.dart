@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/DevTools.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -23,14 +24,15 @@ class _MapScreenState extends State<MapScreen> {
   Marker marker;
   Location location = Location();
   Set<Marker> _markers = HashSet<Marker>();
-  BitmapDescriptor _markerIcon;
+  BitmapDescriptor _lotIcon;
+  BitmapDescriptor _driverIcon;
   bool viewCentered;
   LatLng currentLocation;
   TextEditingController _searchController;
-
-  StreamSubscription<LocationData> locationSubscription;
+  ApiService _apiService = ApiService.create();
   bool workingMap = true;
-
+  List<dynamic> lotsInRadius;
+  bool lotsMarked = false;
   PickResult selectedPlace;
   @override
   void initState() {
@@ -40,26 +42,46 @@ class _MapScreenState extends State<MapScreen> {
       _mapStyle = string;
     });
     _setMarkerIcon();
-    locationSubscription = location.onLocationChanged.listen((location) async {
-      devLog(
-          "LocationUpdate",
-          "Updating location : [" +
-              location.latitude.toString() +
-              ',' +
-              location.longitude.toString() +
-              ']');
+    location.onLocationChanged.listen((location) async {
+      devLog("LocationUpdate",
+          "Updating location : [" + location.latitude.toString() + ',' + location.longitude.toString() + ']');
+      if (lotsInRadius == null){
+      var lots = await _apiService.findLotsFromRadius({
+          "latitude": location.latitude,
+          "longitude": location.longitude,
+          "radius": 2000
+        });
+      print({
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "radius": 1500
+      });
+      print(lots.body);
+      lotsInRadius = lots.body;
+      }
       setState(() {
         currentLocation = LatLng(location.latitude, location.longitude);
         _markers.clear();
         _markers.add(
           Marker(
-              markerId: MarkerId("0"),
+              markerId: MarkerId("Driver"),
               position: currentLocation,
-              icon: _markerIcon,
+              icon: _driverIcon,
               onTap: () {
-                print("SomeCallback");
+                print("Driver");
               }),
         );
+        for(int i = 0; i<lotsInRadius.length; i++){
+          _markers.add(
+            Marker(
+                markerId: MarkerId("Lot Result $i"),
+                position: LatLng(lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
+                icon: _lotIcon,
+                onTap: () {
+                  print("Lot Result $i: ${lotsInRadius[i]["address"].toString()}");
+                }),
+          );
+        }
       });
       if (viewCentered == null) {
         devLog("ViewNotCentered", "view is not centered");
@@ -238,9 +260,10 @@ class _MapScreenState extends State<MapScreen> {
 //  }
 
   void _setMarkerIcon() async {
-    _markerIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)),
-        'assets/launcher_icon/pushpin.png');
+    _lotIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
+    _driverIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
   }
 
   searchBar(BuildContext context) {
@@ -259,16 +282,10 @@ class _MapScreenState extends State<MapScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32),
           child: TextField(
             controller: _searchController,
-            style: TextStyle(
-                fontFamily: "Champagne & Limousines",
-                color: Colors.black,
-                fontSize: 20),
+            style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
             decoration: InputDecoration(
               hintText: "Enter destination",
-              hintStyle: TextStyle(
-                  fontFamily: "Champagne & Limousines",
-                  fontSize: 18,
-                  color: Colors.black),
+              hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 18, color: Colors.black),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),
               ),
