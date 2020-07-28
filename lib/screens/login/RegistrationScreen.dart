@@ -1,3 +1,4 @@
+import 'package:carspace/model/GlobalData.dart';
 import 'package:carspace/resusables/AppBarLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';

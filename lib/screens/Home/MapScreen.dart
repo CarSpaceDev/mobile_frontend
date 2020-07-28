@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/screens/ReservationScreen/ReservationScreen.dart';
+import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/DevTools.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,7 +36,9 @@ class _MapScreenState extends State<MapScreen> {
   bool workingMap = true;
   List<dynamic> lotsInRadius;
   bool lotsMarked = false;
+  int selectedIndex;
   PickResult selectedPlace;
+  StreamSubscription<LocationData> locationSubscription;
   @override
   void initState() {
     super.initState();
@@ -44,22 +47,15 @@ class _MapScreenState extends State<MapScreen> {
       _mapStyle = string;
     });
     _setMarkerIcon();
-    location.onLocationChanged.listen((location) async {
+    locationSubscription = location.onLocationChanged.listen((location) async {
       devLog("LocationUpdate",
           "Updating location : [" + location.latitude.toString() + ',' + location.longitude.toString() + ']');
-      if (lotsInRadius == null){
-      var lots = await _apiService.findLotsFromRadius({
-          "latitude": location.latitude,
-          "longitude": location.longitude,
-          "radius": 2000
-        });
-      print({
-        "latitude": location.latitude,
-        "longitude": location.longitude,
-        "radius": 1500
-      });
-      print(lots.body);
-      lotsInRadius = lots.body;
+      if (lotsInRadius == null) {
+        var lots = await _apiService
+            .findLotsFromRadius({"latitude": location.latitude, "longitude": location.longitude, "radius": 2000});
+        print({"latitude": location.latitude, "longitude": location.longitude, "radius": 1500});
+        print(lots.body);
+        lotsInRadius = lots.body;
       }
       setState(() {
         currentLocation = LatLng(location.latitude, location.longitude);
@@ -73,13 +69,17 @@ class _MapScreenState extends State<MapScreen> {
                 print("Driver");
               }),
         );
-        for(int i = 0; i<lotsInRadius.length; i++){
+        for (int i = 0; i < lotsInRadius.length; i++) {
           _markers.add(
             Marker(
                 markerId: MarkerId("Lot Result $i"),
-                position: LatLng(lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
+                position: LatLng(
+                    lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
                 icon: _lotIcon,
                 onTap: () {
+                  setState(() {
+                    selectedIndex = i;
+                  });
                   print("Lot Result $i: ${lotsInRadius[i]["address"].toString()}");
                 }),
           );
@@ -124,203 +124,116 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (workingMap)
-      return Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(1, 1),
-                zoom: 16.0,
-              ),
-              markers: _markers,
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(1, 1),
+              zoom: 16.0,
             ),
-            Positioned(
-              bottom: SizeConfig.widthMultiplier * 5,
-              left: SizeConfig.widthMultiplier * 5,
-              child: FloatingActionButton(
-                backgroundColor: themeData.secondaryHeaderColor,
-                onPressed: () {
-                  setOptions();
-                },
-                elevation: 3,
-                child: Icon(Icons.more_horiz),
-              ),
+            markers: _markers,
+          ),
+          Positioned(
+            bottom: SizeConfig.widthMultiplier * 5,
+            left: SizeConfig.widthMultiplier * 5,
+            child: FloatingActionButton(
+              backgroundColor: themeData.secondaryHeaderColor,
+              onPressed: () {
+                setOptions();
+              },
+              elevation: 3,
+              child: Icon(Icons.more_horiz),
             ),
-            Positioned(
-              top: 16,
-              child: PreferredSize(
-                preferredSize: Size(MediaQuery.of(context).size.width, 53),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.transparent,
-                  child: searchBar(context),
-                ),
+          ),
+          Positioned(
+            top: 16,
+            child: PreferredSize(
+              preferredSize: Size(MediaQuery.of(context).size.width, 53),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                color: Colors.transparent,
+                child: searchBar(context),
               ),
             ),
-            options
-                ? Positioned(
-                    bottom: SizeConfig.widthMultiplier * 5,
-                    left: SizeConfig.widthMultiplier * 5,
-                    child: Row(
-                      children: <Widget>[
-                        FloatingActionButton(
-                          backgroundColor: themeData.secondaryHeaderColor,
-                          elevation: 3,
-                          child: Icon(Icons.arrow_back_ios),
-                          onPressed: () {
-                            setState(() {
-                              this.options = false;
-                            });
-                            print(this.options);
-                          },
-                        ),
-                        SizedBox(width: 5),
-                        FloatingActionButton(
-                          backgroundColor: themeData.secondaryHeaderColor,
-                          elevation: 3,
-                          child: Icon(Icons.center_focus_strong),
-                          onPressed: () {
-                            setState(() {
-                              this.options = false;
-                            });
-                            mapController
-                                ?.moveCamera(CameraUpdate.newCameraPosition(
-                              CameraPosition(
-                                target: currentLocation,
-                                zoom: 16.0,
-                              ),
-                            ));
-                          },
-                        ),
-                        SizedBox(width: 5),
-                        FloatingActionButton(
-                          backgroundColor: themeData.secondaryHeaderColor,
-                          elevation: 3,
-                          child: Icon(Icons.location_on),
-                          onPressed: () {
-                            setState(() {
-                              this.options = false;
-                              this.suggestedLocation = true;
-                            });
-                          },
-                        )
-                      ],
-                    ),
-                  )
-                : Container(),
-            suggestedLocation ? Positioned(
-                bottom: SizeConfig.widthMultiplier * 22,
-                left: SizeConfig.widthMultiplier * 10,
-                right: SizeConfig.widthMultiplier * 10,
-              child: GestureDetector(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ReservationScreen()));
-                  },
-                  child: SuggestedLocationCard()),
-            ):Container()
-          ],
-        ),
-      );
-    else
-      return PlacePicker(
-        apiKey: StringConstants.kGmapsApiKey,
-        useCurrentLocation: true,
-        //usePlaceDetailSearch: true,
-        onPlacePicked: (result) {
-          selectedPlace = result;
-          Navigator.of(context).pop();
-          setState(() {});
-        },
-        //forceSearchOnZoomChanged: true,
-        //automaticallyImplyAppBarLeading: false,
-        //autocompleteLanguage: "ko",
-        //region: 'au',
-        //selectInitialPosition: true,
-        // selectedPlaceWidgetBuilder: (_, selectedPlace, state, isSearchBarFocused) {
-        //   print("state: $state, isSearchBarFocused: $isSearchBarFocused");
-        //   return isSearchBarFocused
-        //       ? Container()
-        //       : FloatingCard(
-        //           bottomPosition: 0.0,    // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-        //           leftPosition: 0.0,
-        //           rightPosition: 0.0,
-        //           width: 500,
-        //           borderRadius: BorderRadius.circular(12.0),
-        //           child: state == SearchingState.Searching
-        //               ? Center(child: CircularProgressIndicator())
-        //               : RaisedButton(
-        //                   child: Text("Pick Here"),
-        //                   onPressed: () {
-        //                     // IMPORTANT: You MUST manage selectedPlace data yourself as using this build will not invoke onPlacePicker as
-        //                     //            this will override default 'Select here' Button.
-        //                     print("do something with [selectedPlace] data");
-        //                     Navigator.of(context).pop();
-        //                   },
-        //                 ),
-        //         );
-        // },
-        // pinBuilder: (context, state) {
-        //   if (state == PinState.Idle) {
-        //     return Icon(Icons.favorite_border);
-        //   } else {
-        //     return Icon(Icons.favorite);
-        //   }
-        // },
-      );
+          ),
+          options
+              ? Positioned(
+                  bottom: SizeConfig.widthMultiplier * 5,
+                  left: SizeConfig.widthMultiplier * 5,
+                  child: Row(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        backgroundColor: themeData.secondaryHeaderColor,
+                        elevation: 3,
+                        child: Icon(Icons.arrow_back_ios),
+                        onPressed: () {
+                          setState(() {
+                            this.options = false;
+                          });
+                          print(this.options);
+                        },
+                      ),
+                      SizedBox(width: 5),
+                      FloatingActionButton(
+                        backgroundColor: themeData.secondaryHeaderColor,
+                        elevation: 3,
+                        child: Icon(Icons.center_focus_strong),
+                        onPressed: () {
+                          setState(() {
+                            this.options = false;
+                          });
+                          mapController?.moveCamera(CameraUpdate.newCameraPosition(
+                            CameraPosition(
+                              target: currentLocation,
+                              zoom: 16.0,
+                            ),
+                          ));
+                        },
+                      ),
+                      SizedBox(width: 5),
+                      FloatingActionButton(
+                        backgroundColor: themeData.secondaryHeaderColor,
+                        elevation: 3,
+                        child: Icon(Icons.location_on),
+                        onPressed: () {
+                          setState(() {
+                            this.options = false;
+                            this.suggestedLocation = true;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
+          suggestedLocation
+              ? Positioned(
+                  bottom: SizeConfig.widthMultiplier * 22,
+                  left: SizeConfig.widthMultiplier * 10,
+                  right: SizeConfig.widthMultiplier * 10,
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (BuildContext context) => ReservationScreen()));
+                      },
+                      child: SuggestedLocationCard(
+                        name: lotsInRadius[selectedIndex]["address"]["streetAddress"],
+                        address: lotsInRadius[selectedIndex]["address"]["addressLocality"] +
+                            " , " +
+                            lotsInRadius[selectedIndex]["address"]["addressRegion"],
+                        price: double.parse(lotsInRadius[selectedIndex]["pricing"].toString()),
+                        distance: lotsInRadius[selectedIndex]["dist"]["calculated"],
+                      )),
+                )
+              : Container()
+        ],
+      ),
+    );
   }
-
-//  @override
-//  Widget build(BuildContext context) {
-//    return Container(
-//      height: MediaQuery.of(context).size.height,
-//      width: MediaQuery.of(context).size.width,
-//      child: Stack(
-//        children: [
-//          GoogleMap(
-//          onMapCreated: _onMapCreated,
-//          initialCameraPosition: CameraPosition(
-//            target: LatLng(1, 1),
-//            zoom: 16.0,
-//          ),
-//          markers: _markers,
-//        ), Positioned(
-//            bottom: SizeConfig.widthMultiplier * 5,
-//            left: SizeConfig.widthMultiplier * 5,
-//            child: FloatingActionButton(
-//              backgroundColor: themeData.secondaryHeaderColor,
-//              onPressed: (){
-//                mapController?.moveCamera(
-//                CameraUpdate.newCameraPosition(
-//                  CameraPosition(
-//                    target: currentLocation,
-//                    zoom: 16.0,
-//                  ),
-//                ),
-//              );
-//                },
-//              elevation: 3,
-//              child: Icon(Icons.center_focus_strong),
-//            ),
-//          ),
-//          Positioned(
-//            top: 16,
-//            child: PreferredSize(
-//              preferredSize: Size(MediaQuery.of(context).size.width, 53),
-//              child: Container(
-//                width: MediaQuery.of(context).size.width,
-//                color: Colors.transparent,
-//                child: searchBar(context),
-//              ),
-//            ),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
 
   void _setMarkerIcon() async {
     _lotIcon = await BitmapDescriptor.fromAssetImage(
@@ -345,22 +258,16 @@ class _MapScreenState extends State<MapScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32),
           child: TextField(
             controller: _searchController,
-            style: TextStyle(
-                fontFamily: "Champagne & Limousines",
-                color: Colors.black,
-                fontSize: 20),
+            style: TextStyle(fontFamily: "Champagne & Limousines", color: Colors.black, fontSize: 20),
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: "Enter destination",
-              hintStyle: TextStyle(
-                  fontFamily: "Champagne & Limousines",
-                  fontSize: 18,
-                  color: Colors.black),
+              hintStyle: TextStyle(fontFamily: "Champagne & Limousines", fontSize: 18, color: Colors.black),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal:8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
             width: 50,
             height: 50,
@@ -380,78 +287,82 @@ class _MapScreenState extends State<MapScreen> {
 }
 
 class SuggestedLocationCard extends StatelessWidget {
-  const SuggestedLocationCard({
+  final String name;
+  final String address;
+  final double price;
+  final double distance;
+  SuggestedLocationCard({
     Key key,
+    this.name,
+    this.address,
+    this.price,
+    this.distance,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 6.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
         height: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0)
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
         child: Row(
           children: <Widget>[
             Container(
-              width: 110,
+              width: 160,
               decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  bottomLeft: Radius.circular(20.0)
-                )
-              ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), bottomLeft: Radius.circular(20.0))),
+              child: Image.network(
+                  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Subterranean_parking_lot.jpg/440px-Subterranean_parking_lot.jpg"),
             ),
             Container(
+              padding: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0)
-                )
-              ),
-              width: 170,
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(20.0), bottomRight: Radius.circular(20.0))),
+              width: 200,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
                     child: Column(
                       children: <Widget>[
-                        Text('Bacon Spaces',style: TextStyle(fontWeight: FontWeight.bold),),
-                        Text('Cebu City', style: TextStyle(color: Colors.grey),),
+                        Text(
+                          name,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          address,
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ],
                     ),
                   ),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Container(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(bottom: 16, left: 8),
                           child: Row(
                             children: <Widget>[
-                              Icon(Icons.location_on,size: 10),
-                              Text('5km to [location]',style: TextStyle(fontSize: 10),)
+                              Icon(Icons.location_on, size: 16),
+                              Text(
+                                '${distance.toStringAsFixed(2)} m',
+                                style: TextStyle(fontSize: 16),
+                              )
                             ],
                           ),
                         ),
                       ),
                       Container(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: <Widget>[
-                              Text('Php 25.00'),
-                              Text('/ per hour')
-                            ],
+                          padding: const EdgeInsets.only(bottom: 16, left: 8),
+                          child: Row(
+                            children: <Widget>[Text(price.toStringAsFixed(2)), Text('/ per hour')],
                           ),
                         ),
                       )
