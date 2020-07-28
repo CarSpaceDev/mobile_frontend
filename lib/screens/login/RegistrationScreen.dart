@@ -1,5 +1,4 @@
-import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/resusables/AppBarLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
@@ -38,130 +37,93 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         TextEditingController(text: Provider.of<GlobalData>(context).heldEmail);
     return Scaffold(
       backgroundColor: themeData.primaryColor,
-      appBar: AppBar(
-        leading: IconButton(
-          color: Colors.white,
-          onPressed: () {
-            navigateToEula(context);
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
-        centerTitle: true,
-        title: Text(
-          "Register Account",
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+      appBar: arrowForwardAppBarWidget(context, "Register account", () {
+        navigateToEula(context);
+      }),
+      bottomNavigationBar: SizedBox(child: _nextButton()),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Center(
+          child: Column(  mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              SizedBox(height: 40.0),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset(
+              Column(
+                children: <Widget>[
+                  Container(
+                    child: Image.asset(
                       'assets/logo/CarSpace.png',
                       height: 115,
                       width: 115,
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text(
+                        "let's create your account....",
+                        style: TextStyle(
+                            fontFamily: "Champagne & Limousines",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 60.0, horizontal: 20.0),
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                        controller: _emailController,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20),
+                        decoration: InputDecoration(
+                            hintText: "Email address",
+                            hintStyle: TextStyle(
+                                fontFamily: "Champagne & Limousines",
+                                fontSize: 16,
+                                color: Colors.grey),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ))),
+                    TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontSize: 20),
+                        decoration: InputDecoration(
+                            hintText: "Password",
+                            hintStyle: TextStyle(
+                                fontFamily: "Champagne & Limousines",
+                                fontSize: 16,
+                                color: Colors.grey),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ))),
+                    TextField(
+                        controller: _verifyPasswordController,
+                        obscureText: true,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20),
+                        decoration: InputDecoration(
+                            hintText: "Verify password",
+                            hintStyle: TextStyle(
+                                fontFamily: "Champagne & Limousines",
+                                fontSize: 16,
+                                color: Colors.grey),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ))),
                   ],
                 ),
               ),
-              SizedBox(height: 15.0),
-              Text(
-                "let's create your account....",
-                style: TextStyle(
-                    fontFamily: "Champagne & Limousines",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0,
-                    color: Colors.white),
-              ),
-              SizedBox(height: 35.0),
-              TextField(
-                  controller: _firstNameController,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                  decoration: InputDecoration(
-                      hintText: "first name",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ))),
-              TextField(
-                  controller: _lastNameController,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                  decoration: InputDecoration(
-                      hintText: "last name",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ))),
-              TextField(
-                  controller: _emailController,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                  decoration: InputDecoration(
-                      hintText: "email address",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ))),
-              TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                  decoration: InputDecoration(
-                      hintText: "password",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ))),
-              TextField(
-                  controller: _verifyPasswordController,
-                  obscureText: true,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20),
-                  decoration: InputDecoration(
-                      hintText: "verify password",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ))),
-              SizedBox(height: 22.0),
-              _nextButton(),
-              SizedBox(height: 5.0),
-              SizedBox(height: 10.0),
+
             ],
           ),
         ),
@@ -170,51 +132,38 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Widget _nextButton() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(225.0, 0, 0, 0),
-      child: OutlineButton(
-        splashColor: Colors.grey,
-        onPressed: () {
-          if (_passwordController.text.isEmpty ||
-              _verifyPasswordController.text.isEmpty) {
-            _showDialog('Password fields must not be empty');
-          } else if (_passwordController.text !=
-              _verifyPasswordController.text) {
-            _showDialog('Password fields must match');
-          } else if (_passwordController.text.length <= 5) {
-            _showDialog('Password must be at least 6 characters');
-          } else if (_emailController.text.isNotEmpty) {
-            if (!validateEmail(_emailController.text)) {
-              _showDialog('Enter a valid email address');
-            } else
-              testSubmit(context);
-          }
-        },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-        highlightElevation: 0,
-        borderSide: BorderSide(color: Colors.white),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      'Next',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal:20.0),
+      child: Expanded(
+        child: Container(
+          child: OutlineButton(
+            splashColor: Colors.grey,
+            onPressed: () {
+              if (_passwordController.text.isEmpty ||
+                  _verifyPasswordController.text.isEmpty) {
+                _showDialog('Password fields must not be empty');
+              } else if (_passwordController.text !=
+                  _verifyPasswordController.text) {
+                _showDialog('Password fields must match');
+              } else if (_passwordController.text.length <= 5) {
+                _showDialog('Password must be at least 6 characters');
+              } else if (_emailController.text.isNotEmpty) {
+                if (!validateEmail(_emailController.text)) {
+                  _showDialog('Enter a valid email address');
+                }
+              }
+            },
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+            borderSide: BorderSide(color: Colors.white),
+            child: Text(
+              'Next',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),
