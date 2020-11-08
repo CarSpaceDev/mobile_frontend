@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 //part 'User.g.dart';
 //
 //@JsonSerializable()
-class User {
+class CSUser {
   //these variables come from the login data
   String uid;
   DateTime lastSignInTime;
@@ -31,7 +31,7 @@ class User {
 //  Filter filter;
   double distance;
 
-  User({
+  CSUser({
     this.uid,
     this.lastSignInTime,
     this.displayName,
@@ -45,16 +45,16 @@ class User {
     this.subscriptionEnd,
   });
 
-  User.fromAuthService(FirebaseUser user, String token) {
+  CSUser.fromAuthService(User user, String token) {
     this.uid = user.uid;
-    this.photoUrl = user.photoUrl;
+    this.photoUrl = user.photoURL;
     this.lastSignInTime = user.metadata.lastSignInTime;
     this.displayName = user.displayName;
     this.email = user.email;
     this.jwt = token;
   }
 
-  User.fromJson(Map<String, dynamic> json)
+  CSUser.fromJson(Map<String, dynamic> json)
       : uid = json['uid'],
         lastSignInTime = json['lastSignInTime'],
         displayName = json['displayName'],
@@ -67,12 +67,12 @@ class User {
         subscriptionType = json['subscriptionType'],
         subscriptionEnd = json['subscriptionEnd'];
 
-  User fromJson(Map<String, dynamic> user) => _$UserFromJson(user);
+  CSUser fromJson(Map<String, dynamic> user) => _$UserFromJson(user);
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
-  User _$UserFromJson(Map<String, dynamic> json) {
-    return User(
+  CSUser _$UserFromJson(Map<String, dynamic> json) {
+    return CSUser(
       uid: json['authId'] as String,
       lastSignInTime: json['lastSignInTime'] == null
           ? null
@@ -97,7 +97,7 @@ class User {
       ..distance = (json['distance'] as num)?.toDouble();
   }
 
-  Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+  Map<String, dynamic> _$UserToJson(CSUser instance) => <String, dynamic>{
         'uid': instance.uid,
         'lastSignInTime': instance.lastSignInTime?.toIso8601String(),
         'email': instance.email,

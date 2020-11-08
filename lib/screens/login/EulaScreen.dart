@@ -1,12 +1,10 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../../serviceLocator.dart';
 import 'login_bloc.dart';
-import 'dart:convert';
-import 'package:carspace/model/User.dart';
 
 class EulaScreen extends StatefulWidget {
   @override
@@ -81,7 +79,7 @@ class _EulaScreenState extends State<EulaScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Text(
-                            Provider.of<GlobalData>(context).eula,
+                            locator<GlobalData>().eula,
                             style: TextStyle(
                               fontSize: 16.0,
                               color: Colors.black87,
@@ -102,11 +100,11 @@ class _EulaScreenState extends State<EulaScreen> {
 
   navigateToRegistration(BuildContext context) {
     print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
+    context.watch<LoginBloc>().add(NavigateToRegisterEvent());
   }
 
   navigateToLandingPage(BuildContext context) {
     print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToLandingPageEvent());
+    context.watch<LoginBloc>().add(NavigateToLandingPageEvent());
   }
 }

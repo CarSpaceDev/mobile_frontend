@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/User.dart';
-import 'package:carspace/screens/repository/submitRepo.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:equatable/equatable.dart';
@@ -23,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else if (event is NoSessionEvent) {
       yield LoggedOut();
     } else if (event is LoggedInEvent) {
-      User user = await authService.currentUser();
+      CSUser user = await authService.currentUser();
       yield AuthorizationSuccess();
 //      user = await getUserDataFromApi(user);
       yield LoggedIn(user);
@@ -33,7 +32,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoggedIn(event.user);
     } else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
-      User user = await authService.loginGoogle();
+      CSUser user = await authService.loginGoogle();
       print(user.toJson());
       final result = user.email;
       print(result);
@@ -53,7 +52,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedOut();
     } else if (event is LogInEmailEvent) {
       yield LoginInProgress();
-      User user =
+      CSUser user =
           await authService.signInWithEmail(event.email, event.password);
       print(user.toJson());
       print(user != null);
@@ -86,7 +85,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  getUserDataFromApi(User user) async {
+  getUserDataFromApi(CSUser user) async {
     try {
       final response =
           await apiService.requestUserInfo(user.jwt, user.toJson());

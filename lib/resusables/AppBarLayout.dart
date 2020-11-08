@@ -16,7 +16,7 @@ AppBar arrowForwardAppBarWidget(
   );
 }
 
-AppBar MainAppBar(
+AppBar mainAppBar(
     BuildContext context, String appBarTitle, Function onPressed) {
   return AppBar(
     backgroundColor: themeData.primaryColor,

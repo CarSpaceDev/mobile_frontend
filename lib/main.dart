@@ -1,20 +1,24 @@
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/login/VehicleRegistrationScreen.dart';
-import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/screens/Initialization/initialization_bloc.dart';
+import 'package:carspace/screens/login/login_bloc.dart';
+import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'constants/SizeConfig.dart';
 import 'constants/GlobalConstants.dart';
-import 'model/GlobalData.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-      .copyWith(systemNavigationBarColor: Colors.indigo[900], statusBarColor: Colors.indigo[900]));
+  await Firebase.initializeApp();
+  setUpServiceLocator();
+  await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
+      systemNavigationBarColor: Colors.indigo[900],
+      statusBarColor: Colors.indigo[900]));
   runApp(CarSpaceApp());
 }
 
@@ -34,17 +38,19 @@ class CarSpaceApp extends StatelessWidget {
 class GlobalDataHandler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Provider<GlobalData>(
-      create: (_) => GlobalData(),
-      child: Provider(
-        create: (_) => ApiService.create(),
-        dispose: (_, ApiService service) => service.client.dispose(),
-        child: Provider<AuthService>(
-          create: (_) => AuthService(),
-          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: InitializationBlocHandler()),
-//          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: VehicleRegistrationScreen()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<InitializationBloc>(
+          create: (BuildContext context) => InitializationBloc(),
         ),
-      ),
+        BlocProvider(
+        create: (BuildContext context) => LoginBloc(),),
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeData,
+          home: InitializationBlocHandler()),
+//
     );
   }
 }

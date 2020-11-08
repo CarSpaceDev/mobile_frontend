@@ -1,11 +1,10 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../../serviceLocator.dart';
 import 'login_bloc.dart';
-import 'dart:convert';
 import 'package:carspace/model/User.dart';
 
 class GoogleEula extends StatefulWidget {
@@ -17,7 +16,7 @@ class _GoogleEulaState extends State<GoogleEula> {
   final scrollController = new ScrollController();
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<GlobalData>(context).user;
+    CSUser user = locator<GlobalData>().user;
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: AppBar(
@@ -101,13 +100,13 @@ class _GoogleEulaState extends State<GoogleEula> {
     );
   }
 
-  navigateToRegistration(BuildContext context, User user) {
+  navigateToRegistration(BuildContext context, CSUser user) {
     print('Navigate to registration');
-    context.bloc<LoginBloc>().add(LoggedInEulaToGoogle(user));
+    context.watch<LoginBloc>().add(LoggedInEulaToGoogle(user));
   }
 
   navigateToLandingPage(BuildContext context) {
     print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToLandingPageEvent());
+    context.watch<LoginBloc>().add(NavigateToLandingPageEvent());
   }
 }

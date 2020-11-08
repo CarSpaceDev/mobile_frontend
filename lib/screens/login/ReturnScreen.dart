@@ -1,8 +1,5 @@
-import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:provider/provider.dart';
 import 'login_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -107,25 +104,7 @@ class _ReturnScreen extends State<ReturnScreen> {
     );
   }
 
-  _showDialog(String errorMessage) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Error"),
-          content: new Text(errorMessage.toString()),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   navigateToRegisterEvent(BuildContext context) {
     print('Navigate to NavToReturnScreen');

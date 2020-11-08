@@ -60,14 +60,14 @@ class NavigateToEulaEvent extends LoginEvent {
 }
 
 class LoggedInGoogleFromEulaEvent extends LoginEvent {
-  final User user;
+  final CSUser user;
   LoggedInGoogleFromEulaEvent(this.user);
   @override
   List<Object> get props => [user];
 }
 
 class LoggedInEulaToGoogle extends LoginEvent {
-  final User user;
+  final CSUser user;
   LoggedInEulaToGoogle(this.user);
   @override
   List<Object> get props => [user];

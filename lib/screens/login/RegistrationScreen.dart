@@ -3,6 +3,7 @@ import 'package:carspace/resusables/AppBarLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
+import '../../serviceLocator.dart';
 import 'login_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,11 +32,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     _firstNameController = TextEditingController(
-        text: Provider.of<GlobalData>(context).heldFirstName);
+        text: locator<GlobalData>().heldFirstName);
     _lastNameController = TextEditingController(
-        text: Provider.of<GlobalData>(context).heldLastName);
+        text: locator<GlobalData>().heldLastName);
     _emailController =
-        TextEditingController(text: Provider.of<GlobalData>(context).heldEmail);
+        TextEditingController(text: locator<GlobalData>().heldEmail);
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: arrowForwardAppBarWidget(context, "Register account", () {
@@ -200,12 +201,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   navigateToEula(BuildContext context) {
     print('Navigate to Eula');
-    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
+    context.watch<LoginBloc>().add(NavigateToEulaEvent());
   }
 
   testSubmit(BuildContext context) {
     print('testSubmit');
-    context.bloc<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
+    context.watch<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
         _firstNameController.text, _lastNameController.text));
   }
 }

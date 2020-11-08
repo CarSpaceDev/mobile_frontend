@@ -1,5 +1,4 @@
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/resusables/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(context, 'CarSpace', () {}),
+      appBar: mainAppBar(context, 'CarSpace', () {}),
       body: Stack(
         children: <Widget>[
           Container(

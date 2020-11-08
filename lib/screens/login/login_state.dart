@@ -35,7 +35,7 @@ class GettingUserData extends LoginState {
 }
 
 class LoginNoFilter extends LoginState {
-  final User user;
+  final CSUser user;
   LoginNoFilter(this.user);
   @override
   List<Object> get props => [user];
@@ -43,14 +43,14 @@ class LoginNoFilter extends LoginState {
 
 //final state
 class LoggedIn extends LoginState {
-  final User user;
+  final CSUser user;
   LoggedIn(this.user);
   @override
   List<Object> get props => [user];
 }
 
 class GoogleToEulaState extends LoginState {
-  final User user;
+  final CSUser user;
   GoogleToEulaState(this.user);
   @override
   List<Object> get props => [user];
@@ -102,7 +102,7 @@ class VerificationState extends LoginState {
 
   VerificationState(this._email);
 
-  User get getEmail => _email;
+  CSUser get getEmail => _email;
 
   @override
   List<Object> get props => [_email];

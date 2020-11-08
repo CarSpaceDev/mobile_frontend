@@ -1,5 +1,4 @@
 import 'package:carspace/model/GlobalData.dart';
-import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
@@ -129,28 +128,9 @@ class _RegistrationScreenState extends State<TestScreen> {
     return (!regex.hasMatch(value)) ? false : true;
   }
 
-  void _showDialog(String errorMessage) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Error"),
-          content: new Text(errorMessage.toString()),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   navigateToEula(BuildContext context) {
     print('Navigate to Eula');
-    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
+    context.watch<LoginBloc>().add(NavigateToEulaEvent());
   }
 }

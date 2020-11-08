@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: MainAppBar(context, 'Map', () async {
+      appBar: mainAppBar(context, 'Map', () async {
         await _authService.logOut();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (BuildContext context) => LoginBlocHandler()));

@@ -1,7 +1,7 @@
 import 'User.dart';
 
 class GlobalData {
-  User user;
+  CSUser user;
   String eula;
   String heldEmail = '';
   String heldFirstName = '';

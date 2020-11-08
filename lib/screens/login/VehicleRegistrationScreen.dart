@@ -249,12 +249,12 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
 
   navigateToEula(BuildContext context) {
     print('Navigate to Eula');
-    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
+    context.watch<LoginBloc>().add(NavigateToEulaEvent());
   }
 
   testSubmit(BuildContext context) {
     print('testSubmit');
-    context.bloc<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
+    context.watch<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
         _firstNameController.text, _lastNameController.text));
   }
 }

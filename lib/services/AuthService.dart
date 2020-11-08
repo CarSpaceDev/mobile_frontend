@@ -14,21 +14,21 @@ class AuthService {
     devLog("AuthServiceInit",'AuthService is initialized');
   }
   //UserObject transformation
-  User _userFromResult(FirebaseUser user, String token) {
+  CSUser _userFromResult(User user, String token) {
     if (user == null)
       return null;
     else
-      return User.fromAuthService(user, token);
+      return CSUser.fromAuthService(user, token);
   }
 
 
 
   currentUser() async {
     try {
-      var user = await _auth.currentUser();
+      var user = _auth.currentUser;
       if (user != null) {
         var token = await _getJWT(user);
-        return User.fromAuthService(user, token);
+        return CSUser.fromAuthService(user, token);
       } else
         return null;
     } catch (e) {
@@ -39,11 +39,11 @@ class AuthService {
 
   Future signInWithEmail(String email, String password) async {
     try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(
+      UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       final token = await _getJWT(result.user);
 //      print(token);
-      final User currentUser = _userFromResult(result.user, token);
+      final CSUser currentUser = _userFromResult(result.user, token);
       return currentUser;
     } catch (e) {
       print(e.message);
@@ -60,15 +60,15 @@ class AuthService {
           await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
       //sign in to firebase auth
-      final AuthResult result = await _auth.signInWithCredential(credential);
+      final UserCredential result = await _auth.signInWithCredential(credential);
       final token = await _getJWT(result.user);
 //      print(token);
-      final User currentUser = _userFromResult(result.user, token);
+      final CSUser currentUser = _userFromResult(result.user, token);
       return currentUser;
     } catch (e) {
       print(e.toString());
@@ -128,9 +128,9 @@ class AuthService {
 //    }
 //  }
 
-  _getJWT(FirebaseUser user) async {
-    final IdTokenResult result = await user.getIdToken();
-    return result.token;
+  _getJWT(User user) async {
+    final String result = await user.getIdToken();
+    return result;
   }
 
   //TODO insert a method to update DB and download session data after authentication is done particularly since we need first login status and user UUID and filter data if set
