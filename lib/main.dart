@@ -1,11 +1,11 @@
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/Initialization/initialization_bloc.dart';
 import 'package:carspace/screens/login/login_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'blocs/init/initialization_bloc.dart';
 import 'constants/SizeConfig.dart';
 import 'constants/GlobalConstants.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,28 +29,21 @@ class CarSpaceApp extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return OrientationBuilder(builder: (context, orientation) {
         SizeConfig().init(constraints, orientation);
-        return GlobalDataHandler();
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<InitializationBloc>(
+              create: (BuildContext context) => InitializationBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => LoginBloc(),),
+          ],
+          child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: themeData,
+              home: InitializationBlocHandler()),
+        );
       });
     });
   }
 }
 
-class GlobalDataHandler extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<InitializationBloc>(
-          create: (BuildContext context) => InitializationBloc(),
-        ),
-        BlocProvider(
-        create: (BuildContext context) => LoginBloc(),),
-      ],
-      child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: themeData,
-          home: InitializationBlocHandler()),
-//
-    );
-  }
-}

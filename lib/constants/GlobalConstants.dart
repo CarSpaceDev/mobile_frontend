@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
-  static const kApiUrl = "https://api.zdgph.tech";
-//  static const kApiUrl = "http://192.168.101.8:3000";
+  // static const kApiUrl = "https://api.zdgph.tech";
+  static const kApiUrl = "http://localhost:3000";
   static const kGmapsApiKey = "AIzaSyActXaJmZ251hnenQ6Qjnoui-tcyct9qZ4";
 }
 

@@ -26,7 +26,10 @@ class ErrorScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Text(prompt, style: TextStyle(color: Colors.white),)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(prompt, style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+                      )
                     ],
                   ),
                 ),

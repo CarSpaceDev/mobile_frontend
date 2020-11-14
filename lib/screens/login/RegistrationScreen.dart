@@ -5,7 +5,6 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
 import '../../serviceLocator.dart';
 import 'login_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override

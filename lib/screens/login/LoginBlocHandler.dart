@@ -9,7 +9,6 @@ import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
 import '../HomeScreen.dart';
