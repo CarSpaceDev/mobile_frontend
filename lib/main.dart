@@ -4,7 +4,8 @@ import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'blocs/init/initialization_bloc.dart';
 import 'constants/SizeConfig.dart';
 import 'constants/GlobalConstants.dart';
@@ -12,6 +13,9 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var path = await getApplicationDocumentsDirectory();
+  Hive..init(path.path);
+  await Hive.openBox('localCache');
   await Firebase.initializeApp();
   setUpServiceLocator();
   await SystemChrome.setPreferredOrientations(
@@ -19,6 +23,7 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       systemNavigationBarColor: Colors.indigo[900],
       statusBarColor: Colors.indigo[900]));
+
   runApp(CarSpaceApp());
 }
 

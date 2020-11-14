@@ -28,8 +28,8 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> requestInitData() {
-    final $url = '/resource/init';
+  Future<Response<dynamic>> requestInitData({String hash}) {
+    final $url = '/resource/init/$hash';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }

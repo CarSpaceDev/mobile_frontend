@@ -5,6 +5,7 @@ import 'package:carspace/model/GlobalData.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/DevTools.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
 import '../../serviceLocator.dart';
@@ -16,6 +17,7 @@ class InitializationBloc
     extends Bloc<InitializationEvent, InitializationState> {
   final ApiService apiService = locator<ApiService>();
   final GlobalData globalData = locator<GlobalData>();
+  final cache = Hive.box("localCache");
   InitializationBloc() : super(InitialState());
   @override
   Stream<InitializationState> mapEventToState(
@@ -23,21 +25,40 @@ class InitializationBloc
   ) async* {
     if (event is BeginInitEvent) {
       try {
-        devLog("InitialState", "InitialState Check");
-        var result = await apiService.requestInitData();
-        if (result.statusCode == 200) {
-          globalData.eula = result.body['eula'];
-          devLog("EULA", globalData.eula);
-          yield ReadyState();
+        var existingCache = cache.get("data");
+        if (existingCache == null) {
+          var result = await apiService.requestInitData(
+              hash: DateTime.now().millisecondsSinceEpoch.toString());
+          if (result.statusCode == 200) {
+            cache.put('data', result.body["data"]);
+            print(cache.get('data'));
+          } else {
+            devLog(
+                "InitError",
+                'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
+                    result.statusCode.toString());
+            yield ErrorState();
+          }
         } else {
-          devLog(
-              "InitError",
-              'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
-                  result.statusCode.toString());
-          yield ErrorState();
+          var result =
+              await apiService.requestInitData(hash: existingCache["hash"]);
+          if (result.statusCode == 200) {
+            if (result.body["data"].runtimeType == bool) {
+              yield ReadyState();
+            } else {
+              cache.put('data', result.body["data"]);
+              yield ReadyState();
+            }
+          } else {
+            devLog(
+                "InitError",
+                'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
+                    result.statusCode.toString());
+            yield ErrorState();
+          }
         }
-      }catch (e){
-        print (e.toString());
+      } catch (e) {
+        print(e.toString());
         yield ErrorState(error: e.toString());
       }
     }

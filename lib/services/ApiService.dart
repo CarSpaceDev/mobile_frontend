@@ -23,8 +23,8 @@ abstract class ApiService extends ChopperService {
   Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt,
       @Body() Map<String, dynamic> body);
 
-  @Get(path: '/resource/init')
-  Future<Response> requestInitData();
+  @Get(path: '/resource/init/{hash}')
+  Future<Response> requestInitData({@Path('hash') String hash});
 
   @Get(path: '/user/all')
   Future<Response> getAllUser();
