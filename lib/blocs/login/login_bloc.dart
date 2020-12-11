@@ -24,13 +24,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginEvent event,
   ) async* {
     if (event is LoginStartEvent) {
+      //Start of login flow
+      //1. Check for a logged in user.
+      //2. If none exists, show login screen
+      //3. Else, get data from server
+      //4. Evaluate data, if there are issues with the data switch screens.
       CSUser user = await authService.currentUser();
+      print("Current user");
+      print(user);
       if (user!=null){
         final userData = await apiService.checkExistence(uid:user.uid);
         print(userData.body);
         // cache.put("user", userData.body);
       }
-      yield LoginStartState();
+      else {
+        yield LoggedOut();
+      }
     } else if (event is NoSessionEvent) {
       yield LoggedOut();
     } else if (event is LoggedInEvent) {

@@ -28,7 +28,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           if (state is LoginInitialState) {
             context.bloc<LoginBloc>().add(LoginStartEvent());
             return LoadingScreen(
-              prompt: 'Starting Login',
+              prompt: 'Checking for sessions',
             );
           } else if (state is LoginInProgress) {
             return LoadingScreen(

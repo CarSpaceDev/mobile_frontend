@@ -26,9 +26,11 @@ class AuthService {
   currentUser() async {
     try {
       var user = _auth.currentUser;
+      print(user);
       if (user != null) {
-        var token = await _getJWT(user);
-        return CSUser.fromAuthService(user, token);
+        // var token = await _getJWT(user);
+        return user;
+        // return CSUser.fromAuthService(user, token);
       } else
         return null;
     } catch (e) {
