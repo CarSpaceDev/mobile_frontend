@@ -1,9 +1,7 @@
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:carspace/model/GlobalData.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import '../../serviceLocator.dart';
 import '../../blocs/login/login_bloc.dart';
 
 class EulaScreen extends StatefulWidget {
@@ -33,7 +31,7 @@ class _EulaScreenState extends State<EulaScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               FlatButton(
-                onPressed: () => {navigateToLandingPage(context)},
+                onPressed: () => {sendResponse(context, false)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -43,7 +41,7 @@ class _EulaScreenState extends State<EulaScreen> {
                 ),
               ),
               FlatButton(
-                onPressed: () => {navigateToRegistration(context)},
+                onPressed: () => {sendResponse(context, true)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -99,13 +97,9 @@ class _EulaScreenState extends State<EulaScreen> {
     );
   }
 
-  navigateToRegistration(BuildContext context) {
-    print('Navigate to registration');
-    context.read<LoginBloc>().add(NavigateToRegisterEvent());
+  sendResponse(BuildContext context, bool v) {
+    print('Sending Eula Response: $v');
+    context.read<LoginBloc>().add(EulaResponseEvent(value:v));
   }
 
-  navigateToLandingPage(BuildContext context) {
-    print('Navigate to registration');
-    context.read<LoginBloc>().add(NavigateToLandingPageEvent());
-  }
 }

@@ -5,6 +5,7 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
 import '../../navigation.dart';
@@ -29,20 +30,48 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       //2. If none exists, show login screen
       //3. Else, get data from server
       //4. Evaluate data, if there are issues with the data switch screens.
-      CSUser user = await authService.currentUser();
+      User user = await authService.currentUser();
       print("Current user");
       print(user);
       if (user!=null){
         final userData = await apiService.checkExistence(uid:user.uid);
         print(userData.body);
-        // cache.put("user", userData.body);
+        if(userData.body["data"]==null){
+          //case where user does not exist
+          yield ShowEulaScreen();
+        }
+        else{
+          //case where the user exists
+          //cache the user data for later
+          cache.put("user", userData.body);
+          //todo HANDLE THIS CASE
+        }
       }
       else {
         yield LoggedOut();
       }
-    } else if (event is NoSessionEvent) {
-      yield LoggedOut();
-    } else if (event is LoggedInEvent) {
+    }
+    else if (event is EulaResponseEvent){
+      if (event.value){
+        //true
+        //check if this is a first login event by checking the existing user
+        //if the user is null then show the email/pass registration
+        //else run the api endpoint that generates the user and check for the phone number
+        var currentUser = await authService.currentUser();
+        if (currentUser!=null){
+          //a google first sign in event
+
+        }
+        else{
+          //a user/pass registration event
+        }
+      }
+      else {
+        //false
+        yield LoggedOut();
+      }
+    }
+    else if (event is LoggedInEvent) {
       CSUser user = await authService.currentUser();
       yield AuthorizationSuccess();
 //      user = await getUserDataFromApi(user);

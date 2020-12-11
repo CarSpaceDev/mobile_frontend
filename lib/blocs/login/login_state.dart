@@ -66,6 +66,14 @@ class NavToEula extends LoginState {
   List<Object> get props => [];
 }
 
+//V2 Usage
+class ShowEulaScreen extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+
+
 class NavToLandingPage extends LoginState {
   @override
   List<Object> get props => [];

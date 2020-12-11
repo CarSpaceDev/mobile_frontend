@@ -1,6 +1,5 @@
-import 'package:carspace/model/GlobalData.dart';
+
 import 'package:carspace/screens/login/EulaScreen.dart';
-import 'package:carspace/screens/login/GoogleEula.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/screens/login/ReturnScreen.dart';
@@ -41,9 +40,13 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           } else if (state is LoggedOut) {
             return LandingScreen();
           } else if (state is GoogleToEulaState)
-            return GoogleEula();
-          else if (state is NavToEula)
             return EulaScreen();
+          else if (state is NavToEula) {
+            return EulaScreen();
+          }
+          else if (state is ShowEulaScreen) {
+            return EulaScreen();
+          }
           else if (state is NavToRegister)
             return RegistrationScreen();
           else if (state is NavToTestPage) {
