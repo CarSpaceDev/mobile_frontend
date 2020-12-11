@@ -70,6 +70,7 @@ flutter:
     - assets/login_screen_assets/
     - assets/mapStyle.txt
     - assets/launcher_icon/
+    - assets/images/
 
   fonts:
     - family: Champagne & Limousines
