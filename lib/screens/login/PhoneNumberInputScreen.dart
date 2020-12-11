@@ -5,7 +5,7 @@ class PhoneNumberInputScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
+
     );
   }
 }
