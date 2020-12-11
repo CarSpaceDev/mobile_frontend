@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'login_bloc.dart';
+import '../../blocs/login/login_bloc.dart';
 
 class LandingScreen extends StatefulWidget {
   @override

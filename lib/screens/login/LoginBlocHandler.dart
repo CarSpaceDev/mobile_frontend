@@ -11,8 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../serviceLocator.dart';
-import '../HomeScreen.dart';
-import 'login_bloc.dart';
+import '../../blocs/login/login_bloc.dart';
 
 class LoginBlocHandler extends StatefulWidget {
   @override
@@ -20,66 +19,49 @@ class LoginBlocHandler extends StatefulWidget {
 }
 
 class _LoginBlocHandlerState extends State<LoginBlocHandler> {
-  final GlobalData globalData = locator<GlobalData>();
   final AuthService authService = locator<AuthService>();
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginBloc, LoginState>(listener: (context, state) async {
-        if (state is LoginStartState) {
-    var currentUser =
-        await authService
-            .currentUser();
-    if (currentUser != null)
-      context.bloc<LoginBloc>().add(LoggedInEvent());
-    else
-      context.bloc<LoginBloc>().add(NoSessionEvent());
-        } else if (state is LoggedIn) {
-    print("Logged in");
-    globalData.user = state.user;
-        } else if (state is GoogleToEulaState) {
-    print("Logged in");
-    globalData.user = state.user;
-        }
-      }, builder: (context, state) {
-        if (state is LoginInitialState) {
-    context.bloc<LoginBloc>().add(LoginStartEvent());
-    return LoadingScreen(
-      prompt: 'Starting Initialization',
-    );
-        } else if (state is LoginInProgress) {
-    return LoadingScreen(
-      prompt: 'Logging in',
-    );
-        } else if (state is AuthorizationSuccess) {
-    return LoadingScreen(
-      prompt: 'Getting user data',
-    );
-        } else if (state is LoggedOut) {
-    return LandingScreen();
-        } else if (state is LoggedIn)
-    return HomeScreen();
-        else if (state is GoogleToEulaState)
-    return GoogleEula();
-        else if (state is NavToEula)
-    return EulaScreen();
-        else if (state is NavToRegister)
-    return RegistrationScreen();
-        else if (state is NavToTestPage) {
-    globalData.heldEmail = state.email;
-    globalData.heldFirstName = state.firstName;
-    globalData.heldLastName = state.lastName;
-    return TestScreen();
-        } else if (state is NavToLandingPage)
-    return LandingScreen();
-        else if (state is NavToReturnScreen) {
-    globalData.heldEmail = state.email;
-    globalData.heldFirstName = state.firstName;
-    globalData.heldLastName = state.lastName;
-    return ReturnScreen();
-        }
-        return LoadingScreen(
-    prompt: 'Checking for sessions',
-        );
-      });
+    return BlocConsumer<LoginBloc, LoginState>(
+        listener: (context, state) async {},
+        builder: (context, state) {
+          if (state is LoginInitialState) {
+            context.bloc<LoginBloc>().add(LoginStartEvent());
+            return LoadingScreen(
+              prompt: 'Starting Login',
+            );
+          } else if (state is LoginInProgress) {
+            return LoadingScreen(
+              prompt: 'Logging in',
+            );
+          } else if (state is AuthorizationSuccess) {
+            return LoadingScreen(
+              prompt: 'Getting user data',
+            );
+          } else if (state is LoggedOut) {
+            return LandingScreen();
+          } else if (state is GoogleToEulaState)
+            return GoogleEula();
+          else if (state is NavToEula)
+            return EulaScreen();
+          else if (state is NavToRegister)
+            return RegistrationScreen();
+          else if (state is NavToTestPage) {
+            // globalData.heldEmail = state.email;
+            // globalData.heldFirstName = state.firstName;
+            // globalData.heldLastName = state.lastName;
+            return TestScreen();
+          } else if (state is NavToLandingPage)
+            return LandingScreen();
+          else if (state is NavToReturnScreen) {
+            // globalData.heldEmail = state.email;
+            // globalData.heldFirstName = state.firstName;
+            // globalData.heldLastName = state.lastName;
+            return ReturnScreen();
+          }
+          return LoadingScreen(
+            prompt: 'Checking for sessions',
+          );
+        });
   }
 }

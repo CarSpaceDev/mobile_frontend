@@ -26,6 +26,9 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/resource/init/{hash}')
   Future<Response> requestInitData({@Path('hash') String hash});
 
+  @Get(path: '/user/google/{uid}')
+  Future<Response> checkExistence({@Path('uid') String uid});
+
   @Get(path: '/user/all')
   Future<Response> getAllUser();
 

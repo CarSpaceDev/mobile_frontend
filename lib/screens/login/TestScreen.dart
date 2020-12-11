@@ -2,7 +2,7 @@ import 'package:carspace/model/GlobalData.dart';
 import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
-import 'login_bloc.dart';
+import '../../blocs/login/login_bloc.dart';
 
 class TestScreen extends StatefulWidget {
   @override

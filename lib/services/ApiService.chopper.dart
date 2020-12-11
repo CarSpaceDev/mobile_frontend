@@ -35,6 +35,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> checkExistence({String uid}) {
+    final $url = '/user/google/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getAllUser() {
     final $url = '/user/all';
     final $request = Request('GET', $url, client.baseUrl);

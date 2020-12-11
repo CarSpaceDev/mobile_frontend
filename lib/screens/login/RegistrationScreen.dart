@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:provider/provider.dart';
 import '../../serviceLocator.dart';
-import 'login_bloc.dart';
+import '../../blocs/login/login_bloc.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -135,35 +135,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget _nextButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal:20.0),
-      child: Expanded(
-        child: Container(
-          child: OutlineButton(
-            splashColor: Colors.grey,
-            onPressed: () {
-              if (_passwordController.text.isEmpty ||
-                  _verifyPasswordController.text.isEmpty) {
-                _showDialog('Password fields must not be empty');
-              } else if (_passwordController.text !=
-                  _verifyPasswordController.text) {
-                _showDialog('Password fields must match');
-              } else if (_passwordController.text.length <= 5) {
-                _showDialog('Password must be at least 6 characters');
-              } else if (_emailController.text.isNotEmpty) {
-                if (!validateEmail(_emailController.text)) {
-                  _showDialog('Enter a valid email address');
-                }
+      child: Container(
+        child: OutlineButton(
+          splashColor: Colors.grey,
+          onPressed: () {
+            if (_passwordController.text.isEmpty ||
+                _verifyPasswordController.text.isEmpty) {
+              _showDialog('Password fields must not be empty');
+            } else if (_passwordController.text !=
+                _verifyPasswordController.text) {
+              _showDialog('Password fields must match');
+            } else if (_passwordController.text.length <= 5) {
+              _showDialog('Password must be at least 6 characters');
+            } else if (_emailController.text.isNotEmpty) {
+              if (!validateEmail(_emailController.text)) {
+                _showDialog('Enter a valid email address');
               }
-            },
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-            borderSide: BorderSide(color: Colors.white),
-            child: Text(
-              'Next',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 17,
-                color: Colors.white,
-              ),
+            }
+          },
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+          borderSide: BorderSide(color: Colors.white),
+          child: Text(
+            'Next',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              color: Colors.white,
             ),
           ),
         ),
@@ -200,12 +198,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   navigateToEula(BuildContext context) {
     print('Navigate to Eula');
-    context.watch<LoginBloc>().add(NavigateToEulaEvent());
+    context.read<LoginBloc>().add(NavigateToEulaEvent());
   }
 
   testSubmit(BuildContext context) {
     print('testSubmit');
-    context.watch<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
+    context.read<LoginBloc>().add(SubmitRegistrationEvent(_emailController.text,
         _firstNameController.text, _lastNameController.text));
   }
 }

@@ -1,4 +1,4 @@
-part of 'login_bloc.dart';
+part of '../../blocs/login/login_bloc.dart';
 
 abstract class LoginState extends Equatable {
   const LoginState();

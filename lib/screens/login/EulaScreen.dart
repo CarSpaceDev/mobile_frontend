@@ -1,9 +1,10 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/GlobalData.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../serviceLocator.dart';
-import 'login_bloc.dart';
+import '../../blocs/login/login_bloc.dart';
 
 class EulaScreen extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class EulaScreen extends StatefulWidget {
 
 class _EulaScreenState extends State<EulaScreen> {
   final scrollController = new ScrollController();
+  final cache = Hive.box("localCache");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +80,7 @@ class _EulaScreenState extends State<EulaScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Text(
-                            locator<GlobalData>().eula,
+                            cache.get("data")["eula"],
                             style: TextStyle(
                               fontSize: 16.0,
                               color: Colors.black87,
@@ -99,11 +101,11 @@ class _EulaScreenState extends State<EulaScreen> {
 
   navigateToRegistration(BuildContext context) {
     print('Navigate to registration');
-    context.watch<LoginBloc>().add(NavigateToRegisterEvent());
+    context.read<LoginBloc>().add(NavigateToRegisterEvent());
   }
 
   navigateToLandingPage(BuildContext context) {
     print('Navigate to registration');
-    context.watch<LoginBloc>().add(NavigateToLandingPageEvent());
+    context.read<LoginBloc>().add(NavigateToLandingPageEvent());
   }
 }

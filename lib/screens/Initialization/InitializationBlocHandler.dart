@@ -13,7 +13,6 @@ class InitializationBlocHandler extends StatefulWidget {
 }
 
 class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
-
   @override
   void initState() {
     context.bloc<InitializationBloc>().add(BeginInitEvent());
@@ -25,12 +24,11 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
     return BlocConsumer<InitializationBloc, InitializationState>(
         listener: (context, state) async {},
         builder: (context, state) {
-          if (state is ReadyState)
-            return LoginBlocHandler();
-          else if (state is ErrorState)
+          if (state is ErrorState)
             return ErrorScreen(
-              prompt:
-                  state.error == null ?'There has been an error in getting needed resources.\n Please try again later.' : state.error,
+              prompt: state.error == null
+                  ? 'There has been an error in getting needed resources.\n Please try again later.'
+                  : state.error,
             );
           return LoadingScreen(
             prompt: 'Getting latest resources',

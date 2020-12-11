@@ -1,5 +1,5 @@
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/login/login_bloc.dart';
+import 'blocs/login/login_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +10,8 @@ import 'blocs/init/initialization_bloc.dart';
 import 'constants/SizeConfig.dart';
 import 'constants/GlobalConstants.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,15 +42,18 @@ class CarSpaceApp extends StatelessWidget {
               create: (BuildContext context) => InitializationBloc(),
             ),
             BlocProvider(
-              create: (BuildContext context) => LoginBloc(),),
+              create: (BuildContext context) => LoginBloc(),
+            ),
           ],
           child: MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: themeData,
-              home: InitializationBlocHandler()),
+              builder: (context, child) => child,
+              navigatorKey: locator<NavigationService>().navigatorKey,
+              onGenerateRoute: generateRoute,
+              initialRoute: InitializationRoute),
         );
       });
     });
   }
 }
-

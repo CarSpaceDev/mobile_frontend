@@ -5,19 +5,31 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
+
+import '../../navigation.dart';
+import '../../serviceLocator.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitialState());
-  final AuthService authService = AuthService();
-  final ApiService apiService = ApiService.create();
+  final AuthService authService = locator<AuthService>();
+  final ApiService apiService = locator<ApiService>();
+  final NavigationService navService = locator<NavigationService>();
+  final cache = Hive.box("localCache");
   @override
   Stream<LoginState> mapEventToState(
     LoginEvent event,
   ) async* {
     if (event is LoginStartEvent) {
+      CSUser user = await authService.currentUser();
+      if (user!=null){
+        final userData = await apiService.checkExistence(uid:user.uid);
+        print(userData.body);
+        // cache.put("user", userData.body);
+      }
       yield LoginStartState();
     } else if (event is NoSessionEvent) {
       yield LoggedOut();
@@ -25,7 +37,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       CSUser user = await authService.currentUser();
       yield AuthorizationSuccess();
 //      user = await getUserDataFromApi(user);
-      yield LoggedIn(user);
+      navService.pushReplaceNavigateTo(HomeRoute);
     } else if (event is LoggedInEulaToGoogle) {
       apiService.registerUser(event.user.toJson());
       yield AuthorizationSuccess();
@@ -34,19 +46,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoginInProgress();
       CSUser user = await authService.loginGoogle();
       print(user.toJson());
-      final result = user.email;
-      print(result);
-      final testResult = await apiService.getUserEmails({'email': result});
-      final checkBody = testResult.body;
+      final userData = await apiService.checkExistence(uid:user.uid);
+      print(userData.body);
       if (user != null) {
-        if (checkBody.isEmpty) {
+        if (userData.body["data"]==null) {
           yield GoogleToEulaState(user);
-          // apiService.registerUser(user.toJson());
-//        user = await getUserDataFromApi(user);
         } else {
           yield AuthorizationSuccess();
           print("Logged in");
-          yield LoggedIn(user);
+          navService.pushReplaceNavigateTo(HomeRoute);
         }
       } else
         yield LoggedOut();
@@ -60,7 +68,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield AuthorizationSuccess();
 //        user = await getUserDataFromApi(user);
         print("Logged in!!!!");
-        yield LoggedIn(user);
+        navService.pushReplaceNavigateTo(HomeRoute);
       } else
         yield LoggedOut();
     } else if (event is NavigateToEulaEvent) {

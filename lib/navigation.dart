@@ -1,3 +1,6 @@
+import 'package:carspace/screens/HomeScreen.dart';
+import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
+import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
 
 const String LoginRoute = '/login';
@@ -11,7 +14,11 @@ const String HomeRoute = '/home';
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case InitializationRoute:
-      return _getPageRoute(Container(), settings);
+      return _getPageRoute(InitializationBlocHandler(), settings);
+    case LoginRoute:
+      return _getPageRoute(LoginBlocHandler(), settings);
+    case HomeRoute:
+      return _getPageRoute(HomeScreen(), settings);
   }
 }
 
