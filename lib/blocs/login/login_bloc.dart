@@ -43,7 +43,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         else{
           //case where the user exists
           //cache the user data for later
-          cache.put("user", userData.body);
+          cache.put("user", userData.body["data"]);
           //todo HANDLE THIS CASE
         }
       }
@@ -54,13 +54,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is EulaResponseEvent){
       if (event.value){
         //true
-        //check if this is a first login event by checking the existing user
-        //if the user is null then show the email/pass registration
+        //It is implied that when the EulaResponseEvent is triggered, the user does not exist in database
+        //Check if the firebase user is null then show the email/pass registration if that is the case
         //else run the api endpoint that generates the user and check for the phone number
-        var currentUser = await authService.currentUser();
+        User currentUser = await authService.currentUser();
         if (currentUser!=null){
           //a google first sign in event
-
+          print("Eula accepted/Google First Sign");
+          var userResponse = await apiService.registerViaGoogle(uid:currentUser.uid);
+          if (userResponse.statusCode==200) {
+            print(userResponse.body['data']);
+            cache.put("user", userResponse.body["data"]);
+            if (userResponse.body["data"]['phoneNumber'] == null) {
+              yield ShowPhoneNumberInputScreen();
+            }
+          }
+          else yield LoginError();
         }
         else{
           //a user/pass registration event

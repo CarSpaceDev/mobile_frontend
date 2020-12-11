@@ -1,6 +1,7 @@
 
 import 'package:carspace/screens/login/EulaScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
+import 'package:carspace/screens/login/PhoneNumberInputScreen.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/screens/login/ReturnScreen.dart';
 import 'package:carspace/screens/login/TestScreen.dart';
@@ -24,6 +25,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
     return BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) async {},
         builder: (context, state) {
+          //V2 Update
           if (state is LoginInitialState) {
             context.bloc<LoginBloc>().add(LoginStartEvent());
             return LoadingScreen(
@@ -44,8 +46,13 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           else if (state is NavToEula) {
             return EulaScreen();
           }
+          //V2 Update
           else if (state is ShowEulaScreen) {
             return EulaScreen();
+          }
+          //V2 Update
+          else if (state is ShowPhoneNumberInputScreen){
+            return PhoneNumberInputScreen();
           }
           else if (state is NavToRegister)
             return RegistrationScreen();

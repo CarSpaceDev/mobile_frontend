@@ -14,7 +14,14 @@ class LoginStartState extends LoginState {
   List<Object> get props => [];
 }
 
+//V2 Usage
 class LoggedOut extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+//V2 Usage
+class LoginError extends LoginState {
   @override
   List<Object> get props => [];
 }
@@ -72,6 +79,11 @@ class ShowEulaScreen extends LoginState {
   List<Object> get props => [];
 }
 
+//V2 Usage
+class ShowPhoneNumberInputScreen extends LoginState {
+  @override
+  List<Object> get props => [];
+}
 
 
 class NavToLandingPage extends LoginState {
