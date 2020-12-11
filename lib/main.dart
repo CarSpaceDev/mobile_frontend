@@ -1,4 +1,6 @@
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
+import 'package:carspace/screens/login/LandingScreen.dart';
+import 'package:carspace/screens/registration/number_registration_screen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'constants/GlobalConstants.dart';
 import 'model/GlobalData.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
@@ -24,7 +27,7 @@ class CarSpaceApp extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return OrientationBuilder(builder: (context, orientation) {
         SizeConfig().init(constraints, orientation);
-        return GlobalDataHandler();
+        return  MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: PhoneNumberRegistration());
       });
     });
   }

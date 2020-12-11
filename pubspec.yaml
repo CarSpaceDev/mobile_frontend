@@ -48,6 +48,7 @@ dependencies:
   equatable: ^1.0.3
   location: ^3.0.2
   google_maps_place_picker: 0.9.4
+  flutter_statusbarcolor: ^0.2.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,6 +87,7 @@ flutter:
     - assets/login_screen_assets/
     - assets/mapStyle.txt
     - assets/launcher_icon/
+    - assets/images/
 
   fonts:
     - family: Champagne & Limousines
