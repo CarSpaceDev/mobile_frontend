@@ -1,5 +1,5 @@
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:carspace/resusables/AppBarLayout.dart';
+import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

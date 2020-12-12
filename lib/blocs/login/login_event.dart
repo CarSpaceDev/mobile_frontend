@@ -3,12 +3,34 @@ part of 'login_bloc.dart';
 abstract class LoginEvent extends Equatable {
   const LoginEvent();
 }
+
+//used by v2
 class EulaResponseEvent extends LoginEvent {
   final bool value;
   EulaResponseEvent({this.value});
   @override
   List<Object> get props => [value];
 }
+//used by v2
+class GeneratePhoneCodeEvent extends LoginEvent {
+  final String phoneNumber;
+  GeneratePhoneCodeEvent({this.phoneNumber});
+  @override
+  List<Object> get props => [phoneNumber];
+}
+//used by v2
+class ConfirmPhoneCodeEvent extends LoginEvent {
+  final String code;
+  ConfirmPhoneCodeEvent({this.code});
+  @override
+  List<Object> get props => [code];
+}
+//used by v2
+class RestartLogin extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class LoginStartEvent extends LoginEvent {
   @override
   List<Object> get props => [];

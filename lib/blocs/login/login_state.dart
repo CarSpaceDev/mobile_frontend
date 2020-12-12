@@ -22,8 +22,10 @@ class LoggedOut extends LoginState {
 
 //V2 Usage
 class LoginError extends LoginState {
+  final String message;
+  LoginError({this.message});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [message];
 }
 
 class LoginInProgress extends LoginState {
@@ -83,6 +85,20 @@ class ShowEulaScreen extends LoginState {
 class ShowPhoneNumberInputScreen extends LoginState {
   @override
   List<Object> get props => [];
+}
+
+//V2 Usage
+class ShowPhoneCodeConfirmScreen extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+
+//V2 Usage
+class WaitingLogin extends LoginState {
+  final String message;
+  WaitingLogin({this.message});
+  @override
+  List<Object> get props => [message];
 }
 
 

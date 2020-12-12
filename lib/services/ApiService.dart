@@ -32,6 +32,12 @@ abstract class ApiService extends ChopperService {
   @Patch(path: '/user/register/google/{uid}')
   Future<Response> registerViaGoogle({@Path('uid') String uid});
 
+  @Patch(path: '/user/generatecode/{uid}/{phoneNumber}')
+  Future<Response> generateCode({@Path('uid') String uid,@Path('phoneNumber') String phoneNumber});
+
+  @Patch(path: '/user/confirmcode/{uid}/{code}')
+  Future<Response> confirmCode({@Path('uid') String uid,@Path('code') String code });
+
 
   @Get(path: '/user/all')
   Future<Response> getAllUser();

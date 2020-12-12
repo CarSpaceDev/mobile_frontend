@@ -5,6 +5,7 @@ import 'package:carspace/screens/login/PhoneNumberInputScreen.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/screens/login/ReturnScreen.dart';
 import 'package:carspace/screens/login/TestScreen.dart';
+import 'package:carspace/screens/prompts/ErrorScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../serviceLocator.dart';
 import '../../blocs/login/login_bloc.dart';
+import 'PhoneCodeConfirmScreen.dart';
 
 class LoginBlocHandler extends StatefulWidget {
   @override
@@ -53,6 +55,22 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           //V2 Update
           else if (state is ShowPhoneNumberInputScreen){
             return PhoneNumberInputScreen();
+          }
+          //V2 Update
+          else if (state is ShowPhoneCodeConfirmScreen){
+            return PhoneCodeConfirmScreen();
+          }
+          //V2 Update
+          else if (state is WaitingLogin){
+            return LoadingScreen(
+              prompt: state.message,
+            );
+          }
+          //V2 Update
+          else if (state is LoginError){
+            return ErrorScreen(
+              prompt: state.message,
+            );
           }
           else if (state is NavToRegister)
             return RegistrationScreen();

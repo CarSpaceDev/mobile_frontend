@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -44,7 +44,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           //case where the user exists
           //cache the user data for later
           cache.put("user", userData.body["data"]);
-          //todo HANDLE THIS CASE
+          if (userData.body["data"]['phoneNumber'] == null) {
+            yield ShowPhoneNumberInputScreen();
+          }
+          //todo else check for the other stuff like car registration
         }
       }
       else {
@@ -60,16 +63,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         User currentUser = await authService.currentUser();
         if (currentUser!=null){
           //a google first sign in event
+          yield WaitingLogin(message: "Creating account.");
           print("Eula accepted/Google First Sign");
           var userResponse = await apiService.registerViaGoogle(uid:currentUser.uid);
           if (userResponse.statusCode==200) {
+            yield WaitingLogin(message: "Account created.");
             print(userResponse.body['data']);
             cache.put("user", userResponse.body["data"]);
             if (userResponse.body["data"]['phoneNumber'] == null) {
               yield ShowPhoneNumberInputScreen();
             }
           }
-          else yield LoginError();
+          else yield LoginError(message: "Account creation failure");
         }
         else{
           //a user/pass registration event
@@ -80,8 +85,40 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedOut();
       }
     }
+    //V2 Update
+    else if (event is GeneratePhoneCodeEvent){
+      User user = await authService.currentUser();
+      yield WaitingLogin(message:"Generating code");
+      var result = await apiService.generateCode(uid:user.uid, phoneNumber:event.phoneNumber);
+      if (result.statusCode==200){
+        yield ShowPhoneCodeConfirmScreen();
+      }
+    }
+    //V2 Update
+    else if (event is RestartLogin){
+      yield WaitingLogin(message:"Please wait");
+      await authService.logOut();
+      cache.put("user", null);
+      yield LoggedOut();
+    }
+    //V2 Update
+    //todo Handle 500 errors
+    else if (event is ConfirmPhoneCodeEvent){
+      User user = await authService.currentUser();
+      yield WaitingLogin(message:"Confirming code");
+      var result = await apiService.confirmCode(uid:user.uid, code:event.code);
+      if (result.statusCode==200){
+        print("Code confirmed");
+        // yield ShowPhoneCodeConfirmScreen();
+      }
+      else {
+        print(result.error);
+        print(result.error.toString());
+        yield LoginError(message: result.error.toString());
+      }
+    }
     else if (event is LoggedInEvent) {
-      CSUser user = await authService.currentUser();
+      User user = await authService.currentUser();
       yield AuthorizationSuccess();
 //      user = await getUserDataFromApi(user);
       navService.pushReplaceNavigateTo(HomeRoute);
@@ -140,22 +177,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  getUserDataFromApi(CSUser user) async {
-    try {
-      final response =
-          await apiService.requestUserInfo(user.jwt, user.toJson());
-      if (response.statusCode == 201) {
-        print('Decoding the response body');
-        print(response.body.toString());
-        user = user.fromJson(response.body);
-        return user;
-      } else if (response.statusCode == 403)
-        print("JWT Error");
-      else
-        throw Error();
-    } catch (e) {
-      print(e);
-      return null;
-    }
+
+
+  checkUserDataForMissingInfo({String uid, Map<String,dynamic> user}){
+
   }
 }

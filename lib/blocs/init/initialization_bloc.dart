@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:carspace/model/GlobalData.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/DevTools.dart';
