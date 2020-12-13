@@ -1,12 +1,14 @@
 import 'dart:core';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class CSUser {
   String uid;
   String displayName;
   String emailAddress;
   String firstName;
   String lastName;
-  double credits;
+  int credits;
   String phoneNumber;
   String photoUrl;
   //internal attributes
@@ -14,8 +16,8 @@ class CSUser {
   int userAccess;
   String subscriptionType;
   //List Items
-  List<String> reservations;
-  List<String> vehicles;
+  List<dynamic> reservations;
+  List<dynamic> vehicles;
   //metaData
   DateTime dateCreated;
   DateTime dateUpdated;
@@ -37,21 +39,29 @@ class CSUser {
       this.dateCreated,
       this.dateUpdated});
 
+  CSUser.fromUser(User v){
+    this.uid = v.uid;
+    this.phoneNumber = v.phoneNumber;
+    this.displayName = v.displayName;
+    this.photoUrl = v.photoURL;
+    this.emailAddress = v.email;
+  }
+
   CSUser.fromJson(Map<String, dynamic> json)
       : uid = json['uid'] as String,
         displayName = json['displayName'] as String,
         emailAddress = json['emailAddress'] as String,
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
-        credits = json['credits'] as double,
+        credits = json['credits'] as int,
         phoneNumber =
             json['phoneNumber'] != null ? json['phoneNumber'] as String : null,
         photoUrl = json['photoUrl'] as String,
         partnerAccess = json['partnerAccess'] as int,
         userAccess = json['userAccess'] as int,
         subscriptionType = json['subscriptionType'] as String,
-        reservations = json['reservations'] as List<String>,
-        vehicles = json['vehicles'] as List<String>,
+        reservations = json['reservations'] as List<dynamic>,
+        vehicles = json['vehicles'] as List<dynamic>,
         dateCreated = DateTime.parse(json['dateCreated'] as String),
         dateUpdated = DateTime.parse(json['dateUpdated'] as String);
 

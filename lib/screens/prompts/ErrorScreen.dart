@@ -1,7 +1,7 @@
+import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
-import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:provider/provider.dart';
 
 class ErrorScreen extends StatelessWidget {
@@ -65,7 +65,7 @@ class ErrorScreen extends StatelessWidget {
               minWidth: MediaQuery.of(context).size.width * 0.35,
               color: Color(0xFF333333), //534bae
               onPressed: () {
-                context.read<LoginBloc>().add(RestartLogin());
+                context.read<LoginBloc>().add(RestartLoginEvent());
               },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40)),

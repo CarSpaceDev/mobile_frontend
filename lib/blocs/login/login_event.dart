@@ -11,6 +11,7 @@ class EulaResponseEvent extends LoginEvent {
   @override
   List<Object> get props => [value];
 }
+
 //used by v2
 class GeneratePhoneCodeEvent extends LoginEvent {
   final String phoneNumber;
@@ -18,6 +19,7 @@ class GeneratePhoneCodeEvent extends LoginEvent {
   @override
   List<Object> get props => [phoneNumber];
 }
+
 //used by v2
 class ConfirmPhoneCodeEvent extends LoginEvent {
   final String code;
@@ -25,10 +27,32 @@ class ConfirmPhoneCodeEvent extends LoginEvent {
   @override
   List<Object> get props => [code];
 }
+
 //used by v2
-class RestartLogin extends LoginEvent {
+class RestartLoginEvent extends LoginEvent {
   @override
   List<Object> get props => [];
+}
+
+//used by v2
+class SkipVehicleAddEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+//used by v2
+class AddVehicleEvent extends LoginEvent {
+  final String plateNumber;
+  final int type;
+  final String color;
+  // ignore: non_constant_identifier_names
+  final String OR;
+  // ignore: non_constant_identifier_names
+  final String CR;
+  // ignore: non_constant_identifier_names
+  AddVehicleEvent({this.plateNumber, this.type, this.color, this.OR, this.CR});
+  @override
+  List<Object> get props => [plateNumber, type, color, OR, CR];
 }
 
 class LoginStartEvent extends LoginEvent {

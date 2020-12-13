@@ -28,11 +28,17 @@ class LoginError extends LoginState {
   List<Object> get props => [message];
 }
 
-class LoginInProgress extends LoginState {
+//V2 Usage
+class ShowVehicleRegistration extends LoginState {
   @override
   List<Object> get props => [];
 }
 
+class LoginInProgress extends LoginState {
+  @override
+  List<Object> get props => [];
+}
+//V2 Usage
 class AuthorizationSuccess extends LoginState {
   @override
   List<Object> get props => [];

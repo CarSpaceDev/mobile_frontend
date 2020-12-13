@@ -63,6 +63,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> addVehicle(dynamic uid, Map<String, dynamic> body) {
+    final $url = '/user/addVehicle/$uid';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getAllUser() {
     final $url = '/user/all';
     final $request = Request('GET', $url, client.baseUrl);
