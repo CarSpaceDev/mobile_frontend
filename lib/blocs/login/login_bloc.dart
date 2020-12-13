@@ -27,6 +27,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventToState(
     LoginEvent event,
   ) async* {
+    //V2 Update
     if (event is LoginStartEvent) {
       //Start of login flow
       //1. Check for a logged in user.
@@ -71,7 +72,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           } else
             yield LoginError(message: "Account creation failure");
         } else {
-          //todo handle this part
+          //todo handle this part Jesury
           //a user/pass registration event
         }
       } else {
@@ -131,6 +132,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       navService.pushReplaceNavigateTo(HomeRoute);
     }
     //V2 Update
+    else if (event is LogoutEvent) {
+      yield WaitingLogin(message: "Please wait");
+      await authService.logOut();
+      cache.put("user", null);
+      yield LoggedOut();
+    }
+    //V2 Update
     else if (event is ConfirmPhoneCodeEvent) {
       User user = await authService.currentUser();
       yield WaitingLogin(message: "Confirming code");
@@ -146,30 +154,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         print(result.error);
         yield LoginError(message: result.error.toString());
       }
-    } else if (event is LoggedInEvent) {
-      User user = await authService.currentUser();
-      yield AuthorizationSuccess();
-//      user = await getUserDataFromApi(user);
-      navService.pushReplaceNavigateTo(HomeRoute);
-    } else if (event is LoggedInEulaToGoogle) {
-      apiService.registerUser(event.user.toJson());
-      yield AuthorizationSuccess();
-      yield LoggedIn(event.user);
-    } else if (event is LoginGoogleEvent) {
+    }
+    //V2 Update??????????
+    else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
       User user = await authService.loginGoogle();
-      final userData = await apiService.checkExistence(uid: user.uid);
-      print(userData.body);
-      if (user != null) {
-        if (userData.body["data"] == null) {
-          yield ShowEulaScreen();
-        } else {
-          yield AuthorizationSuccess();
-          print("Logged in");
-          navService.pushReplaceNavigateTo(HomeRoute);
-        }
-      } else
-        yield LoggedOut();
+      //case where a user is in the google auth cache
+      var userFromApi =
+          (await apiService.checkExistence(uid: user.uid)).body["data"];
+      if (userFromApi == null) {
+        //if said user is not registered in db
+        yield ShowEulaScreen();
+      } else {
+        //case where the user exists
+        CSUser userData = CSUser.fromJson(userFromApi);
+        yield checkUserDataForMissingInfo(user: userData);
+      }
     } else if (event is LogInEmailEvent) {
       yield LoginInProgress();
       CSUser user =
@@ -183,25 +183,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         navService.pushReplaceNavigateTo(HomeRoute);
       } else
         yield LoggedOut();
-    } else if (event is NavigateToEulaEvent) {
-      yield NavToEula();
-    } else if (event is NavigateToRegisterEvent) {
-      yield NavToRegister();
-    } else if (event is NavigateToLandingPageEvent) {
-      yield NavToLandingPage();
-    } else if (event is SubmitRegistrationEvent) {
-      yield LoginInProgress();
-      ApiService apiService = ApiService.create();
-      final testResult =
-          await apiService.getUserEmails({'email': event._email});
-      final result = testResult.body;
-      print(result);
-      if (result.isEmpty)
-        yield NavToTestPage(event._email, event._firstName, event._lastName);
-      else {
-        yield NavToReturnScreen(
-            event._email, event._firstName, event._lastName);
-      }
     }
   }
 
@@ -212,7 +193,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else if (user.vehicles.length == 0) {
       var userSettings = cache.get(user.emailAddress);
       print(userSettings);
-      print(userSettings["skipVehicle"]);
       if (userSettings == null) {
         cache.put(user.emailAddress, {"skipVehicle": false});
         result = ShowVehicleRegistration();

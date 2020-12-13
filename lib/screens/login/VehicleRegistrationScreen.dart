@@ -685,7 +685,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
 
   backToLogin(BuildContext context) {
     print('Back to login');
-    context.watch<LoginBloc>().add(RestartLoginEvent());
+    context.read<LoginBloc>().add(RestartLoginEvent());
   }
 
   showSkipDialog(BuildContext context) async {
