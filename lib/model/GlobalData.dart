@@ -6,6 +6,7 @@ class GlobalData {
   String heldEmail = '';
   String heldFirstName = '';
   String heldLastName = '';
+  String heldPhoneNumber = '';
 }
 
 ///Provider.of<GlobalData>(context).testString
