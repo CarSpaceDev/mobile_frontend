@@ -27,8 +27,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   final cropKey = GlobalKey<CropState>();
   List<String> vehicleTypes;
   List<String> colors;
-  TextStyle style = TextStyle(
-      fontFamily: "Champagne & Limousines", fontSize: 20, color: Colors.white);
+  TextStyle style = TextStyle(fontSize: 20, color: Colors.white);
   @override
   void initState() {
     super.initState();
@@ -84,7 +83,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
               Text(
                 "Let's add your vehicle",
                 style: TextStyle(
-                    fontFamily: "Champagne & Limousines",
                     fontWeight: FontWeight.bold,
                     fontSize: 30.0,
                     color: Colors.white),

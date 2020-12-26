@@ -72,13 +72,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           } else
             yield LoginError(message: "Account creation failure");
         } else {
-          //todo handle this part Jesury
+          print("JESSSSSSSSSSS!!!!!!!!!!!!");
+          yield NavToRegister();
           //a user/pass registration event
         }
       } else {
         //false
         yield LoggedOut();
       }
+    } else if (event is NavigateToEulaEvent) {
+      print("event is navigateToeula");
+      yield ShowEulaScreen();
     }
     //V2 Update
     else if (event is GeneratePhoneCodeEvent) {

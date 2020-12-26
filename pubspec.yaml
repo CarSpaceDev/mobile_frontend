@@ -34,6 +34,8 @@ dependencies:
   path_provider: 1.6.24
   #locator
   get_it: 5.0.1
+  fdottedline: 1.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -73,11 +75,11 @@ flutter:
     - assets/mapStyle.txt
     - assets/launcher_icon/
     - assets/images/
-
-  fonts:
-    - family: Champagne & Limousines
-      fonts:
-        - asset: assets/fonts/Champagne&Limousines-Italic.ttf
-        - asset: assets/fonts/Champagne&Limousines-Bold-Italic.ttf
-        - asset: assets/fonts/Champagne&Limousines-Bold.ttf
-        - asset: assets/fonts/Champagne&Limousines.ttf
+#
+#  fonts:
+#    - family: Champagne & Limousines
+#      fonts:
+#        - asset: assets/fonts/Champagne&Limousines-Italic.ttf
+#        - asset: assets/fonts/Champagne&Limousines-Bold-Italic.ttf
+#        - asset: assets/fonts/Champagne&Limousines-Bold.ttf
+#        - asset: assets/fonts/Champagne&Limousines.ttf

@@ -3,6 +3,7 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../blocs/login/login_bloc.dart';
 
@@ -37,9 +38,7 @@ class _LandingScreenState extends State<LandingScreen> {
           child: RichText(
             text: TextSpan(
               style: new TextStyle(
-                  fontFamily: "Champagne & Limousines",
-                  color: Colors.white,
-                  fontSize: SizeConfig.textMultiplier * 2),
+                  color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
               children: <TextSpan>[
                 TextSpan(text: 'Already have an account? '),
                 TextSpan(
@@ -79,16 +78,10 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                   TextField(
                     controller: _emailController,
-                    style: TextStyle(
-                        fontFamily: "Champagne & Limousines",
-                        color: Colors.black,
-                        fontSize: 20),
+                    style: TextStyle(color: Colors.black, fontSize: 20),
                     decoration: InputDecoration(
                       hintText: "enter email",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.black),
+                      hintStyle: TextStyle(fontSize: 20, color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -96,16 +89,10 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                   TextField(
                     controller: _passwordController,
-                    style: TextStyle(
-                        fontFamily: "Champagne & Limousines",
-                        color: Colors.black,
-                        fontSize: 20),
+                    style: TextStyle(color: Colors.black, fontSize: 20),
                     decoration: InputDecoration(
                       hintText: "enter password",
-                      hintStyle: TextStyle(
-                          fontFamily: "Champagne & Limousines",
-                          fontSize: 20,
-                          color: Colors.black),
+                      hintStyle: TextStyle(fontSize: 20, color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -200,7 +187,6 @@ class LandingContent extends StatelessWidget {
                         textAlign: TextAlign.center,
                         text: TextSpan(
                           style: TextStyle(
-                              fontFamily: 'Champagne & Limousines',
                               color: Colors.white,
                               fontSize: SizeConfig.textMultiplier * 2),
                           children: <TextSpan>[
@@ -223,7 +209,7 @@ class LandingContent extends StatelessWidget {
                       Spacer(flex: 1),
                       FlatButton(
                         onPressed: () {
-                          navigateToEula(context);
+                          context.read<LoginBloc>().add(NavigateToEulaEvent());
                         },
                         color: themeData.secondaryHeaderColor,
                         shape: RoundedRectangleBorder(
@@ -236,7 +222,6 @@ class LandingContent extends StatelessWidget {
                               "Get Started",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: 'Champagne & Limousines',
                                   color: Colors.white,
                                   fontSize: SizeConfig.textMultiplier * 2),
                             ),
@@ -256,15 +241,5 @@ class LandingContent extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  navigateToEu(BuildContext context) {
-    print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
-  }
-
-  navigateToEula(BuildContext context) {
-    print('Navigate to Eula');
-    context.bloc<LoginBloc>().add(NavigateToEulaEvent());
   }
 }
