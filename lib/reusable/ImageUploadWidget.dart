@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/UploadService.dart';
@@ -14,16 +15,18 @@ import '../serviceLocator.dart';
 class ImageUploadWidget extends StatefulWidget {
   final String prompt;
   final Function callback;
-  ImageUploadWidget({this.prompt, this.callback});
+  final double aspectRatio;
+  ImageUploadWidget(this.aspectRatio, this.callback, {this.prompt});
   @override
   _ImageUploadWidgetState createState() =>
-      _ImageUploadWidgetState(this.prompt, this.callback);
+      _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
 }
 
 class _ImageUploadWidgetState extends State<ImageUploadWidget> {
-  _ImageUploadWidgetState(this.prompt, this.callback);
+  _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
   File imageFile;
   String imageUrl;
+  final double aspectRatio;
   final Function callback;
   final String prompt;
   final picker = ImagePicker();
@@ -31,6 +34,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   final UploadService uploadService = locator<UploadService>();
   @override
   Widget build(BuildContext context) {
+    print(aspectRatio);
     return FDottedLine(
       color: Colors.black54,
       strokeWidth: 2.0,
@@ -77,6 +81,34 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   getImageFile() {
     print(imageUrl);
     return imageUrl;
+  }
+
+  _showWaiting(String message) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) => Container(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32.0),
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24),
+                      ),
+                    ),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: themeData.primaryColor,
+                    ),
+                  ],
+                ),
+              ),
+            ));
   }
 
   Future<void> _showImageViewer(BuildContext context, bool deleteMode) {
@@ -133,15 +165,18 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                   Column(
                     children: <Widget>[
                       AspectRatio(
-                        aspectRatio: 92 / 60,
+                        aspectRatio: this.aspectRatio,
                         child: Container(
                           padding: EdgeInsets.all(20),
                           child: deleteMode
-                              ? Image.network(imageUrl)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.network(imageUrl),
+                                )
                               : Crop(
                                   image: FileImage(imageFile),
                                   key: cropKey,
-                                  aspectRatio: 92 / 60,
+                                  aspectRatio: this.aspectRatio,
                                 ),
                         ),
                       ),
@@ -156,14 +191,21 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                 deleteMode
                                     ? OutlineButton(
                                         onPressed: () async {
-                                          await _deleteTempFile();
-                                          await locator<ApiService>()
-                                              .deleteImage({"url": imageUrl});
-                                          setState(() {
-                                            imageFile = null;
-                                            imageUrl = null;
+                                          _showWaiting("Deleting Image");
+                                          List<Future<dynamic>> batch = [];
+                                          batch = [
+                                            _deleteTempFile(),
+                                            locator<ApiService>()
+                                                .deleteImage({"url": imageUrl})
+                                          ];
+                                          Future.wait(batch).then((value) {
+                                            setState(() {
+                                              imageFile = null;
+                                              imageUrl = null;
+                                            });
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
                                           });
-                                          Navigator.pop(context);
                                         },
                                         borderSide:
                                             BorderSide(color: Colors.red),
@@ -180,18 +222,22 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                     : OutlineButton(
                                         onPressed: () async {
                                           try {
+                                            _showWaiting("Uploading Image");
                                             await _cropImage();
-                                            var result = await uploadService
-                                                .uploadItemImage(
-                                                    imageFile.path);
-                                            print(result.body);
-                                            setState(() {
-                                              imageUrl = result.body;
+                                            await uploadService
+                                                .uploadItemImage(imageFile.path)
+                                                .then((result) {
+                                              print(result.body);
+                                              setState(() {
+                                                imageUrl = result.body;
+                                              });
+                                              this.callback(result.body);
+                                              Navigator.pop(context);
+                                              Navigator.pop(context);
                                             });
-                                            this.callback(result.body);
-                                            Navigator.pop(context);
                                           } catch (e) {
                                             print(e);
+                                            Navigator.pop(context);
                                             _showErrorDialog(e);
                                           }
                                         },

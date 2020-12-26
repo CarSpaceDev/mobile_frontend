@@ -11,8 +11,8 @@ class _TestScreenState extends State<TestScreen> {
   dynamic imageWidget;
 
   _TestScreenState() {
-    imageWidget = new ImageUploadWidget(
-        prompt: "Upload a something something", callback: saveUrl);
+    imageWidget = new ImageUploadWidget((92 / 60), saveUrl,
+        prompt: "Upload a something something");
   }
   String imageUrl;
 
@@ -22,8 +22,8 @@ class _TestScreenState extends State<TestScreen> {
       body: Container(
         child: Column(
           children: [
-            imageWidget,
-            FlatButton(onPressed: () {}, child: Icon(Icons.image))
+            Padding(padding: EdgeInsets.all(16), child: imageWidget),
+            FlatButton(onPressed: () {print(imageUrl);}, child: Icon(Icons.image))
           ],
         ),
       ),
