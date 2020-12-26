@@ -1,11 +1,10 @@
-import 'package:carspace/model/GlobalData.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
-import 'package:fdottedline/fdottedline.dart';
+import 'package:carspace/reusable/ImageUploadWidget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../blocs/login/login_bloc.dart';
-import '../../serviceLocator.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -14,34 +13,36 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   TextEditingController _emailController;
-  TextEditingController _passwordController;
-  TextEditingController _verifyPasswordController;
   TextEditingController _firstNameController;
   TextEditingController _lastNameController;
-  TextEditingController _phoneNumberController;
-
+  TextEditingController _licenseExpiryController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String imageUrl;
+  TextStyle inputStyle;
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: "");
-    _lastNameController = TextEditingController(text: "");
-    _emailController = TextEditingController(text: "");
-    _passwordController = TextEditingController(text: "");
-    _verifyPasswordController = TextEditingController(text: "");
-    _phoneNumberController = TextEditingController(text:"");
+    if (_auth.currentUser != null) {
+      var name = _auth.currentUser.displayName.split(" ");
+      _firstNameController = TextEditingController(text: name[0]);
+      _lastNameController =
+          TextEditingController(text: name[1] != null ? name[1] : "");
+      _emailController = TextEditingController(text: _auth.currentUser.email);
+      _licenseExpiryController = TextEditingController(text: "");
+    } else {
+      print("Not a google user registration");
+      _firstNameController = TextEditingController(text: "");
+      _lastNameController = TextEditingController(text: "");
+      _emailController = TextEditingController(text: "");
+      _licenseExpiryController = TextEditingController(text: "");
+    }
+    inputStyle = TextStyle(
+        fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold);
   }
 
   @override
   Widget build(BuildContext context) {
-    _firstNameController =
-        TextEditingController(text: locator<GlobalData>().heldFirstName);
-    _lastNameController =
-        TextEditingController(text: locator<GlobalData>().heldLastName);
-    _emailController =
-        TextEditingController(text: locator<GlobalData>().heldEmail);
-    _phoneNumberController = TextEditingController(text: locator<GlobalData>().heldPhoneNumber);
     return Scaffold(
-      // backgroundColor: themeData.primaryColor,
       appBar: arrowForwardAppBarWidget(context, "Register account", () {
         navigateToEula(context);
       }),
@@ -78,34 +79,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       elevation: 5,
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: FDottedLine(
-                          color: Colors.black54,
-                          strokeWidth: 2.0,
-                          dottedLength: 15.0,
-                          space: 4.0,
-                          child: AspectRatio(
-                            aspectRatio: 92 / 60,
-                            child: Container(
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.upload_file,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                    Text('Upload photo of license',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black54)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                        child: AspectRatio(
+                          aspectRatio: 92 / 60,
+                          child: ImageUploadWidget(92 / 60, saveUrl,
+                              prompt: "Upload photo of license"),
                         ),
                       ),
                     ),
@@ -116,89 +93,70 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          Padding(padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            child: Text('Driver\'s Information',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              child: Text('Driver\'s Information',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
+                            ),
                           ),
+                          reusableInput(
+                              controller: _firstNameController,
+                              hintText: "First Name*"),
+                          reusableInput(
+                              controller: _lastNameController,
+                              hintText: "Last Name*"),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: _emailController,
+                              onChanged: (data) {
+                                print(validateEmail(data));
+                              },
+                              style: inputStyle,
+                              decoration: InputDecoration(
+                                hintText: "Email address*",
+                                hintStyle: inputStyle,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                              ),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
-                                controller: _firstNameController,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 18),
-                                decoration: InputDecoration(
-                                    hintText: "First name*",
-                                    hintStyle: TextStyle(
-                                        fontFamily: "Champagne & Limousines",
-                                        fontSize: 16,
-                                        color: Colors.black54),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey),
-                                    ))),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                                controller: _lastNameController,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 18),
-                                decoration: InputDecoration(
-                                    hintText: "Last name*",
-                                    hintStyle: TextStyle(
-                                        fontFamily: "Champagne & Limousines",
-                                        fontSize: 16,
-                                        color: Colors.black54),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey),
-                                    ))),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                                controller: _phoneNumberController,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 18),
-                                decoration: InputDecoration(
-                                    hintText: "Phone number*",
-                                    hintStyle: TextStyle(
-                                        fontFamily: "Champagne & Limousines",
-                                        fontSize: 16,
-                                        color: Colors.black54),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey),
-                                    ))),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                                controller: _emailController,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 18),
-                                decoration: InputDecoration(
-                                    hintText: "License expiry*",
-                                    hintStyle: TextStyle(
-                                        fontFamily: "Champagne & Limousines",
-                                        fontSize: 16,
-                                        color: Colors.black54),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey),
-                                    ))),
+                              controller: _licenseExpiryController,
+                              keyboardType: TextInputType.number,
+                              onTap: () async {
+                                showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now(),
+                                        lastDate: new DateTime.now()
+                                            .add(Duration(days: 365 * 10)))
+                                    .then((value) {
+                                  _licenseExpiryController.text =
+                                      value.toString().substring(0, 10);
+                                });
+                              },
+                              style: inputStyle,
+                              decoration: InputDecoration(
+                                hintText: "License expiry*",
+                                hintStyle: TextStyle(
+                                    fontSize: 16, color: Colors.black54),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-
-
                 ]),
               ),
             ),
@@ -208,26 +166,54 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
+  Padding reusableInput({
+    TextEditingController controller,
+    String hintText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: controller,
+        style: inputStyle,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: inputStyle,
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+
+  saveUrl(String v) {
+    print("Saved url");
+    setState(() {
+      imageUrl = v;
+    });
+    print(imageUrl);
+  }
+
   Widget _nextButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12),
       child: Container(
         child: OutlineButton(
           splashColor: Colors.grey,
           onPressed: () {
-            if (_passwordController.text.isEmpty ||
-                _verifyPasswordController.text.isEmpty) {
-              _showDialog('Password fields must not be empty');
-            } else if (_passwordController.text !=
-                _verifyPasswordController.text) {
-              _showDialog('Password fields must match');
-            } else if (_passwordController.text.length <= 5) {
-              _showDialog('Password must be at least 6 characters');
-            } else if (_emailController.text.isNotEmpty) {
-              if (!validateEmail(_emailController.text)) {
-                _showDialog('Enter a valid email address');
-              }
-            }
+            // if (_passwordController.text.isEmpty ||
+            //     _verifyPasswordController.text.isEmpty) {
+            //   _showDialog('Password fields must not be empty');
+            // } else if (_passwordController.text !=
+            //     _verifyPasswordController.text) {
+            //   _showDialog('Password fields must match');
+            // } else if (_passwordController.text.length <= 5) {
+            //   _showDialog('Password must be at least 6 characters');
+            // } else if (_emailController.text.isNotEmpty) {
+            //   if (!validateEmail(_emailController.text)) {
+            //     _showDialog('Enter a valid email address');
+            //   }
+            // }
           },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),

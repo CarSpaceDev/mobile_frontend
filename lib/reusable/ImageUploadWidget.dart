@@ -35,17 +35,17 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   @override
   Widget build(BuildContext context) {
     print(aspectRatio);
-    return FDottedLine(
-      color: Colors.black54,
-      strokeWidth: 2.0,
-      dottedLength: 15.0,
-      space: 4.0,
-      child: AspectRatio(
-        aspectRatio: 92 / 60,
-        child: Container(
-          child: Center(
-            child: imageUrl == null
-                ? InkWell(
+    return imageUrl == null
+        ? FDottedLine(
+            color: Colors.black54,
+            strokeWidth: 2.0,
+            dottedLength: 15.0,
+            space: 4.0,
+            child: AspectRatio(
+              aspectRatio: 92 / 60,
+              child: Container(
+                child: Center(
+                  child: InkWell(
                     onTap: () {
                       _showChoiceDialog(context);
                     },
@@ -65,17 +65,17 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                 color: Colors.black54)),
                       ],
                     ),
-                  )
-                : InkWell(
-                    child: Image.network(imageUrl),
-                    onTap: () {
-                      _showImageViewer(context, true);
-                    },
                   ),
-          ),
-        ),
-      ),
-    );
+                ),
+              ),
+            ),
+          )
+        : InkWell(
+            child: Image.network(imageUrl),
+            onTap: () {
+              _showImageViewer(context, true);
+            },
+          );
   }
 
   getImageFile() {

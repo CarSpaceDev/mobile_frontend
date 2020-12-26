@@ -3,7 +3,6 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/screens/Home/MapScreen.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final AuthService _authService = AuthService();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

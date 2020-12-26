@@ -60,17 +60,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         //else run the api endpoint that generates the user and check for the phone number
         User currentUser = await authService.currentUser();
         if (currentUser != null) {
-          //a google first sign in event
-          yield WaitingLogin(message: "Creating account.");
+          // //a google first sign in event
+          // yield WaitingLogin(message: "Creating account.");
           print("Eula accepted/Google First Sign");
-          var userResponse =
-              await apiService.registerViaGoogle(uid: currentUser.uid);
-          if (userResponse.statusCode == 200) {
-            yield WaitingLogin(message: "Account created.");
-            CSUser userData = CSUser.fromJson(userResponse.body["data"]);
-            yield checkUserDataForMissingInfo(user: userData);
-          } else
-            yield LoginError(message: "Account creation failure");
+          yield NavToRegister();
+          // var userResponse =
+          //     await apiService.registerViaGoogle(uid: currentUser.uid);
+          // if (userResponse.statusCode == 200) {
+          //   yield WaitingLogin(message: "Account created.");
+          //   CSUser userData = CSUser.fromJson(userResponse.body["data"]);
+          //   yield checkUserDataForMissingInfo(user: userData);
+          // } else
+          //   yield LoginError(message: "Account creation failure");
         } else {
           print("JESSSSSSSSSSS!!!!!!!!!!!!");
           yield NavToRegister();

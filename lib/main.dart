@@ -1,4 +1,3 @@
-import 'package:carspace/screens/login/TestScreen.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,9 @@ import 'package:path_provider/path_provider.dart';
 
 import 'blocs/init/initialization_bloc.dart';
 import 'blocs/login/login_bloc.dart';
+import 'constants/GlobalConstants.dart';
 import 'constants/SizeConfig.dart';
+import 'navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,26 +36,26 @@ class CarSpaceApp extends StatelessWidget {
       return OrientationBuilder(builder: (context, orientation) {
         SizeConfig().init(constraints, orientation);
         return MultiBlocProvider(
-            providers: [
-              BlocProvider<InitializationBloc>(
-                create: (BuildContext context) => InitializationBloc(),
-              ),
-              BlocProvider(
-                create: (BuildContext context) => LoginBloc(),
-              ),
-            ],
-            child:
-                // MaterialApp(
-                //     debugShowCheckedModeBanner: false,
-                //     theme: themeData,
-                //     builder: (context, child) => child,
-                //     navigatorKey: locator<NavigationService>().navigatorKey,
-                //     onGenerateRoute: generateRoute,
-                //     initialRoute: InitializationRoute),
-                MaterialApp(
+          providers: [
+            BlocProvider<InitializationBloc>(
+              create: (BuildContext context) => InitializationBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => LoginBloc(),
+            ),
+          ],
+          child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: TestScreen(),
-            ));
+              theme: themeData,
+              builder: (context, child) => child,
+              navigatorKey: locator<NavigationService>().navigatorKey,
+              onGenerateRoute: generateRoute,
+              initialRoute: InitializationRoute),
+          //     MaterialApp(
+          //   debugShowCheckedModeBanner: false,
+          //   home: TestScreen(),
+          // )
+        );
       });
     });
   }
