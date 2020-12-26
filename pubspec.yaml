@@ -14,8 +14,8 @@ dependencies:
   cupertino_icons: ^1.0.0
   font_awesome_flutter: ^8.0.1
   #google service dependencies
-  firebase_auth: ^0.18.3
-  firebase_core: 0.5.3
+  firebase_core: ^0.5.3
+  firebase_auth: ^0.18.4+1
   google_maps_flutter: ^1.0.6
   google_sign_in: ^4.4.4
   google_maps_place_picker: ^1.0.0
