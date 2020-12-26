@@ -56,6 +56,9 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
 
+  @Put(path: '/upload/remove')
+  Future<Response> deleteImage(@Body() Map<String, dynamic> body);
+
   static ApiService create() {
     final client = ChopperClient(
         baseUrl: StringConstants.kApiUrl,
