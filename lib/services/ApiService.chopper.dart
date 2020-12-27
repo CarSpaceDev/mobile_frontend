@@ -42,6 +42,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> checkEmailUsage({String email}) {
+    final $url = '/user/exists/$email';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> registerViaGoogle({String uid}) {
     final $url = '/user/register/google/$uid';
     final $request = Request('PATCH', $url, client.baseUrl);

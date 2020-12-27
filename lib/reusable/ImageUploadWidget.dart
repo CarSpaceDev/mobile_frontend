@@ -34,7 +34,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   final UploadService uploadService = locator<UploadService>();
   @override
   Widget build(BuildContext context) {
-    print(aspectRatio);
+    // print(aspectRatio);
     return imageUrl == null
         ? FDottedLine(
             color: Colors.black54,
@@ -205,6 +205,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                             });
                                             Navigator.pop(context);
                                             Navigator.pop(context);
+                                            this.callback(null);
                                           });
                                         },
                                         borderSide:
@@ -231,9 +232,9 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                               setState(() {
                                                 imageUrl = result.body;
                                               });
+                                              Navigator.pop(context);
+                                              Navigator.pop(context);
                                               this.callback(result.body);
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
                                             });
                                           } catch (e) {
                                             print(e);

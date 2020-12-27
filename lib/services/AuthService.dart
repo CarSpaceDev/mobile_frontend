@@ -31,8 +31,8 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      final token = await _getJWT(result.user);
-      print(token);
+      // final token = await _getJWT(result.user);
+      // print(token);
       final User currentUser = result.user;
       return currentUser;
     } catch (e) {

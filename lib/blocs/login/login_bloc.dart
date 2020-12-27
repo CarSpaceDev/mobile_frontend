@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carspace/model/User.dart';
+import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/UploadService.dart';
@@ -40,6 +41,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         //case where a user is in the google auth cache
         var userFromApi =
             (await apiService.checkExistence(uid: user.uid)).body["data"];
+        print(userFromApi);
+        //todo fix the CSUser.fromJSON function
         if (userFromApi == null) {
           //if said user is not registered in db
           yield ShowEulaScreen();
@@ -56,27 +59,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (event.value) {
         //true
         //It is implied that when the EulaResponseEvent is triggered, the user does not exist in database
-        //Check if the firebase user is null then show the email/pass registration if that is the case
-        //else run the api endpoint that generates the user and check for the phone number
-        User currentUser = await authService.currentUser();
-        if (currentUser != null) {
-          // //a google first sign in event
-          // yield WaitingLogin(message: "Creating account.");
-          print("Eula accepted/Google First Sign");
-          yield NavToRegister();
-          // var userResponse =
-          //     await apiService.registerViaGoogle(uid: currentUser.uid);
-          // if (userResponse.statusCode == 200) {
-          //   yield WaitingLogin(message: "Account created.");
-          //   CSUser userData = CSUser.fromJson(userResponse.body["data"]);
-          //   yield checkUserDataForMissingInfo(user: userData);
-          // } else
-          //   yield LoginError(message: "Account creation failure");
-        } else {
-          print("JESSSSSSSSSSS!!!!!!!!!!!!");
-          yield NavToRegister();
-          //a user/pass registration event
-        }
+        //the register screen automatically populates data if it is a login via google event
+        yield NavToRegister();
       } else {
         //false
         yield LoggedOut();
@@ -160,7 +144,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginError(message: result.error.toString());
       }
     }
-    //V2 Update??????????
+    //V2 Update
     else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
       User user = await authService.loginGoogle();
@@ -175,7 +159,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         CSUser userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
       }
-    } else if (event is LogInEmailEvent) {
+    } else if (event is SubmitRegistrationEvent) {
+      yield WaitingLogin(message: "Creating your account");
+      print(event.payload.toJson());
+      var result = await apiService.registerUser(event.payload.toJson());
+      if (result.statusCode == 201) {
+        yield LoginInProgress();
+        User user = await authService.signInWithEmail(
+            event.payload.email, event.payload.password);
+        var userFromApi =
+            (await apiService.checkExistence(uid: user.uid)).body["data"];
+        print(userFromApi);
+
+        CSUser userData = CSUser.fromJson(userFromApi);
+        yield checkUserDataForMissingInfo(user: userData);
+      }
+      print(result.statusCode);
+      print(result.error);
+    }
+    //todo [JESURY] check for missing data
+    else if (event is LogInEmailEvent) {
       yield LoginInProgress();
       CSUser user =
           await authService.signInWithEmail(event.email, event.password);

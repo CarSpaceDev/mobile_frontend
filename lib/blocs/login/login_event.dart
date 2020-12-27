@@ -145,12 +145,10 @@ class LogInEmailEvent extends LoginEvent {
 }
 
 class SubmitRegistrationEvent extends LoginEvent {
-  final _email;
-  final _firstName;
-  final _lastName;
+  final RegistrationPayload payload;
 
-  SubmitRegistrationEvent(this._email, this._firstName, this._lastName);
+  SubmitRegistrationEvent(this.payload);
 
   @override
-  List<Object> get props => [_email, _firstName, _lastName];
+  List<Object> get props => [this.payload];
 }
