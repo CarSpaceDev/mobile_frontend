@@ -18,8 +18,7 @@ class ImageUploadWidget extends StatefulWidget {
   final double aspectRatio;
   ImageUploadWidget(this.aspectRatio, this.callback, {this.prompt});
   @override
-  _ImageUploadWidgetState createState() =>
-      _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
+  _ImageUploadWidgetState createState() => _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
 }
 
 class _ImageUploadWidgetState extends State<ImageUploadWidget> {
@@ -42,7 +41,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
             dottedLength: 15.0,
             space: 4.0,
             child: AspectRatio(
-              aspectRatio: 92 / 60,
+              aspectRatio: aspectRatio,
               child: Container(
                 child: Center(
                   child: InkWell(
@@ -59,10 +58,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                             color: Colors.black54,
                           ),
                         ),
-                        Text(prompt != null ? prompt : "Upload Image",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54)),
+                        Text(prompt != null ? prompt : "Upload Image", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54)),
                       ],
                     ),
                   ),
@@ -95,10 +91,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                       padding: const EdgeInsets.symmetric(vertical: 32.0),
                       child: Text(
                         message,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
                       ),
                     ),
                     CircularProgressIndicator(
@@ -119,8 +112,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         padding: EdgeInsets.all(10.0),
         child: Material(
           color: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           child: Center(
             child: Stack(
               children: <Widget>[
@@ -134,8 +126,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                       Container(),
                       Text(
                         deleteMode ? "Delete Image?" : 'Upload Image',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -155,12 +146,10 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                     ],
                   ),
                 ),
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: <
-                    Widget>[
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
                   Text(
                     deleteMode ? '' : 'Pinch to crop',
-                    style: TextStyle(
-                        color: Colors.grey, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
                   ),
                   Column(
                     children: <Widget>[
@@ -195,8 +184,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                           List<Future<dynamic>> batch = [];
                                           batch = [
                                             _deleteTempFile(),
-                                            locator<ApiService>()
-                                                .deleteImage({"url": imageUrl})
+                                            locator<ApiService>().deleteImage({"url": imageUrl})
                                           ];
                                           Future.wait(batch).then((value) {
                                             setState(() {
@@ -208,16 +196,13 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                             this.callback(null);
                                           });
                                         },
-                                        borderSide:
-                                            BorderSide(color: Colors.red),
+                                        borderSide: BorderSide(color: Colors.red),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
+                                          borderRadius: BorderRadius.circular(20.0),
                                         ),
                                         child: Text(
                                           'Delete',
-                                          style: TextStyle(
-                                              color: Colors.red, fontSize: 20),
+                                          style: TextStyle(color: Colors.red, fontSize: 20),
                                         ),
                                       )
                                     : OutlineButton(
@@ -225,9 +210,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                           try {
                                             _showWaiting("Uploading Image");
                                             await _cropImage();
-                                            await uploadService
-                                                .uploadItemImage(imageFile.path)
-                                                .then((result) {
+                                            await uploadService.uploadItemImage(imageFile.path).then((result) {
                                               print(result.body);
                                               setState(() {
                                                 imageUrl = result.body;
@@ -239,24 +222,19 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                           } catch (e) {
                                             print(e);
                                             Navigator.pop(context);
-                                            _showErrorDialog(e);
+                                            _showErrorDialog(e.toString());
                                           }
                                         },
-                                        borderSide:
-                                            BorderSide(color: Colors.green),
+                                        borderSide: BorderSide(color: Colors.green),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
+                                          borderRadius: BorderRadius.circular(20.0),
                                         ),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
                                               'Upload',
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 20),
+                                              style: TextStyle(color: Colors.green, fontSize: 20),
                                             ),
                                           ],
                                         ),
@@ -280,11 +258,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
 
   _deleteTempFile() async {
     File existingFile;
-    if (await File(getStoragePath(imageFile.path) + 'compressed_.jpg')
-        .exists()) {
-      existingFile =
-          await File(getStoragePath(imageFile.path) + 'compressed_.jpg')
-              .delete();
+    if (await File(getStoragePath(imageFile.path) + 'compressed_.jpg').exists()) {
+      existingFile = await File(getStoragePath(imageFile.path) + 'compressed_.jpg').delete();
       print("Deleting temp compressed file: " + existingFile.toString());
     }
   }
@@ -319,8 +294,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)), //this right here
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), //this right here
             child: Container(
               height: 150,
               child: Padding(
@@ -332,22 +306,18 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                     Center(
                       child: Text(
                         'Upload Photo',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8.0, top: 20.0, right: 8.0),
+                      padding: const EdgeInsets.only(left: 8.0, top: 20.0, right: 8.0),
                       child: Center(
                         child: Column(
                           children: <Widget>[
                             Row(
                               children: <Widget>[
-                                roundedEndButton(context, 'Open Library', true,
-                                    true, Icons.photo_album, _openLibrary),
-                                roundedEndButton(context, 'Take Picture', false,
-                                    false, Icons.camera, _openCamera),
+                                roundedEndButton(context, 'Open Library', true, true, Icons.photo_album, _openLibrary),
+                                roundedEndButton(context, 'Take Picture', false, false, Icons.camera, _openCamera),
                               ],
                             ),
                           ],
@@ -362,8 +332,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         });
   }
 
-  Expanded roundedEndButton(BuildContext context, String title, bool facingLeft,
-      bool darkMode, IconData iconData, Function onTap) {
+  Expanded roundedEndButton(BuildContext context, String title, bool facingLeft, bool darkMode, IconData iconData, Function onTap) {
     List<Color> theme;
     RoundedRectangleBorder style;
     if (darkMode)
@@ -393,12 +362,10 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(iconData,
-                  color: theme[0], size: 4 * SizeConfig.imageSizeMultiplier),
+              Icon(iconData, color: theme[0], size: 4 * SizeConfig.imageSizeMultiplier),
               Text(
                 title,
-                style: TextStyle(
-                    color: theme[0], fontSize: 1.5 * SizeConfig.textMultiplier),
+                style: TextStyle(color: theme[0], fontSize: 1.5 * SizeConfig.textMultiplier),
               )
             ],
           ),
@@ -413,8 +380,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     imageCache.clear();
     var picture = await picker.getImage(source: ImageSource.gallery);
     if (picture != null) {
-      if (await File(getStoragePath(picture.path) + "compressed_.jpg")
-          .exists()) {
+      if (await File(getStoragePath(picture.path) + "compressed_.jpg").exists()) {
         print("Old compressed file" + "compressed_.jpg exists, deleting");
         await File(getStoragePath(picture.path) + "compressed_.jpg").delete();
       }
@@ -428,15 +394,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   }
 
   Future<File> compressImage(PickedFile picture, int imageIndex) async {
-    return await FlutterImageCompress.compressAndGetFile(
-        picture.path,
-        getStoragePath(picture.path) +
-            "compressed_" +
-            imageIndex.toString() +
-            '.jpg',
-        minWidth: 720,
-        minHeight: 720,
-        quality: 88);
+    return await FlutterImageCompress.compressAndGetFile(picture.path, getStoragePath(picture.path) + "compressed_" + imageIndex.toString() + '.jpg',
+        minWidth: 720, minHeight: 720, quality: 88);
   }
 
   getStoragePath(String path) {
@@ -448,8 +407,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     imageCache.clear();
     var picture = await picker.getImage(source: ImageSource.camera);
     if (picture != null) {
-      if (await File(getStoragePath(picture.path) + "compressed_.jpg")
-          .exists()) {
+      if (await File(getStoragePath(picture.path) + "compressed_.jpg").exists()) {
         print("Old compressed file.jpg exists, deleting");
         await File(getStoragePath(picture.path) + "compressed_.jpg").delete();
       }

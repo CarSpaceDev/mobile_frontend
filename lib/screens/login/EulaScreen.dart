@@ -2,6 +2,7 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+
 import '../../blocs/login/login_bloc.dart';
 
 class EulaScreen extends StatefulWidget {
@@ -17,6 +18,8 @@ class _EulaScreenState extends State<EulaScreen> {
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: AppBar(
+        brightness: Brightness.dark,
+        elevation: 0,
         centerTitle: true,
         title: Text(
           "End User License Agreement",
@@ -99,7 +102,6 @@ class _EulaScreenState extends State<EulaScreen> {
 
   sendResponse(BuildContext context, bool v) {
     print('Sending Eula Response: $v');
-    context.read<LoginBloc>().add(EulaResponseEvent(value:v));
+    context.read<LoginBloc>().add(EulaResponseEvent(value: v));
   }
-
 }

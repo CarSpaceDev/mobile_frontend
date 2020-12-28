@@ -81,23 +81,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
     //V2 Update
     else if (event is AddVehicleEvent) {
-      print("Uploading Images");
-      yield WaitingLogin(message: "Uploading Images");
-      List<Response<dynamic>> result = await Future.wait([
-        uploadService.uploadItemImage(event.OR),
-        uploadService.uploadItemImage(event.CR)
-      ]);
-      print("Upload Image End");
       var payload = {
-        "OR": result[0].body,
-        "CR": result[1].body,
+        "OR": event.OR,
+        "CR": event.CR,
+        "make": event.make,
+        "model": event.model,
         "plateNumber": event.plateNumber,
         "type": event.type,
         "color": event.color
       };
       print(payload);
       print("Sending payload");
-      yield WaitingLogin(message: "Registering vehicle");
+      yield WaitingLogin(message: "Adding vehicle");
       Response res = await apiService.addVehicle(
           (await authService.currentUser()).uid, payload);
       print(res.body);
@@ -165,13 +160,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       var result = await apiService.registerUser(event.payload.toJson());
       if (result.statusCode == 201) {
         yield LoginInProgress();
-        User user = await authService.signInWithEmail(
-            event.payload.email, event.payload.password);
+        User user = await authService.currentUser();
+        CSUser userData;
+        if (user == null) {
+          user = await authService.signInWithEmail(
+              event.payload.email, event.payload.password);
+        }
         var userFromApi =
             (await apiService.checkExistence(uid: user.uid)).body["data"];
         print(userFromApi);
-
-        CSUser userData = CSUser.fromJson(userFromApi);
+        userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
       }
       print(result.statusCode);

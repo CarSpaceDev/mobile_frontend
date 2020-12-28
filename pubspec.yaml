@@ -36,6 +36,7 @@ dependencies:
   #locator
   get_it: 5.0.1
   fdottedline: 1.0.1
+  flutter_material_pickers: 1.8.1
 
 dev_dependencies:
   flutter_test:
