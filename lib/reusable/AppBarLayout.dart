@@ -1,8 +1,7 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
 
-AppBar arrowForwardAppBarWidget(
-    BuildContext context, String appBarTitle, Function onPressed) {
+AppBar arrowForwardAppBarWidget(BuildContext context, String appBarTitle, Function onPressed) {
   return AppBar(
     brightness: Brightness.dark,
     leading: GestureDetector(
@@ -16,17 +15,15 @@ AppBar arrowForwardAppBarWidget(
   );
 }
 
-AppBar mainAppBar(
-    BuildContext context, String appBarTitle, Function onPressed) {
+AppBar mainAppBar(BuildContext context, String appBarTitle, Function onPressed) {
   return AppBar(
     backgroundColor: themeData.primaryColor,
+    brightness: Brightness.dark,
     title: Text(appBarTitle),
     centerTitle: true,
     leading: GestureDetector(
-      onTap: (){},
-      child: Container(
-          child: Icon(Icons.menu)
-      ),
+      onTap: () {},
+      child: Container(child: Icon(Icons.menu)),
     ),
     actions: <Widget>[
       IconButton(
@@ -34,7 +31,6 @@ AppBar mainAppBar(
         onPressed: onPressed,
         icon: Icon(Icons.exit_to_app),
       ),
-
     ],
   );
 }

@@ -48,6 +48,14 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   }
 
   @override
+  void dispose() {
+    _plateNumberFN.dispose();
+    _vehicleMakeFN.dispose();
+    _vehicleModelFN.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: themeData.primaryColor,

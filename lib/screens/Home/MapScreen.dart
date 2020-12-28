@@ -1,17 +1,15 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/screens/ReservationScreen/ReservationScreen.dart';
-import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/DevTools.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:location/location.dart';
-
-import 'dart:collection';
-import 'package:flutter/services.dart' show rootBundle;
 
 String _mapStyle;
 
@@ -32,13 +30,22 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController _searchController;
   bool options = false;
   bool suggestedLocation = false;
-  ApiService _apiService = ApiService.create();
   bool workingMap = true;
   List<dynamic> lotsInRadius;
+  List<double> distances = [];
   bool lotsMarked = false;
   int selectedIndex = 0;
   PickResult selectedPlace;
   StreamSubscription<LocationData> locationSubscription;
+
+  double avg() {
+    double result = 0;
+    distances.forEach((element) {
+      result = result + element;
+    });
+    return result / distances.length;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,57 +55,64 @@ class _MapScreenState extends State<MapScreen> {
     });
     _setMarkerIcon();
     locationSubscription = location.onLocationChanged.listen((location) async {
-      devLog("LocationUpdate",
-          "Updating location : [" + location.latitude.toString() + ',' + location.longitude.toString() + ']');
-      if (lotsInRadius == null) {
-        var lots = await _apiService
-            .findLotsFromRadius({"latitude": location.latitude, "longitude": location.longitude, "radius": 2000});
-        print({"latitude": location.latitude, "longitude": location.longitude, "radius": 1500});
-        print(lots.body);
-        lotsInRadius = lots.body;
+      print("Updating location : [" + location.latitude.toString() + ',' + location.longitude.toString() + ']');
+      if (currentLocation != null) {
+        distances.add(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
+        print("Average distance variation: ${avg()}");
+        print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
       }
       setState(() {
         currentLocation = LatLng(location.latitude, location.longitude);
-        _markers.clear();
-        _markers.add(
-          Marker(
-              markerId: MarkerId("Driver"),
-              position: currentLocation,
-              icon: _driverIcon,
-              onTap: () {
-                print("Driver");
-              }),
-        );
-        for (int i = 0; i < lotsInRadius.length; i++) {
-          _markers.add(
-            Marker(
-                markerId: MarkerId("Lot Result $i"),
-                position: LatLng(
-                    lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
-                icon: _lotIcon,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = i;
-                  });
-                  print("Lot Result $i: ${lotsInRadius[i]["address"].toString()}");
-                }),
-          );
-        }
       });
-      if (viewCentered == null) {
-        devLog("ViewNotCentered", "view is not centered");
-        mapController?.moveCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(location.latitude, location.longitude),
-              zoom: 16.0,
-            ),
-          ),
-        );
-        setState(() {
-          viewCentered = true;
-        });
-      }
+      // if (lotsInRadius == null) {
+      //   var lots = await _apiService
+      //       .findLotsFromRadius({"latitude": location.latitude, "longitude": location.longitude, "radius": 2000});
+      //   print({"latitude": location.latitude, "longitude": location.longitude, "radius": 1500});
+      //   print(lots.body);
+      //   lotsInRadius = lots.body;
+      // }
+      // setState(() {
+      //   currentLocation = LatLng(location.latitude, location.longitude);
+      //   _markers.clear();
+      //   _markers.add(
+      //     Marker(
+      //         markerId: MarkerId("Driver"),
+      //         position: currentLocation,
+      //         icon: _driverIcon,
+      //         onTap: () {
+      //           print("Driver");
+      //         }),
+      //   );
+      //   for (int i = 0; i < lotsInRadius.length; i++) {
+      //     _markers.add(
+      //       Marker(
+      //           markerId: MarkerId("Lot Result $i"),
+      //           position: LatLng(
+      //               lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
+      //           icon: _lotIcon,
+      //           onTap: () {
+      //             setState(() {
+      //               selectedIndex = i;
+      //             });
+      //             print("Lot Result $i: ${lotsInRadius[i]["address"].toString()}");
+      //           }),
+      //     );
+      //   }
+      // });
+      // if (viewCentered == null) {
+      //   devLog("ViewNotCentered", "view is not centered");
+      //   mapController?.moveCamera(
+      //     CameraUpdate.newCameraPosition(
+      //       CameraPosition(
+      //         target: LatLng(location.latitude, location.longitude),
+      //         zoom: 16.0,
+      //       ),
+      //     ),
+      //   );
+      //   setState(() {
+      //     viewCentered = true;
+      //   });
+      // }
     });
   }
 
@@ -217,14 +231,11 @@ class _MapScreenState extends State<MapScreen> {
                   right: SizeConfig.widthMultiplier * 10,
                   child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context, MaterialPageRoute(builder: (BuildContext context) => ReservationScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ReservationScreen()));
                       },
                       child: SuggestedLocationCard(
                         name: lotsInRadius[selectedIndex]["address"]["streetAddress"],
-                        address: lotsInRadius[selectedIndex]["address"]["addressLocality"] +
-                            " , " +
-                            lotsInRadius[selectedIndex]["address"]["addressRegion"],
+                        address: lotsInRadius[selectedIndex]["address"]["addressLocality"] + " , " + lotsInRadius[selectedIndex]["address"]["addressRegion"],
                         price: double.parse(lotsInRadius[selectedIndex]["pricing"].toString()),
                         distance: lotsInRadius[selectedIndex]["dist"]["calculated"],
                       )),
@@ -236,10 +247,8 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _setMarkerIcon() async {
-    _lotIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
-    _driverIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
+    _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
+    _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
   }
 
   searchBar(BuildContext context) {
@@ -312,15 +321,12 @@ class SuggestedLocationCard extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 160,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), bottomLeft: Radius.circular(20.0))),
-              child: Image.network(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Subterranean_parking_lot.jpg/440px-Subterranean_parking_lot.jpg"),
+              decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), bottomLeft: Radius.circular(20.0))),
+              child: Image.network("https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Subterranean_parking_lot.jpg/440px-Subterranean_parking_lot.jpg"),
             ),
             Container(
               padding: EdgeInsets.only(top: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(20.0), bottomRight: Radius.circular(20.0))),
+              decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(20.0), bottomRight: Radius.circular(20.0))),
               width: 200,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
