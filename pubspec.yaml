@@ -29,7 +29,6 @@ dependencies:
   provider: ^4.1.2
   flutter_bloc: 6.0.0
   equatable: ^1.2.5
-  location: ^3.0.2
   geolocator: ^6.1.13
   #storage
   hive: 1.4.4+1
@@ -38,7 +37,7 @@ dependencies:
   get_it: 5.0.1
   fdottedline: 1.0.1
   flutter_material_pickers: 1.8.1
-
+  location_permissions: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

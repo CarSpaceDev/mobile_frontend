@@ -9,7 +9,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
-import 'package:location/location.dart';
 
 String _mapStyle;
 
@@ -21,7 +20,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController mapController;
   Marker marker;
-  Location location = Location();
   Set<Marker> _markers = HashSet<Marker>();
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
@@ -36,7 +34,7 @@ class _MapScreenState extends State<MapScreen> {
   bool lotsMarked = false;
   int selectedIndex = 0;
   PickResult selectedPlace;
-  StreamSubscription<LocationData> locationSubscription;
+  StreamSubscription<Position> positionStream;
 
   double avg() {
     double result = 0;
@@ -54,72 +52,43 @@ class _MapScreenState extends State<MapScreen> {
       _mapStyle = string;
     });
     _setMarkerIcon();
-    locationSubscription = location.onLocationChanged.listen((location) async {
-      print("Updating location : [" + location.latitude.toString() + ',' + location.longitude.toString() + ']');
-      if (currentLocation != null) {
-        distances.add(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
-        print("Average distance variation: ${avg()}");
-        print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
+    Geolocator.isLocationServiceEnabled().then((bool value) {
+      if (value) {
+        Geolocator.checkPermission().then((v) {
+          if (v != null || v == LocationPermission.denied || v == LocationPermission.deniedForever) {
+            Geolocator.requestPermission().then((locationPermission) {
+              if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
+            });
+          } else {
+            startPositionStream();
+          }
+        });
       }
-      setState(() {
-        currentLocation = LatLng(location.latitude, location.longitude);
-      });
-      // if (lotsInRadius == null) {
-      //   var lots = await _apiService
-      //       .findLotsFromRadius({"latitude": location.latitude, "longitude": location.longitude, "radius": 2000});
-      //   print({"latitude": location.latitude, "longitude": location.longitude, "radius": 1500});
-      //   print(lots.body);
-      //   lotsInRadius = lots.body;
-      // }
-      // setState(() {
-      //   currentLocation = LatLng(location.latitude, location.longitude);
-      //   _markers.clear();
-      //   _markers.add(
-      //     Marker(
-      //         markerId: MarkerId("Driver"),
-      //         position: currentLocation,
-      //         icon: _driverIcon,
-      //         onTap: () {
-      //           print("Driver");
-      //         }),
-      //   );
-      //   for (int i = 0; i < lotsInRadius.length; i++) {
-      //     _markers.add(
-      //       Marker(
-      //           markerId: MarkerId("Lot Result $i"),
-      //           position: LatLng(
-      //               lotsInRadius[i]["location"]["coordinates"][1], lotsInRadius[i]["location"]["coordinates"][0]),
-      //           icon: _lotIcon,
-      //           onTap: () {
-      //             setState(() {
-      //               selectedIndex = i;
-      //             });
-      //             print("Lot Result $i: ${lotsInRadius[i]["address"].toString()}");
-      //           }),
-      //     );
-      //   }
-      // });
-      // if (viewCentered == null) {
-      //   devLog("ViewNotCentered", "view is not centered");
-      //   mapController?.moveCamera(
-      //     CameraUpdate.newCameraPosition(
-      //       CameraPosition(
-      //         target: LatLng(location.latitude, location.longitude),
-      //         zoom: 16.0,
-      //       ),
-      //     ),
-      //   );
-      //   setState(() {
-      //     viewCentered = true;
-      //   });
-      // }
     });
   }
 
   @override
   void dispose() {
-    locationSubscription.cancel();
+    positionStream.cancel();
     super.dispose();
+  }
+
+  startPositionStream() {
+    positionStream =
+        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 0, intervalDuration: Duration(seconds: 1))
+            .listen(positionChangeHandler);
+  }
+
+  positionChangeHandler(Position location) {
+    print("Location: ${location.latitude}, ${location.longitude}");
+    if (currentLocation != null) {
+      distances.add(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
+      print("Average distance variation: ${avg().toStringAsFixed(5)}");
+      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
+    }
+    setState(() {
+      currentLocation = LatLng(location.latitude, location.longitude);
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
