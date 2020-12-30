@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 
 import '../../serviceLocator.dart';
 
@@ -37,7 +36,6 @@ class _MapScreenState extends State<MapScreen> {
   List<double> distances = [];
   bool lotsMarked = false;
   int selectedIndex = 0;
-  PickResult selectedPlace;
   StreamSubscription<Position> positionStream;
 
   double avg() {
@@ -79,7 +77,7 @@ class _MapScreenState extends State<MapScreen> {
 
   startPositionStream() {
     positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 0, intervalDuration: Duration(seconds: 1))
+        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
             .listen(positionChangeHandler);
   }
 
@@ -100,6 +98,7 @@ class _MapScreenState extends State<MapScreen> {
                     print(res.body[i]);
                     setState(() {
                       selectedIndex = i;
+                      suggestedLocation = true;
                     });
                   },
                   icon: _lotIcon,
@@ -146,6 +145,9 @@ class _MapScreenState extends State<MapScreen> {
       child: Stack(
         children: [
           GoogleMap(
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
+            zoomControlsEnabled: false,
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
               target: LatLng(1, 1),
@@ -340,7 +342,7 @@ class SuggestedLocationCard extends StatelessWidget {
                     children: <Widget>[
                       Icon(Icons.location_on, size: 16),
                       Text(
-                        '${distance.toStringAsFixed(2)} m',
+                        '${distance.toStringAsFixed(2)} km',
                         style: TextStyle(fontSize: 16),
                       )
                     ],
