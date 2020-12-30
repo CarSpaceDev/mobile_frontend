@@ -211,13 +211,13 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                             _showWaiting("Uploading Image");
                                             await _cropImage();
                                             await uploadService.uploadItemImage(imageFile.path).then((result) {
-                                              print(result.body);
+                                              print(result.body["url"]);
                                               setState(() {
-                                                imageUrl = result.body;
+                                                imageUrl = result.body["url"];
                                               });
                                               Navigator.pop(context);
                                               Navigator.pop(context);
-                                              this.callback(result.body);
+                                              this.callback(result.body["url"]);
                                             });
                                           } catch (e) {
                                             print(e);

@@ -196,7 +196,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginState result;
     if (user.phoneNumber == null) {
       result = ShowPhoneNumberInputScreen();
-    } else if (user.vehicles.length == 0) {
+    }
+        else if (user.vehicles.length == 0) {
       var userSettings = cache.get(user.emailAddress);
       print(userSettings);
       if (userSettings == null) {

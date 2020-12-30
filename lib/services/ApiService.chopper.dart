@@ -85,8 +85,16 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> getLotsInRadius(
+      {double latitude, double longitude, double kmRadius}) {
+    final $url = '/partner/radius/$latitude/$longitude/$kmRadius';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> registerUser(Map<String, dynamic> body) {
-    final $url = '/user/register';
+    final $url = '/user/register/true';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
