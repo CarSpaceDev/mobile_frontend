@@ -1,3 +1,4 @@
+import 'package:carspace/services/ApiMapService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/UploadService.dart';
@@ -13,6 +14,7 @@ void setUpServiceLocator() {
   locator.registerSingleton<NavigationService>(NavigationService());
   locator.registerSingleton<ApiService>(ApiService.create());
   locator.registerSingleton<AuthService>(AuthService());
+  locator.registerSingleton<ApiMapService>(ApiMapService.create());
   locator.registerSingleton<GlobalData>(GlobalData());
   locator.registerSingleton<UploadService>(UploadService.create());
 }

@@ -2,6 +2,7 @@ import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
+import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/MapScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,9 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context.read<LoginBloc>().add(LogoutEvent());
         locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
       }),
-      drawer: Container(
-        color: Colors.red,
-      ),
+      drawer: LocationSearchWidget(title: "Test"),
       backgroundColor: themeData.primaryColor,
       body: SafeArea(
         child: Stack(children: [

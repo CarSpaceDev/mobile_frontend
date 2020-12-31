@@ -115,6 +115,7 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
     setState(() {
+      print("Updating the markers since distance is >1m");
       if (currentLocation == null) {
         mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       }
