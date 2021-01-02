@@ -2,27 +2,25 @@ import 'dart:io';
 
 import 'package:carspace/services/ApiMapService.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:uuid/uuid.dart';
 
 import '../serviceLocator.dart';
 
 class LocationSearchWidget extends StatefulWidget {
-  LocationSearchWidget({Key key, this.title}) : super(key: key);
-
+  LocationSearchWidget({Key key, this.title, this.callback}) : super(key: key);
+  final Function callback;
   final String title;
 
   @override
-  _LocationSearchWidgetState createState() => _LocationSearchWidgetState();
+  _LocationSearchWidgetState createState() => _LocationSearchWidgetState(this.callback);
 }
 
 class _LocationSearchWidgetState extends State<LocationSearchWidget> {
   final _controller = TextEditingController();
-  String _streetNumber = '';
-  String _street = '';
-  String _city = '';
-  String _zipCode = '';
-
+  final Function callback;
+  _LocationSearchWidgetState(this.callback);
   @override
   void dispose() {
     _controller.dispose();
@@ -31,57 +29,47 @@ class _LocationSearchWidgetState extends State<LocationSearchWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Container(
-        margin: EdgeInsets.only(left: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextField(
-              controller: _controller,
-              readOnly: true,
-              onTap: () async {
-                // generate a new token here
-                final sessionToken = Uuid().v4();
-                final Suggestion result = await showSearch(
-                  context: context,
-                  delegate: AddressSearch(sessionToken),
-                );
-                // This will change the text displayed in the TextField
-                if (result != null) {
-                  final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
-                  setState(() {
-                    _controller.text = result.description;
-                    _streetNumber = placeDetails.streetNumber;
-                    _street = placeDetails.street;
-                    _city = placeDetails.city;
-                    _zipCode = placeDetails.zipCode;
-                  });
-                }
-              },
-              decoration: InputDecoration(
-                icon: Container(
-                  width: 10,
-                  height: 10,
-                  child: Icon(
-                    Icons.home,
-                    color: Colors.black,
-                  ),
-                ),
-                hintText: "Enter your shipping address",
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(left: 8.0, top: 16.0),
-              ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(
+            Radius.circular(25.0),
+          ),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: TextField(
+          controller: _controller,
+          readOnly: true,
+          onTap: () async {
+            // generate a new token here
+            final sessionToken = Uuid().v4();
+            final Suggestion result = await showSearch(
+              context: context,
+              delegate: AddressSearch(sessionToken),
+            );
+            print("RESULT OF SEARCH");
+            print(result);
+            // This will change the text displayed in the TextField
+            if (result != null) {
+              final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
+              setState(() {
+                _controller.text = result.description;
+                // print(placeDetails);
+              });
+              if (callback != null) callback(placeDetails);
+            }
+          },
+          decoration: InputDecoration(
+            icon: Icon(
+              Icons.map_outlined,
+              color: Colors.black,
             ),
-            SizedBox(height: 20.0),
-            Text('Street Number: $_streetNumber'),
-            Text('Street: $_street'),
-            Text('City: $_city'),
-            Text('ZIP Code: $_zipCode'),
-          ],
+            hintText: "Enter Destination",
+            border: InputBorder.none,
+          ),
         ),
       ),
     );
@@ -122,7 +110,8 @@ class AddressSearch extends SearchDelegate<Suggestion> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return null;
+    close(context, null);
+    return Container();
   }
 
   @override
@@ -191,11 +180,11 @@ class PlaceApiProvider {
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
     final response = await locator<ApiMapService>().getAutoComplete(input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
-    print(response.statusCode);
-    print(response.body);
+    // print(response.statusCode);
+    // print(response.body);
     if (response.statusCode == 200) {
       final result = response.body;
-      print(result);
+      // print(result);
       if (result['status'] == 'OK') {
         // compose suggestions in a list
         return result['predictions'].map<Suggestion>((p) => Suggestion(p['place_id'], p['description'])).toList();
@@ -209,13 +198,14 @@ class PlaceApiProvider {
     }
   }
 
-  Future<Place> getPlaceDetailFromId(String placeId) async {
+  Future<LocationSearchResult> getPlaceDetailFromId(String placeId) async {
+    if (placeId == "0") return null;
     GoogleMapsPlaces _places = new GoogleMapsPlaces(apiKey: apiKey); //Same API_KEY as above
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(placeId);
     double latitude = detail.result.geometry.location.lat;
     double longitude = detail.result.geometry.location.lng;
 
-    print("ResQ2");
+    // print("ResQ2");
     var components = detail.result.addressComponents;
     final place = Place();
     components.forEach((c) {
@@ -233,7 +223,19 @@ class PlaceApiProvider {
         place.zipCode = c.longName;
       }
     });
-    print("$latitude  $longitude ${place.toString()}");
-    return place;
+    return LocationSearchResult(latitude, longitude, locationDetails: place);
+  }
+}
+
+class LocationSearchResult {
+  Place locationDetails;
+  LatLng location;
+
+  LocationSearchResult(double latitude, double longitude, {this.locationDetails}) {
+    this.location = new LatLng(latitude, longitude);
+  }
+
+  toJson() {
+    return "${location.latitude} ${location.longitude} ${locationDetails.toString()}";
   }
 }

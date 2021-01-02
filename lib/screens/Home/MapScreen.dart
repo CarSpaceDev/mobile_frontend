@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/ReservationScreen/ReservationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController mapController;
-  Marker marker;
+  Marker driverMarker;
   Set<Marker> _markers = HashSet<Marker>();
   List<Marker> _lotMarkers = [];
   BitmapDescriptor _lotIcon;
@@ -37,6 +38,7 @@ class _MapScreenState extends State<MapScreen> {
   bool lotsMarked = false;
   int selectedIndex = 0;
   StreamSubscription<Position> positionStream;
+  LatLng searchPosition;
 
   double avg() {
     double result = 0;
@@ -83,6 +85,7 @@ class _MapScreenState extends State<MapScreen> {
 
   positionChangeHandler(Position location) {
     print("Updating Location: ${location.latitude}, ${location.longitude}");
+    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: LatLng(location.latitude, location.longitude));
     if (currentLocation != null) {
       distances.add(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
       print("Average distance variation: ${avg().toStringAsFixed(5)}");
@@ -108,7 +111,7 @@ class _MapScreenState extends State<MapScreen> {
         }
         setState(() {
           lotsInRadius = res.body;
-          _markers = Set.from([Marker(markerId: MarkerId("user"), icon: _driverIcon, position: LatLng(location.latitude, location.longitude))] + _lotMarkers);
+          _markers = Set.from([driverMarker] + _lotMarkers);
         });
 
         print(res.body);
@@ -120,7 +123,7 @@ class _MapScreenState extends State<MapScreen> {
         mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       }
       currentLocation = LatLng(location.latitude, location.longitude);
-      _markers = Set.from([Marker(markerId: MarkerId("user"), icon: _driverIcon, position: LatLng(location.latitude, location.longitude))] + _lotMarkers);
+      _markers = Set.from([driverMarker] + _lotMarkers);
     });
   }
 
@@ -146,6 +149,7 @@ class _MapScreenState extends State<MapScreen> {
       child: Stack(
         children: [
           GoogleMap(
+            onCameraMove: _onCameraMove,
             myLocationButtonEnabled: false,
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
@@ -175,7 +179,12 @@ class _MapScreenState extends State<MapScreen> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 color: Colors.transparent,
-                child: searchBar(context),
+                child: LocationSearchWidget(
+                  callback: (LocationSearchResult data) {
+                    print(data.toJson());
+                    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
+                  },
+                ),
               ),
             ),
           ),
@@ -247,6 +256,16 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
     );
+  }
+
+  void _onCameraMove(CameraPosition d) {
+    Marker searchMarker = Marker(
+        markerId: MarkerId("picker"), position: LatLng(d.target.latitude, d.target.longitude), onTap: () => print("Position ${searchPosition.toJson()}"));
+    print(d.target);
+    setState(() {
+      searchPosition = LatLng(d.target.latitude, d.target.longitude);
+      _markers = Set.from([searchMarker, driverMarker] + _lotMarkers);
+    });
   }
 
   void _setMarkerIcon() async {
