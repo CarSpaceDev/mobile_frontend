@@ -83,8 +83,8 @@ class _MapScreenState extends State<MapScreen> {
       print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
     } else {
       mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+      getLotsInRadius(location);
     }
-    getLotsInRadius(location);
     currentLocation = LatLng(location.latitude, location.longitude);
   }
 
@@ -92,6 +92,7 @@ class _MapScreenState extends State<MapScreen> {
     locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 1).then((res) {
       if (res.statusCode == 200) {
         if (res.body.length > 0) {
+          print(res.body);
           _lotMarkers = [];
           for (int i = 0; i < res.body.length; i++) {
             _lotMarkers.add(Marker(
@@ -106,17 +107,19 @@ class _MapScreenState extends State<MapScreen> {
                 icon: _lotIcon,
                 position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
           }
+
+          setState(() {
+            lotsInRadius = res.body;
+            if (destinationMarker != null) {
+              print("destinationMarker is not null");
+              _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+            } else {
+              print("destination marker is null");
+              _markers = Set.from([driverMarker] + _lotMarkers);
+            }
+          });
         }
       }
-      setState(() {
-        lotsInRadius = res.body;
-        if (destinationMarker != null) {
-          print("destinationMarker is not null");
-          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-        } else
-          _markers = Set.from([driverMarker] + _lotMarkers);
-      });
-      print(res.body);
     });
   }
 
@@ -162,18 +165,35 @@ class _MapScreenState extends State<MapScreen> {
       width: MediaQuery.of(context).size.width,
       child: Stack(
         children: [
-          GoogleMap(
-            mapType: MapType.hybrid,
-            onCameraMove: _onCameraMove,
-            myLocationButtonEnabled: true,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(
-              target: LatLng(1, 1),
-              zoom: 18.0,
+          Listener(
+            onPointerUp: (e) {
+              print("Moved camera, new position is ${searchPosition.toString()}");
+              destinationMarker = Marker(
+                  markerId: MarkerId("destination"),
+                  position: searchPosition,
+                  icon: _destination,
+                  draggable: true,
+                  onDragEnd: (e) {
+                    getLotsInRadius(e);
+                    setState(() {
+                      searchPosition = e;
+                    });
+                  });
+              getLotsInRadius(searchPosition);
+            },
+            child: GoogleMap(
+              mapType: MapType.hybrid,
+              onCameraMove: _onCameraMove,
+              myLocationButtonEnabled: true,
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: false,
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(1, 1),
+                zoom: 18.0,
+              ),
+              markers: _markers,
             ),
-            markers: _markers,
           ),
           Positioned(
             bottom: SizeConfig.widthMultiplier * 5,
@@ -203,7 +223,7 @@ class _MapScreenState extends State<MapScreen> {
           options
               ? Positioned(
                   bottom: SizeConfig.widthMultiplier * 5,
-                  left: SizeConfig.widthMultiplier * 5,
+                  right: SizeConfig.widthMultiplier * 5,
                   child: Row(
                     children: <Widget>[
                       FloatingActionButton(
@@ -279,10 +299,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onCameraMove(CameraPosition d) {
-    print(d.target);
-    setState(() {
-      searchPosition = LatLng(d.target.latitude, d.target.longitude);
-    });
+    searchPosition = LatLng(d.target.latitude, d.target.longitude);
   }
 
   void _setMarkerIcon() async {
