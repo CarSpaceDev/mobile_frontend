@@ -13,8 +13,7 @@ import '../../serviceLocator.dart';
 part 'initialization_event.dart';
 part 'initialization_state.dart';
 
-class InitializationBloc
-    extends Bloc<InitializationEvent, InitializationState> {
+class InitializationBloc extends Bloc<InitializationEvent, InitializationState> {
   final ApiService apiService = locator<ApiService>();
   final NavigationService navService = locator<NavigationService>();
   final cache = Hive.box("localCache");
@@ -27,23 +26,19 @@ class InitializationBloc
       try {
         var existingCache = cache.get("data");
         if (existingCache == null) {
-          var result = await apiService.requestInitData(
-              hash: DateTime.now().millisecondsSinceEpoch.toString());
+          var result = await apiService.requestInitData(hash: DateTime.now().millisecondsSinceEpoch.toString());
           if (result.statusCode == 200) {
             cache.put('data', result.body["data"]);
             print(cache.get('data'));
             print("No cache, got latest cache and navigating to Login");
             navService.pushReplaceNavigateTo(LoginRoute);
           } else {
-            devLog(
-                "InitError",
-                'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
-                    result.statusCode.toString());
-            yield ErrorState();
+            devLog("InitError", 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
+            yield ErrorState(
+                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
           }
         } else {
-          var result =
-              await apiService.requestInitData(hash: existingCache["hash"]);
+          var result = await apiService.requestInitData(hash: existingCache["hash"]);
           if (result.statusCode == 200) {
             if (result.body["data"].runtimeType == bool) {
               print("Cache is up to date, proceeding to Login");
@@ -54,11 +49,9 @@ class InitializationBloc
               navService.pushReplaceNavigateTo(LoginRoute);
             }
           } else {
-            devLog(
-                "InitError",
-                'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
-                    result.statusCode.toString());
-            yield ErrorState();
+            devLog("InitError", 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
+            yield ErrorState(
+                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
           }
         }
       } catch (e) {

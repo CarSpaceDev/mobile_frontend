@@ -70,6 +70,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           else if (state is LoginError) {
             return ErrorScreen(
               prompt: state.message,
+              showButtons: true,
             );
           }
           //V2 Update

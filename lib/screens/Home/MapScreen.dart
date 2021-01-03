@@ -22,31 +22,23 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController mapController;
-  Marker driverMarker;
-  Set<Marker> _markers = HashSet<Marker>();
-  List<Marker> _lotMarkers = [];
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
-  bool viewCentered;
-  LatLng currentLocation;
+  BitmapDescriptor _destination;
   TextEditingController _searchController;
   bool options = false;
   bool suggestedLocation = false;
   bool workingMap = true;
-  List<dynamic> lotsInRadius;
-  List<double> distances = [];
   bool lotsMarked = false;
   int selectedIndex = 0;
   StreamSubscription<Position> positionStream;
+  LatLng currentLocation;
   LatLng searchPosition;
-
-  double avg() {
-    double result = 0;
-    distances.forEach((element) {
-      result = result + element;
-    });
-    return result / distances.length;
-  }
+  Set<Marker> _markers = HashSet<Marker>();
+  List<Marker> _lotMarkers = [];
+  Marker driverMarker;
+  Marker destinationMarker;
+  List<dynamic> lotsInRadius;
 
   @override
   void initState() {
@@ -83,47 +75,48 @@ class _MapScreenState extends State<MapScreen> {
             .listen(positionChangeHandler);
   }
 
-  positionChangeHandler(Position location) {
+  positionChangeHandler(Position v) {
+    LatLng location = LatLng(v.latitude, v.longitude);
     print("Updating Location: ${location.latitude}, ${location.longitude}");
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: LatLng(location.latitude, location.longitude));
+    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
-      distances.add(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude));
-      print("Average distance variation: ${avg().toStringAsFixed(5)}");
       print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
     } else {
-      locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 5).then((res) {
-        if (res.statusCode == 200) {
-          if (res.body.length > 0) {
-            for (int i = 0; i < res.body.length; i++) {
-              _lotMarkers.add(Marker(
-                  markerId: MarkerId(res.body[i]["lotId"]),
-                  onTap: () {
-                    print(res.body[i]);
-                    setState(() {
-                      selectedIndex = i;
-                      suggestedLocation = true;
-                    });
-                  },
-                  icon: _lotIcon,
-                  position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
-            }
+      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+    }
+    getLotsInRadius(location);
+    currentLocation = LatLng(location.latitude, location.longitude);
+  }
+
+  void getLotsInRadius(LatLng location) {
+    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 1).then((res) {
+      if (res.statusCode == 200) {
+        if (res.body.length > 0) {
+          _lotMarkers = [];
+          for (int i = 0; i < res.body.length; i++) {
+            _lotMarkers.add(Marker(
+                markerId: MarkerId(res.body[i]["lotId"]),
+                onTap: () {
+                  print(res.body[i]);
+                  setState(() {
+                    selectedIndex = i;
+                    suggestedLocation = true;
+                  });
+                },
+                icon: _lotIcon,
+                position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
           }
         }
-        setState(() {
-          lotsInRadius = res.body;
-          _markers = Set.from([driverMarker] + _lotMarkers);
-        });
-
-        print(res.body);
-      });
-    }
-    setState(() {
-      print("Updating the markers since distance is >1m");
-      if (currentLocation == null) {
-        mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       }
-      currentLocation = LatLng(location.latitude, location.longitude);
-      _markers = Set.from([driverMarker] + _lotMarkers);
+      setState(() {
+        lotsInRadius = res.body;
+        if (destinationMarker != null) {
+          print("destinationMarker is not null");
+          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+        } else
+          _markers = Set.from([driverMarker] + _lotMarkers);
+      });
+      print(res.body);
     });
   }
 
@@ -131,6 +124,27 @@ class _MapScreenState extends State<MapScreen> {
     mapController = controller;
     setState(() {
       mapController.setMapStyle(_mapStyle);
+    });
+  }
+
+  setSearchPositionMarker(LatLng coordinates) {
+    setState(() {
+      destinationMarker = Marker(
+        markerId: MarkerId("destination"),
+        position: coordinates,
+        icon: _destination,
+        draggable: true,
+        onDragEnd: (e) {
+          getLotsInRadius(e);
+          setState(() {
+            searchPosition = e;
+          });
+        },
+        onTap: () {
+          print(searchPosition);
+        },
+      );
+      _markers = Set.from([driverMarker, destinationMarker] + _lotMarkers);
     });
   }
 
@@ -149,8 +163,9 @@ class _MapScreenState extends State<MapScreen> {
       child: Stack(
         children: [
           GoogleMap(
+            mapType: MapType.hybrid,
             onCameraMove: _onCameraMove,
-            myLocationButtonEnabled: false,
+            myLocationButtonEnabled: true,
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
             onMapCreated: _onMapCreated,
@@ -180,10 +195,7 @@ class _MapScreenState extends State<MapScreen> {
                 width: MediaQuery.of(context).size.width,
                 color: Colors.transparent,
                 child: LocationSearchWidget(
-                  callback: (LocationSearchResult data) {
-                    print(data.toJson());
-                    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
-                  },
+                  callback: locationSearchCallback,
                 ),
               ),
             ),
@@ -258,19 +270,25 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  locationSearchCallback(LocationSearchResult data) {
+    print(data.toJson());
+    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
+    searchPosition = data.location;
+    setSearchPositionMarker(data.location);
+    getLotsInRadius(data.location);
+  }
+
   void _onCameraMove(CameraPosition d) {
-    Marker searchMarker = Marker(
-        markerId: MarkerId("picker"), position: LatLng(d.target.latitude, d.target.longitude), onTap: () => print("Position ${searchPosition.toJson()}"));
     print(d.target);
     setState(() {
       searchPosition = LatLng(d.target.latitude, d.target.longitude);
-      _markers = Set.from([searchMarker, driverMarker] + _lotMarkers);
     });
   }
 
   void _setMarkerIcon() async {
     _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
     _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
+    _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
   }
 
   searchBar(BuildContext context) {
