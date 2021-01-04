@@ -18,7 +18,7 @@ class LocationSearchWidget extends StatefulWidget {
 }
 
 class _LocationSearchWidgetState extends State<LocationSearchWidget> {
-  final _controller;
+  final TextEditingController _controller;
   final Function callback;
   _LocationSearchWidgetState(this.callback, this._controller);
   @override
@@ -30,16 +30,16 @@ class _LocationSearchWidgetState extends State<LocationSearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.zero,
       child: Container(
         width: MediaQuery.of(context).size.width,
         decoration: new BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(25.0),
-          ),
+          // borderRadius: BorderRadius.all(
+          //   Radius.circular(25.0),
+          // ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.only(left: 16, right: 16),
         child: TextField(
           controller: _controller,
           readOnly: true,

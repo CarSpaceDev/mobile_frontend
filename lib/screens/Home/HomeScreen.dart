@@ -5,7 +5,6 @@ import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/navigation.dart';
-import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BitmapDescriptor _driverIcon;
   BitmapDescriptor _destination;
   TextEditingController _searchController;
-  bool options = false;
-  bool suggestedLocation = false;
-  bool workingMap = true;
-  bool lotsMarked = false;
-  bool markerTap = false;
+  bool showLotCards = false;
   bool showCrossHair = false;
   int selectedIndex = 0;
   StreamSubscription<Position> positionStream;
@@ -41,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Marker> _lotMarkers = [];
   Marker driverMarker;
   Marker destinationMarker;
-  List<dynamic> lotsInRadius;
+  List<dynamic> lotsInRadius = [];
 
   @override
   void initState() {
@@ -106,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   print(res.body[i]);
                   setState(() {
                     selectedIndex = i;
-                    suggestedLocation = true;
+                    showLotCards = true;
                   });
                 },
                 icon: _lotIcon,
@@ -140,26 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
         markerId: MarkerId("destination"),
         position: coordinates,
         icon: _destination,
-        draggable: true,
-        onDragEnd: (e) {
-          markerTap = true;
-          getLotsInRadius(e);
-          setState(() {
-            searchPosition = e;
-          });
-          markerTap = false;
-        },
         onTap: () {
           print(searchPosition);
         },
       );
-    });
-  }
-
-  setOptions() {
-    setState(() {
-      this.options = true;
-      this.suggestedLocation = false;
     });
   }
 
@@ -181,11 +160,38 @@ class _HomeScreenState extends State<HomeScreen> {
     _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
   }
 
+  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
+    return AppBar(
+      backgroundColor: themeData.primaryColor,
+      brightness: Brightness.dark,
+      title: Text(appBarTitle),
+      centerTitle: true,
+      leading: GestureDetector(
+        onTap: () {},
+        child: Container(child: Icon(Icons.menu)),
+      ),
+      actions: <Widget>[
+        IconButton(
+          color: Colors.white,
+          onPressed: onPressed,
+          icon: Icon(Icons.exit_to_app),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: Size(MediaQuery.of(context).size.width, 52),
+        child: LocationSearchWidget(
+          callback: locationSearchCallback,
+          controller: _searchController,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: themeData.primaryColor,
-      appBar: mainAppBar(context, "Map", () {
+      appBar: homeAppBar(context, "Map", () {
         context.read<LoginBloc>().add(LogoutEvent());
         locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
       }),
@@ -197,25 +203,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
                   : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
               label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-          BottomNavigationBarItem(icon: Icon(Icons.power, color: Color.fromARGB(255, 0, 0, 0)), label: 'Power'),
-          BottomNavigationBarItem(icon: Icon(Icons.power, color: Color.fromARGB(255, 0, 0, 0)), label: 'Power')
+          BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
+          BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
         ],
         onTap: (index) {
           print(index);
+          if (index == 1) {
+            mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: searchPosition,
+                zoom: 15.0,
+              ),
+            ));
+          } else if (index == 2) {
+            mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: currentLocation,
+                zoom: 14.0,
+              ),
+            ));
+          }
         },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          mapController?.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: currentLocation,
-              zoom: 18.0,
-            ),
-          ));
-        },
-        tooltip: 'Show lots at location',
-        child: new Icon(Icons.gps_fixed),
       ),
       body: SafeArea(
         child: Stack(
@@ -230,40 +238,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     onPointerUp: (e) {
-                      if (!markerTap) {
-                        Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-                            .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
-                            .then((addresses) {
-                          print(addresses.first.addressLine);
-                          setState(() {
-                            _searchController.text = addresses.first.addressLine;
-                          });
-                        });
-                        print("Moved camera, new position is ${searchPosition.toString()}");
-                        destinationMarker = Marker(
-                            markerId: MarkerId("destination"),
-                            position: searchPosition,
-                            icon: _destination,
-                            draggable: true,
-                            onDragEnd: (e) {
-                              getLotsInRadius(e).then((v) {
-                                setState(() {
-                                  searchPosition = e;
-                                });
-                              });
-                            });
+                      Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
+                          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+                          .then((addresses) {
+                        print(addresses.first.addressLine);
                         setState(() {
-                          if (destinationMarker != null) {
-                            print("destinationMarker is not null");
-                            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-                          } else {
-                            print("destination marker is null");
-                            _markers = Set.from([driverMarker] + _lotMarkers);
-                          }
-                          showCrossHair = false;
+                          _searchController.text = addresses.first.addressLine;
                         });
-                        getLotsInRadius(searchPosition);
-                      }
+                      });
+                      print("Moved camera, new position is ${searchPosition.toString()}");
+                      destinationMarker = Marker(
+                        markerId: MarkerId("destination"),
+                        position: searchPosition,
+                        icon: _destination,
+                        draggable: true,
+                      );
+                      setState(() {
+                        if (destinationMarker != null) {
+                          print("destinationMarker is not null");
+                          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+                        } else {
+                          print("destination marker is null");
+                          _markers = Set.from([driverMarker] + _lotMarkers);
+                        }
+                        showCrossHair = false;
+                      });
+                      getLotsInRadius(searchPosition);
                     },
                     child: GoogleMap(
                       mapType: MapType.hybrid,
@@ -274,14 +274,57 @@ class _HomeScreenState extends State<HomeScreen> {
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
                         target: LatLng(1, 1),
-                        zoom: 18.0,
+                        zoom: 15.0,
                       ),
                       markers: _markers,
                     ),
                   ),
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: InkWell(
+                      onTap: resetSearchTerm,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: new BoxDecoration(
+                          color: themeData.primaryColor,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(25.0),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.clear,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 66,
+                    top: 8,
+                    child: InkWell(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: new BoxDecoration(
+                          color: themeData.primaryColor,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(25.0),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.save,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                  ),
                   showCrossHair
                       ? Positioned(
-                          top: MediaQuery.of(context).size.height * .5 - 102.5,
+                          top: MediaQuery.of(context).size.height * .5 - 128.5,
                           left: MediaQuery.of(context).size.width * .5 - 16,
                           child: Icon(
                             Icons.gps_fixed,
@@ -296,91 +339,61 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            Positioned(
-              top: 16,
-              child: PreferredSize(
-                preferredSize: Size(MediaQuery.of(context).size.width, 53),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.transparent,
-                  child: LocationSearchWidget(
-                    callback: locationSearchCallback,
-                    controller: _searchController,
+            lotsInRadius.length != 0
+                ? Positioned(
+                    bottom: SizeConfig.widthMultiplier * 8,
+                    child: SizedBox(
+                      width: SizeConfig.widthMultiplier * 100,
+                      height: SizeConfig.heightMultiplier * 15,
+                      child: PageView(
+                        onPageChanged: (index) {
+                          mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                            CameraPosition(
+                              target: LatLng(lotsInRadius[index]["coordinates"][0], lotsInRadius[index]["coordinates"][1]),
+                              zoom: 17.0,
+                            ),
+                          ));
+                        },
+                        controller: new PageController(),
+                        children: generateLotCards(),
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 0,
+                    height: 0,
                   ),
-                ),
-              ),
-            ),
-            // options
-            //     ? Positioned(
-            //         bottom: SizeConfig.widthMultiplier * 5,
-            //         right: SizeConfig.widthMultiplier * 5,
-            //         child: Row(
-            //           children: <Widget>[
-            //             FloatingActionButton(
-            //               backgroundColor: themeData.secondaryHeaderColor,
-            //               elevation: 3,
-            //               child: Icon(Icons.arrow_back_ios),
-            //               onPressed: () {
-            //                 setState(() {
-            //                   this.options = false;
-            //                 });
-            //                 print(this.options);
-            //               },
-            //             ),
-            //             SizedBox(width: 5),
-            //             FloatingActionButton(
-            //               backgroundColor: themeData.secondaryHeaderColor,
-            //               elevation: 3,
-            //               child: Icon(Icons.center_focus_strong),
-            //               onPressed: () {
-            //                 setState(() {
-            //                   this.options = false;
-            //                 });
-            //                 mapController?.animateCamera(CameraUpdate.newCameraPosition(
-            //                   CameraPosition(
-            //                     target: currentLocation,
-            //                     zoom: 17.0,
-            //                   ),
-            //                 ));
-            //               },
-            //             ),
-            //             SizedBox(width: 5),
-            //             FloatingActionButton(
-            //               backgroundColor: themeData.secondaryHeaderColor,
-            //               elevation: 3,
-            //               child: Icon(Icons.location_on),
-            //               onPressed: () {
-            //                 setState(() {
-            //                   this.options = false;
-            //                   this.suggestedLocation = true;
-            //                 });
-            //               },
-            //             )
-            //           ],
-            //         ),
-            //       )
-            //     : Container(),
-            Positioned(
-              bottom: SizeConfig.widthMultiplier * 22,
-              child: GestureDetector(
-                  onTap: () {
-                    // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ReservationScreen()));
-                  },
-                  child: SuggestedLocationCard(
-                    name: "Name",
-                    address: "lotsInRadius[selectedIndex]",
-                    price: 1,
-                    distance: 1,
-                    // name: lotsInRadius[selectedIndex]["lotId"],
-                    // address: lotsInRadius[selectedIndex]["address"],
-                    // price: double.parse(lotsInRadius[selectedIndex]["pricing"].toString()),
-                    // distance: lotsInRadius[selectedIndex]["distance"],
-                  )),
-            )
           ],
         ),
       ),
     );
+  }
+
+  generateLotCards() {
+    List<Widget> result = [];
+    lotsInRadius.forEach((lot) {
+      result.add(SuggestedLocationCard(
+        name: lot["lotId"],
+        address: lot["address"],
+        price: double.parse(lot["pricing"].toString()),
+        distance: lot["distance"],
+      ));
+    });
+    return result;
+  }
+
+  void resetSearchTerm() {
+    setState(() {
+      _searchController.text = "";
+    });
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: currentLocation,
+        zoom: 15.0,
+      ),
+    ));
+    destinationMarker = null;
+    getLotsInRadius(currentLocation);
   }
 }
 
