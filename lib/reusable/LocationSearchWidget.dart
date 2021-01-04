@@ -9,18 +9,18 @@ import 'package:uuid/uuid.dart';
 import '../serviceLocator.dart';
 
 class LocationSearchWidget extends StatefulWidget {
-  LocationSearchWidget({Key key, this.title, this.callback}) : super(key: key);
+  final TextEditingController controller;
+  LocationSearchWidget({Key key, this.callback, this.controller}) : super(key: key);
   final Function callback;
-  final String title;
 
   @override
-  _LocationSearchWidgetState createState() => _LocationSearchWidgetState(this.callback);
+  _LocationSearchWidgetState createState() => _LocationSearchWidgetState(this.callback, this.controller);
 }
 
 class _LocationSearchWidgetState extends State<LocationSearchWidget> {
-  final _controller = TextEditingController();
+  final _controller;
   final Function callback;
-  _LocationSearchWidgetState(this.callback);
+  _LocationSearchWidgetState(this.callback, this._controller);
   @override
   void dispose() {
     _controller.dispose();
