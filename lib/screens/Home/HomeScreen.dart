@@ -8,6 +8,7 @@ import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _mapStyle;
   GoogleMapController mapController;
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
@@ -46,9 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _searchController = TextEditingController(text: "");
-    // rootBundle.loadString('assets/mapStyle.txt').then((string) {
-    //   _mapStyle = string;
-    // });
+    rootBundle.loadString('assets/mapStyle.txt').then((string) {
+      _mapStyle = string;
+    });
     _setMarkerIcon();
     Geolocator.isLocationServiceEnabled().then((bool value) {
       if (value) {
@@ -131,9 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    // setState(() {
-    //   mapController.setMapStyle(_mapStyle);
-    // });
+    setState(() {
+      mapController.setMapStyle(_mapStyle);
+    });
   }
 
   setSearchPositionMarker(LatLng coordinates) {
@@ -162,33 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
   }
 
-  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
-    return AppBar(
-      backgroundColor: themeData.primaryColor,
-      brightness: Brightness.dark,
-      title: Text(appBarTitle),
-      centerTitle: true,
-      leading: GestureDetector(
-        onTap: () {},
-        child: Container(child: Icon(Icons.menu)),
-      ),
-      actions: <Widget>[
-        IconButton(
-          color: Colors.white,
-          onPressed: onPressed,
-          icon: Icon(Icons.exit_to_app),
-        ),
-      ],
-      bottom: PreferredSize(
-        preferredSize: Size(MediaQuery.of(context).size.width, 52),
-        child: LocationSearchWidget(
-          callback: locationSearchCallback,
-          controller: _searchController,
-        ),
-      ),
-    );
-  }
-
   void autoCompleteWidgetAction() {
     if (destinationLocked) {
       setState(() {
@@ -215,6 +190,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Text("Header"),
+            ),
+            ListTile(
+              title: Text("Home"),
+            )
+          ],
+        ),
+      ),
       backgroundColor: themeData.primaryColor,
       appBar: homeAppBar(context, "Map", () {
         context.read<LoginBloc>().add(LogoutEvent());
@@ -240,45 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
                 BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
               ],
-        onTap: (index) {
-          print(index);
-          if (destinationPosition != null) {
-            if (index == 0) {
-              setState(() {
-                showLotCards = !showLotCards;
-              });
-            } else if (index == 1) {
-              if (destinationPosition != null) {
-                mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: destinationPosition,
-                    zoom: 15.0,
-                  ),
-                ));
-              }
-            } else if (index == 2) {
-              mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: currentLocation,
-                  zoom: 14.0,
-                ),
-              ));
-            }
-          } else {
-            if (index == 0) {
-              setState(() {
-                showLotCards = !showLotCards;
-              });
-            } else if (index == 1) {
-              mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: currentLocation,
-                  zoom: 14.0,
-                ),
-              ));
-            }
-          }
-        },
+        onTap: bottomNavBarCallBack,
       ),
       body: SafeArea(
         child: Stack(
@@ -287,45 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Stack(
                 children: [
                   Listener(
-                    onPointerDown: (e) {
-                      if (!destinationLocked) {
-                        setState(() {
-                          showCrossHair = true;
-                        });
-                      }
-                    },
-                    onPointerUp: (e) {
-                      if (!destinationLocked) {
-                        Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-                            .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
-                            .then((addresses) {
-                          print(addresses.first.addressLine);
-                          setState(() {
-                            _searchController.text = addresses.first.addressLine;
-                          });
-                        });
-                        print("Moved camera, new position is ${searchPosition.toString()}");
-                        destinationMarker = Marker(
-                          markerId: MarkerId("destination"),
-                          position: searchPosition,
-                          icon: _destination,
-                          draggable: true,
-                        );
-                        setState(() {
-                          if (destinationMarker != null) {
-                            print("destinationMarker is not null");
-                            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-                          } else {
-                            print("destination marker is null");
-                            _markers = Set.from([driverMarker] + _lotMarkers);
-                          }
-                          showCrossHair = false;
-                        });
-                        getLotsInRadius(searchPosition);
-                      }
-                    },
+                    onPointerDown: mapOnPointerDown,
+                    onPointerUp: mapOnPointerUp,
                     child: GoogleMap(
-                      mapType: MapType.hybrid,
                       onCameraMove: _onCameraMove,
                       myLocationButtonEnabled: true,
                       mapToolbarEnabled: false,
@@ -407,6 +321,115 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
+    return AppBar(
+      backgroundColor: themeData.primaryColor,
+      brightness: Brightness.dark,
+      title: Text(appBarTitle),
+      centerTitle: true,
+      leading: Builder(
+          builder: (context) => InkWell(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: Container(child: Icon(Icons.menu)),
+              )),
+      actions: <Widget>[
+        IconButton(
+          color: Colors.white,
+          onPressed: onPressed,
+          icon: Icon(Icons.exit_to_app),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: Size(MediaQuery.of(context).size.width, 52),
+        child: LocationSearchWidget(
+          callback: locationSearchCallback,
+          controller: _searchController,
+        ),
+      ),
+    );
+  }
+
+  void bottomNavBarCallBack(index) {
+    print(index);
+    if (destinationPosition != null) {
+      if (index == 0) {
+        setState(() {
+          showLotCards = !showLotCards;
+        });
+      } else if (index == 1) {
+        if (destinationPosition != null) {
+          mapController?.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: destinationPosition,
+              zoom: 15.0,
+            ),
+          ));
+        }
+      } else if (index == 2) {
+        mapController?.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: currentLocation,
+            zoom: 14.0,
+          ),
+        ));
+      }
+    } else {
+      if (index == 0) {
+        setState(() {
+          showLotCards = !showLotCards;
+        });
+      } else if (index == 1) {
+        mapController?.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: currentLocation,
+            zoom: 14.0,
+          ),
+        ));
+      }
+    }
+  }
+
+  void mapOnPointerDown(e) {
+    if (!destinationLocked) {
+      setState(() {
+        showCrossHair = true;
+      });
+    }
+  }
+
+  void mapOnPointerUp(e) {
+    if (!destinationLocked) {
+      Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
+          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+          .then((addresses) {
+        print(addresses.first.addressLine);
+        setState(() {
+          _searchController.text = addresses.first.addressLine;
+        });
+      });
+      print("Moved camera, new position is ${searchPosition.toString()}");
+      destinationMarker = Marker(
+        markerId: MarkerId("destination"),
+        position: searchPosition,
+        icon: _destination,
+        draggable: true,
+      );
+      setState(() {
+        if (destinationMarker != null) {
+          print("destinationMarker is not null");
+          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+        } else {
+          print("destination marker is null");
+          _markers = Set.from([driverMarker] + _lotMarkers);
+        }
+        showCrossHair = false;
+      });
+      getLotsInRadius(searchPosition);
+    }
   }
 
   generateLotCards() {
