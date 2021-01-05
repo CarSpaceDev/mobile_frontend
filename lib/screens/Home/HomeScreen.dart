@@ -28,15 +28,19 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _searchController;
   bool showLotCards = false;
   bool showCrossHair = false;
+  bool destinationLocked = false;
+  bool destinationSearchMode = false;
   int selectedIndex = 0;
   StreamSubscription<Position> positionStream;
   LatLng currentLocation;
   LatLng searchPosition;
+  LatLng destinationPosition;
   Set<Marker> _markers = HashSet<Marker>();
   List<Marker> _lotMarkers = [];
   Marker driverMarker;
   Marker destinationMarker;
   List<dynamic> lotsInRadius = [];
+  PageController _pageController = new PageController();
 
   @override
   void initState() {
@@ -82,7 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
       print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
     } else {
       mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
-      getLotsInRadius(location);
+      if (destinationSearchMode) {
+      } else {
+        getLotsInRadius(location);
+      }
     }
     currentLocation = LatLng(location.latitude, location.longitude);
   }
@@ -100,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   print(res.body[i]);
                   setState(() {
-                    selectedIndex = i;
                     showLotCards = true;
                   });
+                  _pageController.jumpToPage(i);
                 },
                 icon: _lotIcon,
                 position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
@@ -130,16 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   setSearchPositionMarker(LatLng coordinates) {
-    setState(() {
-      destinationMarker = Marker(
-        markerId: MarkerId("destination"),
-        position: coordinates,
-        icon: _destination,
-        onTap: () {
-          print(searchPosition);
-        },
-      );
-    });
+    destinationMarker = Marker(
+      markerId: MarkerId("destination"),
+      position: coordinates,
+      icon: _destination,
+    );
   }
 
   locationSearchCallback(LocationSearchResult data) {
@@ -187,6 +189,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void autoCompleteWidgetAction() {
+    if (destinationLocked) {
+      setState(() {
+        destinationLocked = false;
+        _searchController.text = "";
+      });
+      mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: currentLocation,
+          zoom: 15.0,
+        ),
+      ));
+      destinationMarker = null;
+      getLotsInRadius(currentLocation);
+    } else {
+      if (_searchController.text != "")
+        setState(() {
+          destinationLocked = true;
+          destinationPosition = searchPosition;
+        });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,31 +222,61 @@ class _HomeScreenState extends State<HomeScreen> {
       }),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-              icon: lotsInRadius.length == 0
-                  ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                  : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-              label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-          BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
-          BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
-        ],
+        items: destinationPosition != null
+            ? [
+                BottomNavigationBarItem(
+                    icon: lotsInRadius.length == 0
+                        ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
+                        : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                    label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+                BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
+                BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
+              ]
+            : [
+                BottomNavigationBarItem(
+                    icon: lotsInRadius.length == 0
+                        ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
+                        : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                    label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+                BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
+              ],
         onTap: (index) {
           print(index);
-          if (index == 1) {
-            mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: searchPosition,
-                zoom: 15.0,
-              ),
-            ));
-          } else if (index == 2) {
-            mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: currentLocation,
-                zoom: 14.0,
-              ),
-            ));
+          if (destinationPosition != null) {
+            if (index == 0) {
+              setState(() {
+                showLotCards = !showLotCards;
+              });
+            } else if (index == 1) {
+              if (destinationPosition != null) {
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: destinationPosition,
+                    zoom: 15.0,
+                  ),
+                ));
+              }
+            } else if (index == 2) {
+              mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: currentLocation,
+                  zoom: 14.0,
+                ),
+              ));
+            }
+          } else {
+            if (index == 0) {
+              setState(() {
+                showLotCards = !showLotCards;
+              });
+            } else if (index == 1) {
+              mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: currentLocation,
+                  zoom: 14.0,
+                ),
+              ));
+            }
           }
         },
       ),
@@ -233,37 +288,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Listener(
                     onPointerDown: (e) {
-                      setState(() {
-                        showCrossHair = true;
-                      });
+                      if (!destinationLocked) {
+                        setState(() {
+                          showCrossHair = true;
+                        });
+                      }
                     },
                     onPointerUp: (e) {
-                      Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-                          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
-                          .then((addresses) {
-                        print(addresses.first.addressLine);
-                        setState(() {
-                          _searchController.text = addresses.first.addressLine;
+                      if (!destinationLocked) {
+                        Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
+                            .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+                            .then((addresses) {
+                          print(addresses.first.addressLine);
+                          setState(() {
+                            _searchController.text = addresses.first.addressLine;
+                          });
                         });
-                      });
-                      print("Moved camera, new position is ${searchPosition.toString()}");
-                      destinationMarker = Marker(
-                        markerId: MarkerId("destination"),
-                        position: searchPosition,
-                        icon: _destination,
-                        draggable: true,
-                      );
-                      setState(() {
-                        if (destinationMarker != null) {
-                          print("destinationMarker is not null");
-                          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-                        } else {
-                          print("destination marker is null");
-                          _markers = Set.from([driverMarker] + _lotMarkers);
-                        }
-                        showCrossHair = false;
-                      });
-                      getLotsInRadius(searchPosition);
+                        print("Moved camera, new position is ${searchPosition.toString()}");
+                        destinationMarker = Marker(
+                          markerId: MarkerId("destination"),
+                          position: searchPosition,
+                          icon: _destination,
+                          draggable: true,
+                        );
+                        setState(() {
+                          if (destinationMarker != null) {
+                            print("destinationMarker is not null");
+                            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+                          } else {
+                            print("destination marker is null");
+                            _markers = Set.from([driverMarker] + _lotMarkers);
+                          }
+                          showCrossHair = false;
+                        });
+                        getLotsInRadius(searchPosition);
+                      }
                     },
                     child: GoogleMap(
                       mapType: MapType.hybrid,
@@ -283,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     right: 8,
                     top: 8,
                     child: InkWell(
-                      onTap: resetSearchTerm,
+                      onTap: autoCompleteWidgetAction,
                       child: Container(
                         width: 50,
                         height: 50,
@@ -293,32 +352,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             Radius.circular(25.0),
                           ),
                         ),
-                        child: Icon(
-                          Icons.clear,
-                          color: Colors.white,
-                          size: 25,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 66,
-                    top: 8,
-                    child: InkWell(
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: new BoxDecoration(
-                          color: themeData.primaryColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(25.0),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.save,
-                          color: Colors.white,
-                          size: 25,
-                        ),
+                        child: destinationLocked
+                            ? Icon(Icons.clear, color: Colors.white, size: 25)
+                            : Icon(
+                                Icons.save,
+                                color: Colors.white,
+                                size: 25,
+                              ),
                       ),
                     ),
                   ),
@@ -339,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            lotsInRadius.length != 0
+            lotsInRadius.length != 0 && showLotCards
                 ? Positioned(
                     bottom: SizeConfig.widthMultiplier * 8,
                     child: SizedBox(
@@ -354,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ));
                         },
-                        controller: new PageController(),
+                        controller: _pageController,
                         children: generateLotCards(),
                       ),
                     ),
@@ -377,23 +417,12 @@ class _HomeScreenState extends State<HomeScreen> {
         address: lot["address"],
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
+        callback: () {
+          print(lot["lotId"]);
+        },
       ));
     });
     return result;
-  }
-
-  void resetSearchTerm() {
-    setState(() {
-      _searchController.text = "";
-    });
-    mapController?.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-        target: currentLocation,
-        zoom: 15.0,
-      ),
-    ));
-    destinationMarker = null;
-    getLotsInRadius(currentLocation);
   }
 }
 
@@ -402,13 +431,8 @@ class SuggestedLocationCard extends StatelessWidget {
   final String address;
   final double price;
   final double distance;
-  SuggestedLocationCard({
-    Key key,
-    this.name,
-    this.address,
-    this.price,
-    this.distance,
-  }) : super(key: key);
+  final Function callback;
+  SuggestedLocationCard({Key key, this.name, this.address, this.price, this.distance, this.callback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -447,9 +471,10 @@ class SuggestedLocationCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  Text("${price.toStringAsFixed(2)}/hour")
+                  InkWell(onTap: callback, child: Text("Select Lot", style: TextStyle(fontSize: 16))),
+                  Text("${price.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
                 ],
-              )
+              ),
             ],
           ),
         ),
