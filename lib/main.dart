@@ -48,10 +48,10 @@ class CarSpaceApp extends StatelessWidget {
               navigatorKey: locator<NavigationService>().navigatorKey,
               onGenerateRoute: generateRoute,
               initialRoute: InitializationRoute),
-          //   MaterialApp(
-          // debugShowCheckedModeBanner: false,
-          // home: HomeScreen(),
-          // )
+          //     MaterialApp(
+          //   debugShowCheckedModeBanner: false,
+          //   home: HomeScreen(),
+          // ),
         );
       });
     });

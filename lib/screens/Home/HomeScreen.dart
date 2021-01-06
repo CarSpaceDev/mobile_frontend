@@ -197,11 +197,20 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text("Header"),
+              child: Text("Profile"),
             ),
             ListTile(
-              title: Text("Home"),
-            )
+              title: Text("Notifications"),
+            ),
+            ListTile(
+              title: Text("Vehicles"),
+            ),
+            ListTile(
+              title: Text("Reservations"),
+            ),
+            ListTile(
+              title: Text("Sign Out"),
+            ),
           ],
         ),
       ),
@@ -346,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           color: Colors.white,
           onPressed: onPressed,
-          icon: Icon(Icons.exit_to_app),
+          icon: Icon(Icons.email),
         ),
       ],
       bottom: PreferredSize(
