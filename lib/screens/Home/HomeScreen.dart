@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:android_intent/android_intent.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
@@ -190,6 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawerEnableOpenDragGesture: false,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -205,31 +207,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: themeData.primaryColor,
       appBar: homeAppBar(context, "Map", () {
-        context.read<LoginBloc>().add(LogoutEvent());
         locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+        context.read<LoginBloc>().add(LogoutEvent());
       }),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: destinationPosition != null
-            ? [
-                BottomNavigationBarItem(
-                    icon: lotsInRadius.length == 0
-                        ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                        : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                    label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-                BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
-                BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
-              ]
-            : [
-                BottomNavigationBarItem(
-                    icon: lotsInRadius.length == 0
-                        ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                        : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                    label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-                BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
-              ],
-        onTap: bottomNavBarCallBack,
-      ),
+      bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
         child: Stack(
           children: [
@@ -320,6 +301,31 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  BottomNavigationBar homeBottomNavBar() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      items: destinationPosition != null
+          ? [
+              BottomNavigationBarItem(
+                  icon: lotsInRadius.length == 0
+                      ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
+                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
+              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
+            ]
+          : [
+              BottomNavigationBarItem(
+                  icon: lotsInRadius.length == 0
+                      ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
+                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
+            ],
+      onTap: bottomNavBarCallBack,
     );
   }
 
@@ -441,11 +447,18 @@ class _HomeScreenState extends State<HomeScreen> {
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
         callback: () {
-          print(lot["lotId"]);
+          print("calling intent");
+          navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
         },
       ));
     });
     return result;
+  }
+
+  navigateViaGoogleMaps(double lat, double lng) {
+    final AndroidIntent intent =
+        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    intent.launch();
   }
 }
 

@@ -40,6 +40,7 @@ dependencies:
   fdottedline: 1.0.1
   flutter_material_pickers: 1.8.1
   location_permissions: ^3.0.0
+  android_intent: ^0.3.7+7
 dev_dependencies:
   flutter_test:
     sdk: flutter

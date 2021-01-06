@@ -82,23 +82,26 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   _showWaiting(String message) {
     return showDialog(
         context: context,
-        builder: (BuildContext context) => Container(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32.0),
-                      child: Text(
-                        message,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+        builder: (BuildContext context) => Material(
+              color: Colors.transparent,
+              child: Container(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32.0),
+                        child: Text(
+                          message,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
                       ),
-                    ),
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: themeData.primaryColor,
-                    ),
-                  ],
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        backgroundColor: themeData.primaryColor,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ));
