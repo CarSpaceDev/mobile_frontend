@@ -30,6 +30,8 @@ class LoginError extends LoginState {
 
 //V2 Usage
 class ShowVehicleRegistration extends LoginState {
+  final bool fromHomeScreen;
+  ShowVehicleRegistration({this.fromHomeScreen});
   @override
   List<Object> get props => [];
 }
@@ -38,6 +40,7 @@ class LoginInProgress extends LoginState {
   @override
   List<Object> get props => [];
 }
+
 //V2 Usage
 class AuthorizationSuccess extends LoginState {
   @override
@@ -106,7 +109,6 @@ class WaitingLogin extends LoginState {
   @override
   List<Object> get props => [message];
 }
-
 
 class NavToLandingPage extends LoginState {
   @override

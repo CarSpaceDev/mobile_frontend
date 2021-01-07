@@ -39,8 +39,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = await authService.currentUser();
       if (user != null) {
         //case where a user is in the google auth cache
-        var userFromApi =
-            (await apiService.checkExistence(uid: user.uid)).body["data"];
+        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
         print(userFromApi);
         //todo fix the CSUser.fromJSON function
         if (userFromApi == null) {
@@ -73,8 +72,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is GeneratePhoneCodeEvent) {
       User user = await authService.currentUser();
       yield WaitingLogin(message: "Generating code");
-      var result = await apiService.generateCode(
-          uid: user.uid, phoneNumber: event.phoneNumber);
+      var result = await apiService.generateCode(uid: user.uid, phoneNumber: event.phoneNumber);
       if (result.statusCode == 200) {
         yield ShowPhoneCodeConfirmScreen();
       }
@@ -93,12 +91,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       print(payload);
       print("Sending payload");
       yield WaitingLogin(message: "Adding vehicle");
-      Response res = await apiService.addVehicle(
-          (await authService.currentUser()).uid, payload);
+      Response res = await apiService.addVehicle((await authService.currentUser()).uid, payload);
       print(res.body);
       print(res.statusCode);
       if (res.statusCode == 201) {
-        navService.pushReplaceNavigateTo(HomeRoute);
+        if (event.fromHomeScreen) {
+          navService.goBack();
+        } else {
+          navService.pushReplaceNavigateTo(HomeRoute);
+        }
       } else
         yield LoginError(message: res.error.toString());
     }
@@ -126,8 +127,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is ConfirmPhoneCodeEvent) {
       User user = await authService.currentUser();
       yield WaitingLogin(message: "Confirming code");
-      var result =
-          await apiService.confirmCode(uid: user.uid, code: event.code);
+      var result = await apiService.confirmCode(uid: user.uid, code: event.code);
       if (result.statusCode == 200) {
         print("Code confirmed");
         User currentUser = await authService.currentUser();
@@ -140,12 +140,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     }
     //V2 Update
+    else if (event is NavigateToVehicleAddEvent) {
+      yield ShowVehicleRegistration(fromHomeScreen: true);
+    }
+    //V2 Update
     else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
       User user = await authService.loginGoogle();
       //case where a user is in the google auth cache
-      var userFromApi =
-          (await apiService.checkExistence(uid: user.uid)).body["data"];
+      var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
       if (userFromApi == null) {
         //if said user is not registered in db
         yield ShowEulaScreen();
@@ -163,11 +166,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         User user = await authService.currentUser();
         CSUser userData;
         if (user == null) {
-          user = await authService.signInWithEmail(
-              event.payload.email, event.payload.password);
+          user = await authService.signInWithEmail(event.payload.email, event.payload.password);
         }
-        var userFromApi =
-            (await apiService.checkExistence(uid: user.uid)).body["data"];
+        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
         print(userFromApi);
         userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
@@ -178,8 +179,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //todo [JESURY] check for missing data
     else if (event is LogInEmailEvent) {
       yield LoginInProgress();
-      CSUser user =
-          await authService.signInWithEmail(event.email, event.password);
+      CSUser user = await authService.signInWithEmail(event.email, event.password);
       print(user.toJson());
       print(user != null);
       if (user != null) {
@@ -196,8 +196,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginState result;
     if (user.phoneNumber == null) {
       result = ShowPhoneNumberInputScreen();
-    }
-        else if (user.vehicles.length == 0) {
+    } else if (user.vehicles.length == 0) {
       var userSettings = cache.get(user.emailAddress);
       print(userSettings);
       if (userSettings == null) {

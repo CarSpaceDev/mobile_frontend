@@ -51,8 +51,9 @@ class AddVehicleEvent extends LoginEvent {
   final String CR;
   final String make;
   final String model;
+  final bool fromHomeScreen;
   // ignore: non_constant_identifier_names
-  AddVehicleEvent({this.plateNumber, this.type, this.color, this.OR, this.CR, this.make, this.model});
+  AddVehicleEvent({this.plateNumber, this.type, this.color, this.OR, this.CR, this.make, this.model, this.fromHomeScreen});
   @override
   List<Object> get props => [plateNumber, type, color, OR, CR, make, model];
 }
@@ -103,6 +104,11 @@ class AuthorizationSuccessEvent extends LoginEvent {
 }
 
 class NavigateToRegisterEvent extends LoginEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToVehicleAddEvent extends LoginEvent {
   @override
   List<Object> get props => [];
 }

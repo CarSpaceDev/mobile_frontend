@@ -75,7 +75,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
           }
           //V2 Update
           else if (state is ShowVehicleRegistration) {
-            return VehicleRegistrationScreen();
+            return VehicleRegistrationScreen(fromHomeScreen: state.fromHomeScreen);
           } else if (state is NavToRegister)
             return RegistrationScreen();
           else if (state is NavToTestPage) {

@@ -1,7 +1,6 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
-import 'package:carspace/screens/add_vehicle.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +44,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       gUid = _auth.currentUser.uid;
       var name = _auth.currentUser.displayName.split(" ");
       _firstNameController = TextEditingController(text: name[0]);
-      _lastNameController =
-          TextEditingController(text: name[1] != null ? name[1] : "");
+      _lastNameController = TextEditingController(text: name[1] != null ? name[1] : "");
       _emailController = TextEditingController(text: _auth.currentUser.email);
       _licenseExpiryController = TextEditingController(text: "");
     } else {
@@ -58,8 +56,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _passwordController = TextEditingController(text: "");
       _passwordConfirmController = TextEditingController(text: "");
     }
-    inputStyle = TextStyle(
-        fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold);
+    inputStyle = TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.bold);
   }
 
   @override
@@ -78,8 +75,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       appBar: arrowForwardAppBarWidget(context, "Register account", () {
         restartRegistration(context);
       }),
-      bottomNavigationBar: SizedBox(
-          child: _nextButton()),
+      bottomNavigationBar: SizedBox(child: _nextButton()),
       body: SafeArea(
         child: Stack(children: [
           Positioned(
@@ -87,19 +83,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               height: 150,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(20.0),
-                    bottomLeft: Radius.circular(20.0)),
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF1a237e), Color(0xFF000051)]),
+                borderRadius: BorderRadius.only(bottomRight: Radius.circular(20.0), bottomLeft: Radius.circular(20.0)),
+                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1a237e), Color(0xFF000051)]),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(
-                top: 10.0, left: 8.0, right: 8.0, bottom: 8.0),
+            padding: const EdgeInsets.only(top: 10.0, left: 8.0, right: 8.0, bottom: 8.0),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
@@ -107,9 +97,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               child: SingleChildScrollView(
                 child: Column(children: [
                   licenseUploadDetails(context),
-                  gUid != null
-                      ? driverInformationWOPass()
-                      : driverInformationWPass(),
+                  gUid != null ? driverInformationWOPass() : driverInformationWPass(),
                 ]),
               ),
             ),
@@ -129,37 +117,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                child: Text('Driver\'s Information',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                child: Text('Driver\'s Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
-            reusableInput(
-                controller: _firstNameController,
-                hintText: "First Name*",
-                fn: _firstNameFN,
-                nextFn: _lastNameFN),
-            reusableInput(
-                controller: _lastNameController,
-                hintText: "Last Name*",
-                fn: _lastNameFN,
-                nextFn: _emailFN),
-            emailInput(
-                controller: _emailController,
-                hintText: "Email address*",
-                fn: _emailFN,
-                nextFn: _pass1FN),
-            reusableInput(
-                controller: _passwordController,
-                hintText: "Password*",
-                fn: _pass1FN,
-                nextFn: _pass2FN,
-                password: true),
-            reusableInput(
-                controller: _passwordConfirmController,
-                hintText: "Confirm Password*",
-                fn: _pass2FN,
-                password: true),
+            reusableInput(controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
+            reusableInput(controller: _lastNameController, hintText: "Last Name*", fn: _lastNameFN, nextFn: _emailFN),
+            emailInput(controller: _emailController, hintText: "Email address*", fn: _emailFN, nextFn: _pass1FN),
+            reusableInput(controller: _passwordController, hintText: "Password*", fn: _pass1FN, nextFn: _pass2FN, password: true),
+            reusableInput(controller: _passwordConfirmController, hintText: "Confirm Password*", fn: _pass2FN, password: true),
           ],
         ),
       ),
@@ -176,24 +141,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                child: Text('Driver\'s Information',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                child: Text('Driver\'s Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
-            reusableInput(
-                controller: _firstNameController,
-                hintText: "First Name*",
-                fn: _firstNameFN,
-                nextFn: _lastNameFN),
-            reusableInput(
-                controller: _lastNameController,
-                hintText: "Last Name*",
-                fn: _lastNameFN),
-            reusableInput(
-                controller: _emailController,
-                hintText: "Email address*",
-                enabled: gUid != null ? false : true),
+            reusableInput(controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
+            reusableInput(controller: _lastNameController, hintText: "Last Name*", fn: _lastNameFN),
+            reusableInput(controller: _emailController, hintText: "Email address*", enabled: gUid != null ? false : true),
           ],
         ),
       ),
@@ -212,8 +165,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               padding: const EdgeInsets.all(20.0),
               child: AspectRatio(
                 aspectRatio: 92 / 60,
-                child: ImageUploadWidget(92 / 60, saveUrl,
-                    prompt: "Upload photo of license"),
+                child: ImageUploadWidget(92 / 60, saveUrl, prompt: "Upload photo of license"),
               ),
             ),
             Padding(
@@ -245,23 +197,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void setExpiry(BuildContext context) {
-    showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime.now(),
-            lastDate: new DateTime.now().add(Duration(days: 365 * 10)))
+    showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: new DateTime.now().add(Duration(days: 365 * 10)))
         .then((value) {
       _licenseExpiryController.text = value.toString().substring(0, 10);
     });
   }
 
-  Padding reusableInput(
-      {TextEditingController controller,
-      String hintText,
-      bool enabled,
-      FocusNode fn,
-      FocusNode nextFn,
-      bool password}) {
+  Padding reusableInput({TextEditingController controller, String hintText, bool enabled, FocusNode fn, FocusNode nextFn, bool password}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
@@ -287,12 +229,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Padding emailInput(
-      {TextEditingController controller,
-      String hintText,
-      bool enabled,
-      FocusNode fn,
-      FocusNode nextFn}) {
+  Padding emailInput({TextEditingController controller, String hintText, bool enabled, FocusNode fn, FocusNode nextFn}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
@@ -312,9 +249,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                     ),
                   ));
-          locator<ApiService>()
-              .checkEmailUsage(email: controller.text)
-              .then((value) {
+          locator<ApiService>().checkEmailUsage(email: controller.text).then((value) {
             if (value.body["data"]) {
               Navigator.of(context).pop();
               _showErrorDialog("This email is already in use");
@@ -357,14 +292,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       child: OutlineButton(
         splashColor: Colors.grey,
         onPressed: () {
-          // submitData(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddVehicle()),
-          );
+          submitData(context);
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => AddVehicle()),
+          // );
         },
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
         borderSide: BorderSide(color: Colors.black),
         child: Text(
           'Save',
@@ -412,8 +346,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: new Text("Proceed with registration?"),
-          content:
-              new Text("I confirm that all information entered is correct."),
+          content: new Text("I confirm that all information entered is correct."),
           actions: <Widget>[
             new FlatButton(
               child: new Text("Cancel"),
@@ -501,8 +434,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       } else if (_lastNameController.text.isEmpty) {
         _showErrorDialog('Please enter your first name');
         return false;
-      } else if (_passwordController.text.isEmpty ||
-          _passwordConfirmController.text.isEmpty) {
+      } else if (_passwordController.text.isEmpty || _passwordConfirmController.text.isEmpty) {
         _showErrorDialog('Password fields must not be empty');
         return false;
       } else if (_passwordController.text != _passwordConfirmController.text) {
@@ -533,14 +465,7 @@ class RegistrationPayload {
   String licenseImage;
   DateTime licenseExpiry;
   String gUid;
-  RegistrationPayload(
-      {this.firstName,
-      this.lastName,
-      this.email,
-      this.password,
-      this.licenseImage,
-      String licenseExpiry,
-      this.gUid}) {
+  RegistrationPayload({this.firstName, this.lastName, this.email, this.password, this.licenseImage, String licenseExpiry, this.gUid}) {
     this.licenseExpiry = DateTime.parse(licenseExpiry);
   }
 

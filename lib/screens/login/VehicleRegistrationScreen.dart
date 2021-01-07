@@ -7,11 +7,14 @@ import 'package:provider/provider.dart';
 import '../../blocs/login/login_bloc.dart';
 
 class VehicleRegistrationScreen extends StatefulWidget {
+  final bool fromHomeScreen;
+  VehicleRegistrationScreen({this.fromHomeScreen});
   @override
-  _VehicleRegistrationScreenState createState() => _VehicleRegistrationScreenState();
+  _VehicleRegistrationScreenState createState() => _VehicleRegistrationScreenState(this.fromHomeScreen);
 }
 
 class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
+  bool fromHomeScreen;
   TextEditingController _plateNumberController;
   TextEditingController _vehicleMake;
   TextEditingController _vehicleModel;
@@ -28,6 +31,10 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   List<String> colors;
   TextStyle style;
   TextStyle hStyle;
+
+  _VehicleRegistrationScreenState(bool v) {
+    this.fromHomeScreen = v != null ? v : false;
+  }
 
   @override
   void initState() {
@@ -66,23 +73,25 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
         leading: IconButton(
           color: Colors.white,
           onPressed: () {
-            backToLogin(context);
+            fromHomeScreen ? showCancelDialog(context) : backToLogin(context);
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
-        actions: [
-          Center(
-            child: InkWell(
-              onTap: () {
-                showSkipDialog(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
-                child: Text("Skip", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          )
-        ],
+        actions: fromHomeScreen
+            ? null
+            : [
+                Center(
+                  child: InkWell(
+                    onTap: () {
+                      showSkipDialog(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                      child: Text("Skip", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                )
+              ],
         centerTitle: true,
         title: Text(
           "CarSpace",
@@ -332,7 +341,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Next',
+              fromHomeScreen ? "Save" : 'Next',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -396,6 +405,35 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
       },
     )) {
       context.read<LoginBloc>().add(SkipVehicleAddEvent());
+    }
+  }
+
+  showCancelDialog(BuildContext context) async {
+    if (await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Cancel vehicle registration"),
+          content: new Text("Are you sure you want to cancel vehicle registration?"),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: new Text("Sure"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    )) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -486,7 +524,8 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
             model: _vehicleModel.text,
             color: pColor,
             OR: orImageUrl,
-            CR: crImageUrl));
+            CR: crImageUrl,
+            fromHomeScreen: fromHomeScreen));
         // }
       }
     }

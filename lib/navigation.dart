@@ -1,4 +1,5 @@
 import 'package:carspace/screens/Home/HomeScreen.dart';
+import 'package:carspace/screens/Home/VehicleManagementScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
 import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ const String InitializationRoute = '/init';
 const String FilterRoute = '/filter';
 const String SettingsRoute = '/settings';
 const String NotificationsRoute = '/notifications';
+const String VehicleManagement = '/vehicle-manage';
 const String HomeRoute = '/home';
 
 // ignore: missing_return
@@ -21,6 +23,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(LoginBlocHandler(), settings);
     case HomeRoute:
       return _getPageRoute(HomeScreen(), settings);
+    case VehicleManagement:
+      return _getPageRoute(VehicleManagementScreen(), settings);
   }
 }
 
