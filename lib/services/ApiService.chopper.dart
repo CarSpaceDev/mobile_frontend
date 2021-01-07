@@ -42,6 +42,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> checkEmailUsage({String email}) {
+    final $url = '/user/exists/$email';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> registerViaGoogle({String uid}) {
     final $url = '/user/register/google/$uid';
     final $request = Request('PATCH', $url, client.baseUrl);
@@ -78,8 +85,16 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> getLotsInRadius(
+      {double latitude, double longitude, double kmRadius}) {
+    final $url = '/partner/radius/$latitude/$longitude/$kmRadius';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> registerUser(Map<String, dynamic> body) {
-    final $url = '/user/register';
+    final $url = '/user/register/true';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
@@ -98,6 +113,14 @@ class _$ApiService extends ApiService {
     final $url = '/resource/lot/from-radius';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> deleteImage(Map<String, dynamic> body) {
+    final $url = '/upload/remove';
+    final $body = body;
+    final $request = Request('PUT', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
   }
 }

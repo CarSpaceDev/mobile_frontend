@@ -39,7 +39,7 @@ class CSUser {
       this.dateCreated,
       this.dateUpdated});
 
-  CSUser.fromUser(User v){
+  CSUser.fromUser(User v) {
     this.uid = v.uid;
     this.phoneNumber = v.phoneNumber;
     this.displayName = v.displayName;
@@ -61,9 +61,7 @@ class CSUser {
         userAccess = json['userAccess'] as int,
         subscriptionType = json['subscriptionType'] as String,
         reservations = json['reservations'] as List<dynamic>,
-        vehicles = json['vehicles'] as List<dynamic>,
-        dateCreated = DateTime.parse(json['dateCreated'] as String),
-        dateUpdated = DateTime.parse(json['dateUpdated'] as String);
+        vehicles = json['vehicles'] as List<dynamic>;
 
   Map<String, dynamic> toJson() {
     return {

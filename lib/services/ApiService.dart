@@ -20,8 +20,7 @@ abstract class ApiService extends ChopperService {
 //  Future<Response> getPost(@Path('id') int id);
 
   @Post(path: '/user/requestUserInfo')
-  Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt,
-      @Body() Map<String, dynamic> body);
+  Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt, @Body() Map<String, dynamic> body);
 
   @Get(path: '/resource/init/{hash}')
   Future<Response> requestInitData({@Path('hash') String hash});
@@ -29,25 +28,28 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/user/google/{uid}')
   Future<Response> checkExistence({@Path('uid') String uid});
 
+  @Get(path: '/user/exists/{email}')
+  Future<Response> checkEmailUsage({@Path('email') String email});
+
   @Patch(path: '/user/register/google/{uid}')
   Future<Response> registerViaGoogle({@Path('uid') String uid});
 
   @Patch(path: '/user/generatecode/{uid}/{phoneNumber}')
-  Future<Response> generateCode(
-      {@Path('uid') String uid, @Path('phoneNumber') String phoneNumber});
+  Future<Response> generateCode({@Path('uid') String uid, @Path('phoneNumber') String phoneNumber});
 
   @Patch(path: '/user/confirmcode/{uid}/{code}')
-  Future<Response> confirmCode(
-      {@Path('uid') String uid, @Path('code') String code});
+  Future<Response> confirmCode({@Path('uid') String uid, @Path('code') String code});
 
   @Post(path: '/user/addVehicle/{uid}')
-  Future<Response> addVehicle(
-      @Path('uid') uid, @Body() Map<String, dynamic> body);
+  Future<Response> addVehicle(@Path('uid') uid, @Body() Map<String, dynamic> body);
 
   @Get(path: '/user/all')
   Future<Response> getAllUser();
 
-  @Post(path: '/user/register')
+  @Get(path: '/partner/radius/{latitude}/{longitude}/{radiusInKm}')
+  Future<Response> getLotsInRadius({@Path('latitude') double latitude, @Path('longitude') double longitude, @Path('radiusInKm') double kmRadius});
+
+  @Post(path: '/user/register/true')
   Future<Response> registerUser(@Body() Map<String, dynamic> body);
 
   @Post(path: '/user/find')
@@ -55,6 +57,9 @@ abstract class ApiService extends ChopperService {
 
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
+
+  @Put(path: '/upload/remove')
+  Future<Response> deleteImage(@Body() Map<String, dynamic> body);
 
   static ApiService create() {
     final client = ChopperClient(

@@ -49,10 +49,12 @@ class AddVehicleEvent extends LoginEvent {
   final String OR;
   // ignore: non_constant_identifier_names
   final String CR;
+  final String make;
+  final String model;
   // ignore: non_constant_identifier_names
-  AddVehicleEvent({this.plateNumber, this.type, this.color, this.OR, this.CR});
+  AddVehicleEvent({this.plateNumber, this.type, this.color, this.OR, this.CR, this.make, this.model});
   @override
-  List<Object> get props => [plateNumber, type, color, OR, CR];
+  List<Object> get props => [plateNumber, type, color, OR, CR, make, model];
 }
 
 class LoginStartEvent extends LoginEvent {
@@ -145,12 +147,10 @@ class LogInEmailEvent extends LoginEvent {
 }
 
 class SubmitRegistrationEvent extends LoginEvent {
-  final _email;
-  final _firstName;
-  final _lastName;
+  final RegistrationPayload payload;
 
-  SubmitRegistrationEvent(this._email, this._firstName, this._lastName);
+  SubmitRegistrationEvent(this.payload);
 
   @override
-  List<Object> get props => [_email, _firstName, _lastName];
+  List<Object> get props => [this.payload];
 }

@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 
 class ErrorScreen extends StatelessWidget {
   final String prompt;
-  ErrorScreen({this.prompt});
+  final bool showButtons;
+  ErrorScreen({this.prompt, this.showButtons});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ErrorScreen extends StatelessWidget {
         brightness: Brightness.dark,
         elevation: 0,
       ),
-      bottomNavigationBar: _nextButton(context),
+      bottomNavigationBar: showButtons == null || showButtons == false ? null : _nextButton(context),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -36,7 +37,7 @@ class ErrorScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
-                          prompt,
+                          prompt != null ? prompt : "General Error",
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
@@ -67,8 +68,7 @@ class ErrorScreen extends StatelessWidget {
               onPressed: () {
                 context.read<LoginBloc>().add(RestartLoginEvent());
               },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
@@ -88,8 +88,7 @@ class ErrorScreen extends StatelessWidget {
               onPressed: () {
                 context.read<LoginBloc>().add(LoginStartEvent());
               },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
