@@ -581,7 +581,7 @@ class _NotificationListState extends State<NotificationList> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text('Parking space is now available', style: TextStyle(color: Colors.white),),
+                              child: Text('Parking space is now available', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                             ),
                             Text('Jan. 07,2020 12:33 pm', style: TextStyle(color: Colors.white70, fontSize: 10),)
                           ],
