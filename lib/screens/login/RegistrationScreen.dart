@@ -1,6 +1,7 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
+import 'package:carspace/screens/add_vehicle.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       appBar: arrowForwardAppBarWidget(context, "Register account", () {
         restartRegistration(context);
       }),
-      bottomNavigationBar: SizedBox(child: _nextButton()),
+      bottomNavigationBar: SizedBox(
+          child: _nextButton()),
       body: SafeArea(
         child: Stack(children: [
           Positioned(
@@ -349,24 +351,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Widget _nextButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12),
-      child: Container(
-        child: OutlineButton(
-          splashColor: Colors.grey,
-          onPressed: () {
-            submitData(context);
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-          borderSide: BorderSide(color: Colors.black),
-          child: Text(
-            'Save',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-              color: Colors.black,
-            ),
+    return Container(
+      color: Colors.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: OutlineButton(
+        splashColor: Colors.grey,
+        onPressed: () {
+          // submitData(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddVehicle()),
+          );
+        },
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+        borderSide: BorderSide(color: Colors.black),
+        child: Text(
+          'Save',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 17,
+            color: Colors.black,
           ),
         ),
       ),

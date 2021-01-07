@@ -8,6 +8,7 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geocoder/geocoder.dart';
@@ -187,7 +188,25 @@ class _HomeScreenState extends State<HomeScreen> {
         });
     }
   }
-
+  _showDialog(){
+    return showDialog(
+      barrierDismissible: false,
+        context: context,
+        builder: (_) => Dialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)
+          ),
+          child: new SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: NotificationList()
+              ),
+            ),
+          ),
+        )
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,8 +235,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: themeData.primaryColor,
       appBar: homeAppBar(context, "Map", () {
-        locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
-        context.read<LoginBloc>().add(LogoutEvent());
+        // locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+        // context.read<LoginBloc>().add(LogoutEvent());
+        _showDialog();
       }),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
@@ -527,3 +547,75 @@ class SuggestedLocationCard extends StatelessWidget {
     );
   }
 }
+
+class NotificationList extends StatefulWidget {
+  @override
+  _NotificationListState createState() => _NotificationListState();
+}
+
+class _NotificationListState extends State<NotificationList> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top:40.0),
+              child: ListView.builder(
+                  itemCount: 15,
+                  itemBuilder: (BuildContext context, int index){
+                return Container(
+                  margin: const EdgeInsets.all(4.0),
+                 decoration: BoxDecoration(
+                     color: Colors.grey,
+                   borderRadius: BorderRadius.circular(5.0)
+                 ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text('Parking space is now available', style: TextStyle(color: Colors.white),),
+                            ),
+                            Text('Jan. 07,2020 12:33 pm', style: TextStyle(color: Colors.white70, fontSize: 10),)
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: (){},
+                          child: Icon(Icons.more_horiz),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
+            Positioned(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close)),
+                    ],
+                  ),
+                )
+            ),
+          ],
+        ),
+      )
+    );
+  }
+}
+
