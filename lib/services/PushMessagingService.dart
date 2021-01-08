@@ -23,7 +23,8 @@ class PushMessagingService {
     });
     firebaseMessaging.getToken().then((String token) async {
       assert(token != null);
-      print("Push Messaging Initialization Success: $token");
+      print("Push Messaging Initialization Success");
+      print(token);
       this.token = token;
     });
   }

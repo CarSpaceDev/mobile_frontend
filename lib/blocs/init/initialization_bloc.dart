@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/DevTools.dart';
 import 'package:carspace/services/PushMessagingService.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
@@ -65,9 +67,11 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     }
   }
 
-  setPushTokenCache() {
+  setPushTokenCache() async {
     String pushToken = locator<PushMessagingService>().token;
     print("Pushtoken");
     print(pushToken);
+    User currentUser = locator<AuthService>().currentUser();
+    await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
   }
 }
