@@ -88,10 +88,20 @@ class _HomeScreenState extends State<HomeScreen> {
     driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
       print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
+      setState(() {
+        if (destinationMarker != null) {
+          print("destinationMarker is not null");
+          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+        } else {
+          print("destination marker is null");
+          _markers = Set.from([driverMarker] + _lotMarkers);
+        }
+      });
     } else {
       mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       if (destinationSearchMode) {
       } else {
+        print("Car should move");
         getLotsInRadius(location);
       }
     }

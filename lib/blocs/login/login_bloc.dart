@@ -178,9 +178,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
       print(result.statusCode);
       print(result.error);
-    }
-    //todo [JESURY] check for missing data
-    else if (event is LogInEmailEvent) {
+    } else if (event is LogInEmailEvent) {
       yield LoginInProgress();
       CSUser user = await authService.signInWithEmail(event.email, event.password);
       print(user.toJson());
