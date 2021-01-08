@@ -4,6 +4,7 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/PushMessagingService.dart';
 import 'package:carspace/services/UploadService.dart';
 import 'package:chopper/chopper.dart';
 import 'package:equatable/equatable.dart';
@@ -115,6 +116,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is SkipVehicleAddEvent) {
       User user = await authService.currentUser();
       cache.put(user.email, {"skipVehicle": true});
+      setPushTokenCache();
       navService.pushReplaceNavigateTo(HomeRoute);
     }
     //V2 Update
@@ -187,6 +189,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield AuthorizationSuccess();
 //        user = await getUserDataFromApi(user);
         print("Logged in!!!!");
+        setPushTokenCache();
         navService.pushReplaceNavigateTo(HomeRoute);
       } else
         yield LoggedOut();
@@ -204,14 +207,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         cache.put(user.emailAddress, {"skipVehicle": false});
         result = ShowVehicleRegistration();
       } else {
-        if (userSettings["skipVehicle"] == true)
+        if (userSettings["skipVehicle"] == true) {
+          setPushTokenCache();
           navService.pushReplaceNavigateTo(HomeRoute);
-        else {
+        } else {
           result = ShowVehicleRegistration();
         }
       }
-    } else
+    } else {
+      setPushTokenCache();
       navService.pushReplaceNavigateTo(HomeRoute);
+    }
     return result;
+  }
+
+  setPushTokenCache() async {
+    String pushToken = locator<PushMessagingService>().token;
+    print("Pushtoken");
+    print(pushToken);
+    User currentUser = locator<AuthService>().currentUser();
+    await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
   }
 }

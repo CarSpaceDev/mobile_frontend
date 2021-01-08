@@ -3,11 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/DevTools.dart';
-import 'package:carspace/services/PushMessagingService.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
@@ -33,7 +30,6 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           if (result.statusCode == 200) {
             cache.put('data', result.body["data"]);
             print(cache.get('data'));
-            setPushTokenCache();
             print("No cache, got latest cache and navigating to Login");
             navService.pushReplaceNavigateTo(LoginRoute);
           } else {
@@ -46,11 +42,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           if (result.statusCode == 200) {
             if (result.body["data"].runtimeType == bool) {
               print("Cache is up to date, proceeding to Login");
-              setPushTokenCache();
               navService.pushReplaceNavigateTo(LoginRoute);
             } else {
               cache.put('data', result.body["data"]);
-              setPushTokenCache();
               print("Cache is not up to date, saving new data, proceeding to Login");
               navService.pushReplaceNavigateTo(LoginRoute);
             }
@@ -65,13 +59,5 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         yield ErrorState(error: e.toString());
       }
     }
-  }
-
-  setPushTokenCache() async {
-    String pushToken = locator<PushMessagingService>().token;
-    print("Pushtoken");
-    print(pushToken);
-    User currentUser = locator<AuthService>().currentUser();
-    await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
   }
 }
