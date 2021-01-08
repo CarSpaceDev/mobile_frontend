@@ -82,6 +82,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       var payload = {
         "OR": event.OR,
         "CR": event.CR,
+        "vehicleImage": event.vehicleImage,
         "make": event.make,
         "model": event.model,
         "plateNumber": event.plateNumber,

@@ -23,6 +23,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   FocusNode _vehicleModelFN;
   String orImageUrl;
   String crImageUrl;
+  String vehicleImageUrl;
 
   final cache = Hive.box("localCache");
   String pColor;
@@ -119,6 +120,19 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                 ),
                 child: SingleChildScrollView(
                   child: Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: ImageUploadWidget(16 / 9, saveVehicleImage, prompt: "Upload photo of vehicle"),
+                          ),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Card(
@@ -437,6 +451,12 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     }
   }
 
+  saveVehicleImage(String v) {
+    setState(() {
+      vehicleImageUrl = v;
+    });
+  }
+
   saveOR(String v) {
     setState(() {
       orImageUrl = v;
@@ -491,7 +511,9 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   }
 
   void validatePayload(BuildContext context) async {
-    if (orImageUrl == null) {
+    if (vehicleImageUrl == null) {
+      _showErrorDialog("Please add a photo of your vehicle");
+    } else if (orImageUrl == null) {
       _showErrorDialog("Please add a photo of your vehicle OR");
     } else if (crImageUrl == null) {
       _showErrorDialog("Please add a photo of your vehicle CR");
@@ -509,6 +531,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
       print({
         "OR": orImageUrl,
         "CR": crImageUrl,
+        "vehicleImage": vehicleImageUrl,
         "plateNumber": _plateNumberController.text,
         "make": _vehicleMake.text,
         "model": _vehicleModel.text,
@@ -523,6 +546,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
             make: _vehicleMake.text,
             model: _vehicleModel.text,
             color: pColor,
+            vehicleImage: vehicleImageUrl,
             OR: orImageUrl,
             CR: crImageUrl,
             fromHomeScreen: fromHomeScreen));

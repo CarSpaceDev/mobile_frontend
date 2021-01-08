@@ -11,7 +11,7 @@ class AuthService {
     devLog("AuthServiceInit", 'AuthService is initialized');
   }
 
-  currentUser() async {
+  currentUser() {
     try {
       var user = _auth.currentUser;
       print(user);
@@ -29,8 +29,7 @@ class AuthService {
 
   Future signInWithEmail(String email, String password) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       // final token = await _getJWT(result.user);
       // print(token);
       final User currentUser = result.user;
@@ -46,17 +45,14 @@ class AuthService {
     try {
       //trigger the login dialog
       final GoogleSignIn _googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
       //sign in to firebase auth
-      final UserCredential result =
-          await _auth.signInWithCredential(credential);
+      final UserCredential result = await _auth.signInWithCredential(credential);
       final token = await _getJWT(result.user);
       print(token);
       final User currentUser = result.user;

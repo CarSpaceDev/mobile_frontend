@@ -1,5 +1,10 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/serviceLocator.dart';
+import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +16,7 @@ class VehicleManagementScreen extends StatefulWidget {
 }
 
 class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
-  _showDialog() {
+  _showDialog({int index}) {
     return showDialog(
         context: context,
         builder: (_) => Dialog(
@@ -58,7 +63,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 20.0),
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
                             child: Column(
                               children: [Icon(Icons.share, color: Colors.green), Text('Share', style: TextStyle(color: Colors.green))],
                             ),
@@ -81,6 +88,20 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             ));
   }
 
+  List<Vehicle> vehicles = [];
+
+  @override
+  void initState() {
+    User currentUser = locator<AuthService>().currentUser();
+    locator<ApiService>().getVehicles(uid: currentUser.uid).then((data) {
+      new List.from(data.body).forEach((vehicle) {
+        vehicles.add(Vehicle.fromJson(vehicle));
+      });
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,6 +114,24 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             locator<NavigationService>().goBack();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              User currentUser = locator<AuthService>().currentUser();
+              setState(() {
+                vehicles = [];
+              });
+
+              locator<ApiService>().getVehicles(uid: currentUser.uid).then((data) {
+                new List.from(data.body).forEach((vehicle) {
+                  vehicles.add(Vehicle.fromJson(vehicle));
+                });
+                setState(() {});
+              });
+            },
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -100,96 +139,121 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
           },
           child: Icon(Icons.add)),
-      body: ListView.builder(
-        itemCount: 3,
-        itemBuilder: (BuildContext context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: SizedBox(
-              child: Card(
-                elevation: 4.0,
+      body: vehicles.length == 0
+          ? Container(
+              child: Center(
+                  child: Container(
+                height: 100,
                 child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: themeData.primaryColor,
+                    ),
+                    Text(
+                      "Loading",
+                      style: TextStyle(color: themeData.primaryColor),
+                    )
+                  ],
+                ),
+              )),
+            )
+          : ListView.builder(
+              itemCount: vehicles.length,
+              itemBuilder: (BuildContext context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                  child: SizedBox(
+                    child: Card(
+                      elevation: 4.0,
+                      child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Text('KIA', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              _showDialog();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.blueAccent,
-                                  )),
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                  child: Text(vehicles[index].plateNumber, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _showDialog(index: index);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                    child: Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: Icon(
+                                          Icons.more_vert,
+                                          color: Colors.blueAccent,
+                                        )),
+                                  ),
+                                )
+                              ],
                             ),
-                          )
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.network(
+                                    vehicles[index].vehicleImage,
+                                    scale: 2.5,
+                                    height: 80,
+                                    width: 80,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                      child: RichText(
+                                        text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                          TextSpan(text: 'Make : ', style: TextStyle(color: Colors.grey)),
+                                          TextSpan(text: vehicles[index].make)
+                                        ]),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                      child: RichText(
+                                        text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                          TextSpan(text: 'Model : ', style: TextStyle(color: Colors.grey)),
+                                          TextSpan(text: vehicles[index].model)
+                                        ]),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                      child: RichText(
+                                        text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                          TextSpan(text: 'Color : ', style: TextStyle(color: Colors.grey)),
+                                          TextSpan(text: vehicles[index].color)
+                                        ]),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              'assets/images/car.png',
-                              scale: 2.5,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                      style: TextStyle(color: Colors.black),
-                                      children: <TextSpan>[TextSpan(text: 'Model : ', style: TextStyle(color: Colors.grey)), TextSpan(text: 'Picanto')]),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                      style: TextStyle(color: Colors.black),
-                                      children: <TextSpan>[TextSpan(text: 'Color : ', style: TextStyle(color: Colors.grey)), TextSpan(text: 'Red')]),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                      style: TextStyle(color: Colors.black),
-                                      children: <TextSpan>[TextSpan(text: 'Plate number : ', style: TextStyle(color: Colors.grey)), TextSpan(text: 'ABC123')]),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
