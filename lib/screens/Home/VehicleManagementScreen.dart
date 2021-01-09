@@ -65,40 +65,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              print(vehicles[index].toJson());
-                              print({"vehicleId": vehicles[index].plateNumber, "ownerId": vehicles[index].ownerId});
-                              if (locator<AuthService>().currentUser().uid != vehicles[index].ownerId) {
-                                print("You do not own this vehicle!");
-                              } else {
-                                locator<ApiService>().generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId).then((Response data) {
-                                  if (data.statusCode == 200) {
-                                    print(data.body);
-                                    Navigator.of(context).pop();
-                                    showDialog(
-                                        context: context,
-                                        builder: (_) {
-                                          return AlertDialog(
-                                            title: Text(
-                                              "Share Code for ${vehicles[index].plateNumber}",
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                                            content: VehicleTransferCodeScreen(
-                                                payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
-                                            actions: [
-                                              FlatButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text("Close"))
-                                            ],
-                                          );
-                                        });
-                                  } else {
-                                    print("API ERROR");
-                                  }
-                                });
-                              }
+                              generateQR(index);
                             },
                             child: Column(
                               children: [Icon(Icons.qr_code, color: Colors.green), Text('Generate Share Code', style: TextStyle(color: Colors.green))],
@@ -120,6 +87,93 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                 ),
               ),
             ));
+  }
+
+  void generateQR(int index) {
+    print(vehicles[index].toJson());
+    print({"vehicleId": vehicles[index].plateNumber, "ownerId": vehicles[index].ownerId});
+    if (locator<AuthService>().currentUser().uid != vehicles[index].ownerId) {
+      Navigator.of(context).pop();
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text("Error", textAlign: TextAlign.center),
+              content: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Icon(
+                          Icons.announcement,
+                          color: Colors.grey,
+                          size: 50,
+                        ),
+                      ),
+                      Text(
+                        "You do not own this vehicle, please contact the original owner",
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+    } else {
+      Navigator.of(context).pop();
+      showDialog(
+          context: context,
+          builder: (_) {
+            return Dialog(
+              child: Container(
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: themeData.primaryColor,
+                    ),
+                    Text(
+                      "Generating QR Code",
+                      style: TextStyle(color: themeData.primaryColor),
+                    )
+                  ],
+                ),
+              ),
+            );
+          });
+      locator<ApiService>().generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId).then((Response data) {
+        if (data.statusCode == 200) {
+          print(data.body);
+          Navigator.of(context).pop();
+          showDialog(
+              context: context,
+              builder: (_) {
+                return AlertDialog(
+                  title: Text(
+                    "Share Code for ${vehicles[index].plateNumber}",
+                    textAlign: TextAlign.center,
+                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                  content: VehicleTransferCodeScreen(payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
+                  actions: [
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Close"))
+                  ],
+                );
+              });
+        } else {
+          print("API ERROR");
+        }
+      });
+    }
   }
 
   List<Vehicle> vehicles = [];
@@ -169,8 +223,59 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            locator<NavigationService>().pushNavigateTo(LoginRoute);
-            context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return Dialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {},
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.qr_code,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Add from code', style: TextStyle(color: Colors.blueAccent))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    locator<NavigationService>().pushNavigateTo(LoginRoute);
+                                    context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.add_circle_outline,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                });
           },
           child: Icon(Icons.add)),
       body: vehicles.length == 0

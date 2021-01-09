@@ -14,20 +14,32 @@ class _VehicleTransferCodeScreenState extends State<VehicleTransferCodeScreen> {
   final VehicleTransferQrPayLoad payload;
   Timer _timer;
   int _remainingTime;
+  int _timeToClose;
+  bool _codeExpired;
   _VehicleTransferCodeScreenState(this.payload) {
+    _codeExpired = false;
+    _timeToClose = 3;
     _remainingTime = int.parse(((payload.expiry - new DateTime.now().millisecondsSinceEpoch) / 1000).toStringAsFixed(0));
     _timer = new Timer.periodic(
       Duration(seconds: 1),
       (Timer timer) {
+        if (_timeToClose == 1) {
+          setState(() {
+            _timer.cancel();
+          });
+          Navigator.of(context).pop();
+        }
         if (_remainingTime == 0) {
           setState(() {
-            timer.cancel();
-          });
-        } else {
-          setState(() {
-            _remainingTime--;
+            _codeExpired = true;
           });
         }
+        setState(() {
+          if (_codeExpired)
+            _timeToClose--;
+          else
+            _remainingTime--;
+        });
       },
     );
   }
@@ -57,9 +69,12 @@ class _VehicleTransferCodeScreenState extends State<VehicleTransferCodeScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.cancel),
                               Text(
-                                "Code expired, please generate a new code",
+                                "Code expired, please generate a new code.",
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                "Closing in ${_timeToClose.toString() + " seconds"}",
                                 textAlign: TextAlign.center,
                               ),
                             ],
