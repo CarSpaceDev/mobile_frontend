@@ -49,6 +49,9 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/user/addVehicle/{uid}')
   Future<Response> addVehicle(@Path('uid') uid, @Body() Map<String, dynamic> body);
 
+  @Patch(path: '/vehicle/generate-share-code/{vehicleId}/{ownerId}')
+  Future<Response> generateShareCode(@Path('vehicleId') vehicleId, @Path('ownerId') ownerId);
+
   @Get(path: '/user/all')
   Future<Response> getAllUser();
 

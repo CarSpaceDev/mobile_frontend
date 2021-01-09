@@ -4,11 +4,14 @@ import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:chopper/chopper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../navigation.dart';
+import 'VehicleQRCodeGeneration.dart';
 
 class VehicleManagementScreen extends StatefulWidget {
   @override
@@ -21,17 +24,15 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
         context: context,
         builder: (_) => Dialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: new SizedBox(
-                height: 100,
-                // color: Colors.white,
+              child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {},
                             child: Column(
@@ -46,7 +47,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {},
                             child: Column(
@@ -61,18 +62,51 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pop();
+                              print(vehicles[index].toJson());
+                              print({"vehicleId": vehicles[index].plateNumber, "ownerId": vehicles[index].ownerId});
+                              if (locator<AuthService>().currentUser().uid != vehicles[index].ownerId) {
+                                print("You do not own this vehicle!");
+                              } else {
+                                locator<ApiService>().generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId).then((Response data) {
+                                  if (data.statusCode == 200) {
+                                    print(data.body);
+                                    Navigator.of(context).pop();
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              "Share Code for ${vehicles[index].plateNumber}",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                            content: VehicleTransferCodeScreen(
+                                                payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
+                                            actions: [
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text("Close"))
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    print("API ERROR");
+                                  }
+                                });
+                              }
                             },
                             child: Column(
-                              children: [Icon(Icons.share, color: Colors.green), Text('Share', style: TextStyle(color: Colors.green))],
+                              children: [Icon(Icons.qr_code, color: Colors.green), Text('Generate Share Code', style: TextStyle(color: Colors.green))],
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {},
                             child: Column(

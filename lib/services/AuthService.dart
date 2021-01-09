@@ -11,7 +11,7 @@ class AuthService {
     devLog("AuthServiceInit", 'AuthService is initialized');
   }
 
-  currentUser() {
+  User currentUser() {
     try {
       var user = _auth.currentUser;
       print(user);

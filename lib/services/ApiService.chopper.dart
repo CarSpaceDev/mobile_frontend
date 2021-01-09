@@ -92,6 +92,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> generateShareCode(
+      dynamic vehicleId, dynamic ownerId) {
+    final $url = '/vehicle/generate-share-code/$vehicleId/$ownerId';
+    final $request = Request('PATCH', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getAllUser() {
     final $url = '/user/all';
     final $request = Request('GET', $url, client.baseUrl);
