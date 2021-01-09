@@ -14,7 +14,7 @@ class AuthService {
   User currentUser() {
     try {
       var user = _auth.currentUser;
-      print(user);
+      // print(user);
       if (user != null) {
         // var token = await _getJWT(user);
         return user;

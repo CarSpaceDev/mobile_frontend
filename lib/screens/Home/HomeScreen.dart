@@ -8,6 +8,7 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/PushMessagingService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -45,10 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Marker destinationMarker;
   List<dynamic> lotsInRadius = [];
   PageController _pageController = new PageController();
-
+  StreamSubscription notificationSubscription;
   @override
   void initState() {
     super.initState();
+    notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
+      print("new event from stream");
+      print(event);
+    });
     _searchController = TextEditingController(text: "");
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
@@ -73,145 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     positionStream.cancel();
     _searchController.dispose();
+    notificationSubscription.cancel();
     super.dispose();
-  }
-
-  startPositionStream() {
-    positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
-            .listen(positionChangeHandler);
-  }
-
-  positionChangeHandler(Position v) {
-    LatLng location = LatLng(v.latitude, v.longitude);
-    print("Updating Location: ${location.latitude}, ${location.longitude}");
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
-    if (currentLocation != null) {
-      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
-      setState(() {
-        if (destinationMarker != null) {
-          print("destinationMarker is not null");
-          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-        } else {
-          print("destination marker is null");
-          _markers = Set.from([driverMarker] + _lotMarkers);
-        }
-      });
-    } else {
-      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
-      if (destinationSearchMode) {
-      } else {
-        print("Car should move");
-        getLotsInRadius(location);
-      }
-    }
-    currentLocation = LatLng(location.latitude, location.longitude);
-  }
-
-  Future<void> getLotsInRadius(LatLng location) async {
-    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
-      print(res.statusCode);
-      if (res.statusCode == 200) {
-        _lotMarkers = [];
-        print(res.body);
-        if (res.body.length > 0) {
-          for (int i = 0; i < res.body.length; i++) {
-            _lotMarkers.add(Marker(
-                markerId: MarkerId(res.body[i]["lotId"]),
-                onTap: () {
-                  print(res.body[i]);
-                  setState(() {
-                    showLotCards = true;
-                  });
-                  _pageController.jumpToPage(i);
-                },
-                icon: _lotIcon,
-                position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
-          }
-        }
-        setState(() {
-          lotsInRadius = res.body;
-          if (destinationMarker != null) {
-            print("destinationMarker is not null");
-            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-          } else {
-            print("destination marker is null");
-            _markers = Set.from([driverMarker] + _lotMarkers);
-          }
-        });
-      }
-    });
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    setState(() {
-      mapController.setMapStyle(_mapStyle);
-    });
-  }
-
-  setSearchPositionMarker(LatLng coordinates) {
-    destinationMarker = Marker(
-      markerId: MarkerId("destination"),
-      position: coordinates,
-      icon: _destination,
-    );
-  }
-
-  locationSearchCallback(LocationSearchResult data) {
-    print(data.toJson());
-    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
-    searchPosition = data.location;
-    setSearchPositionMarker(data.location);
-    getLotsInRadius(data.location);
-  }
-
-  void _onCameraMove(CameraPosition d) {
-    searchPosition = LatLng(d.target.latitude, d.target.longitude);
-  }
-
-  void _setMarkerIcon() async {
-    _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
-    _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
-    _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
-  }
-
-  void autoCompleteWidgetAction() {
-    if (destinationLocked) {
-      setState(() {
-        destinationLocked = false;
-        _searchController.text = "";
-      });
-      mapController?.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: currentLocation,
-          zoom: 15.0,
-        ),
-      ));
-      destinationMarker = null;
-      getLotsInRadius(currentLocation);
-    } else {
-      if (_searchController.text != "")
-        setState(() {
-          destinationLocked = true;
-          destinationPosition = searchPosition;
-        });
-    }
-  }
-
-  _showNotificationDialog() {
-    return showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: new SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(child: NotificationList()),
-                ),
-              ),
-            ));
   }
 
   @override
@@ -353,6 +221,144 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  startPositionStream() {
+    positionStream =
+        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
+            .listen(positionChangeHandler);
+  }
+
+  positionChangeHandler(Position v) {
+    LatLng location = LatLng(v.latitude, v.longitude);
+    print("Updating Location: ${location.latitude}, ${location.longitude}");
+    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
+    if (currentLocation != null) {
+      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
+      setState(() {
+        if (destinationMarker != null) {
+          print("destinationMarker is not null");
+          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+        } else {
+          print("destination marker is null");
+          _markers = Set.from([driverMarker] + _lotMarkers);
+        }
+      });
+    } else {
+      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+      if (destinationSearchMode) {
+      } else {
+        print("Car should move");
+        getLotsInRadius(location);
+      }
+    }
+    currentLocation = LatLng(location.latitude, location.longitude);
+  }
+
+  Future<void> getLotsInRadius(LatLng location) async {
+    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
+      print(res.statusCode);
+      if (res.statusCode == 200) {
+        _lotMarkers = [];
+        print(res.body);
+        if (res.body.length > 0) {
+          for (int i = 0; i < res.body.length; i++) {
+            _lotMarkers.add(Marker(
+                markerId: MarkerId(res.body[i]["lotId"]),
+                onTap: () {
+                  print(res.body[i]);
+                  setState(() {
+                    showLotCards = true;
+                  });
+                  _pageController.jumpToPage(i);
+                },
+                icon: _lotIcon,
+                position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
+          }
+        }
+        setState(() {
+          lotsInRadius = res.body;
+          if (destinationMarker != null) {
+            print("destinationMarker is not null");
+            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+          } else {
+            print("destination marker is null");
+            _markers = Set.from([driverMarker] + _lotMarkers);
+          }
+        });
+      }
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    setState(() {
+      mapController.setMapStyle(_mapStyle);
+    });
+  }
+
+  setSearchPositionMarker(LatLng coordinates) {
+    destinationMarker = Marker(
+      markerId: MarkerId("destination"),
+      position: coordinates,
+      icon: _destination,
+    );
+  }
+
+  locationSearchCallback(LocationSearchResult data) {
+    print(data.toJson());
+    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
+    searchPosition = data.location;
+    setSearchPositionMarker(data.location);
+    getLotsInRadius(data.location);
+  }
+
+  void _onCameraMove(CameraPosition d) {
+    searchPosition = LatLng(d.target.latitude, d.target.longitude);
+  }
+
+  void _setMarkerIcon() async {
+    _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
+    _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
+    _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
+  }
+
+  void autoCompleteWidgetAction() {
+    if (destinationLocked) {
+      setState(() {
+        destinationLocked = false;
+        _searchController.text = "";
+      });
+      mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: currentLocation,
+          zoom: 15.0,
+        ),
+      ));
+      destinationMarker = null;
+      getLotsInRadius(currentLocation);
+    } else {
+      if (_searchController.text != "")
+        setState(() {
+          destinationLocked = true;
+          destinationPosition = searchPosition;
+        });
+    }
+  }
+
+  _showNotificationDialog() {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: NotificationList()),
+                ),
+              ),
+            ));
+  }
+
   BottomNavigationBar homeBottomNavBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -392,11 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(child: Icon(Icons.menu)),
               )),
       actions: <Widget>[
-        IconButton(
-          color: Colors.white,
-          onPressed: onPressed,
-          icon: Icon(Icons.email),
-        ),
+        IconButton(color: Colors.white, onPressed: onPressed, icon: Icon(Icons.notifications)),
       ],
       bottom: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 52),
@@ -574,6 +576,13 @@ class NotificationList extends StatefulWidget {
 }
 
 class _NotificationListState extends State<NotificationList> {
+  List<Map<String, dynamic>> notifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

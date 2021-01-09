@@ -1,14 +1,21 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class PushMessagingService {
   FirebaseMessaging firebaseMessaging;
   String token;
+  StreamController<Map<String, dynamic>> notificationsController;
+  Stream notificationStream;
 
   PushMessagingService() {
+    notificationsController = StreamController<Map<String, dynamic>>();
+    notificationStream = notificationsController.stream;
     firebaseMessaging = FirebaseMessaging();
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
+        notificationsController.add(message);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");

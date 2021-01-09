@@ -43,6 +43,8 @@ dependencies:
   android_intent: ^0.3.7+7
   qr_flutter: ^3.2.0
   firebase_messaging: ^7.0.3
+  flutter_barcode_scanner: ^1.0.2
+  cached_network_image: ^2.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
