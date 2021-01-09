@@ -50,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
+    notificationSubscription =
+        locator<PushMessagingService>().notificationStream.listen((event) {
       print("new event from stream");
       print(event);
     });
@@ -62,9 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
     Geolocator.isLocationServiceEnabled().then((bool value) {
       if (value) {
         Geolocator.checkPermission().then((v) {
-          if (v != null || v == LocationPermission.denied || v == LocationPermission.deniedForever) {
+          if (v != null ||
+              v == LocationPermission.denied ||
+              v == LocationPermission.deniedForever) {
             Geolocator.requestPermission().then((locationPermission) {
-              if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
+              if (locationPermission != LocationPermission.denied &&
+                  locationPermission != LocationPermission.deniedForever)
+                startPositionStream();
             });
           } else {
             startPositionStream();
@@ -105,7 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(VehicleManagement);
+                    locator<NavigationService>()
+                        .pushNavigateTo(VehicleManagement);
                   },
                   child: Text("Vehicles")),
             ),
@@ -115,7 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: InkWell(
                   onTap: () {
-                    locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+                    locator<NavigationService>()
+                        .pushReplaceNavigateTo(LoginRoute);
                     context.read<LoginBloc>().add(LogoutEvent());
                   },
                   child: Text("Sign Out")),
@@ -199,9 +206,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: SizeConfig.heightMultiplier * 15,
                       child: PageView(
                         onPageChanged: (index) {
-                          mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                          mapController
+                              ?.animateCamera(CameraUpdate.newCameraPosition(
                             CameraPosition(
-                              target: LatLng(lotsInRadius[index]["coordinates"][0], lotsInRadius[index]["coordinates"][1]),
+                              target: LatLng(
+                                  lotsInRadius[index]["coordinates"][0],
+                                  lotsInRadius[index]["coordinates"][1]),
                               zoom: 17.0,
                             ),
                           ));
@@ -222,17 +232,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   startPositionStream() {
-    positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
-            .listen(positionChangeHandler);
+    positionStream = Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 1,
+            intervalDuration: Duration(seconds: 15))
+        .listen(positionChangeHandler);
   }
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
     print("Updating Location: ${location.latitude}, ${location.longitude}");
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
+    driverMarker = Marker(
+        markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
-      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
+      print(Geolocator.distanceBetween(currentLocation.latitude,
+              currentLocation.longitude, location.latitude, location.longitude)
+          .toStringAsFixed(5));
       setState(() {
         if (destinationMarker != null) {
           print("destinationMarker is not null");
@@ -243,7 +258,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     } else {
-      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+      mapController.moveCamera(CameraUpdate.newLatLng(
+          new LatLng(location.latitude, location.longitude)));
       if (destinationSearchMode) {
       } else {
         print("Car should move");
@@ -254,7 +270,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getLotsInRadius(LatLng location) async {
-    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
+    locator<ApiService>()
+        .getLotsInRadius(
+            latitude: location.latitude,
+            longitude: location.longitude,
+            kmRadius: 0.5)
+        .then((res) {
       print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
@@ -271,14 +292,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   _pageController.jumpToPage(i);
                 },
                 icon: _lotIcon,
-                position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
+                position: LatLng(res.body[i]["coordinates"][0],
+                    res.body[i]["coordinates"][1])));
           }
         }
         setState(() {
           lotsInRadius = res.body;
           if (destinationMarker != null) {
             print("destinationMarker is not null");
-            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+            _markers =
+                Set.from([destinationMarker, driverMarker] + _lotMarkers);
           } else {
             print("destination marker is null");
             _markers = Set.from([driverMarker] + _lotMarkers);
@@ -316,9 +339,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _setMarkerIcon() async {
-    _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
-    _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
-    _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
+    _lotIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(10, 10)),
+        'assets/launcher_icon/pushpin.png');
+    _driverIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(10, 10)),
+        'assets/launcher_icon/driver.png');
+    _destination = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(10, 10)),
+        'assets/launcher_icon/destination.png');
   }
 
   void autoCompleteWidgetAction() {
@@ -349,11 +378,28 @@ class _HomeScreenState extends State<HomeScreen> {
         barrierDismissible: false,
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(child: NotificationList()),
+                ),
+              ),
+            ));
+  }
+
+  _showReservationDialog(dynamic lotId) {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: LotReservation(lotId)),
                 ),
               ),
             ));
@@ -367,24 +413,40 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                   icon: lotsInRadius.length == 0
                       ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
-              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
+                      : Icon(Icons.assistant_direction,
+                          color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0
+                      ? "No lots nearby"
+                      : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.assistant_direction,
+                      color: Color.fromARGB(255, 0, 0, 0)),
+                  label: 'Show Destination'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.gps_fixed,
+                      color: Color.fromARGB(255, 0, 0, 0)),
+                  label: 'My Location')
             ]
           : [
               BottomNavigationBarItem(
                   icon: lotsInRadius.length == 0
                       ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
+                      : Icon(Icons.assistant_direction,
+                          color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0
+                      ? "No lots nearby"
+                      : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.gps_fixed,
+                      color: Color.fromARGB(255, 0, 0, 0)),
+                  label: 'My Location'),
             ],
       onTap: bottomNavBarCallBack,
     );
   }
 
-  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
+  AppBar homeAppBar(
+      BuildContext context, String appBarTitle, Function onPressed) {
     return AppBar(
       backgroundColor: themeData.primaryColor,
       brightness: Brightness.dark,
@@ -398,7 +460,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(child: Icon(Icons.menu)),
               )),
       actions: <Widget>[
-        IconButton(color: Colors.white, onPressed: onPressed, icon: Icon(Icons.notifications)),
+        IconButton(
+            color: Colors.white,
+            onPressed: onPressed,
+            icon: Icon(Icons.notifications)),
       ],
       bottom: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 52),
@@ -461,7 +526,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void mapOnPointerUp(e) {
     if (!destinationLocked) {
       Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+          .findAddressesFromCoordinates(
+              Coordinates(searchPosition.latitude, searchPosition.longitude))
           .then((addresses) {
         print(addresses.first.addressLine);
         setState(() {
@@ -498,8 +564,9 @@ class _HomeScreenState extends State<HomeScreen> {
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
         callback: () {
-          print("calling intent");
-          navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
+          _showReservationDialog(lot["lotId"]);
+          // print("calling intent");
+          // navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
         },
       ));
     });
@@ -507,8 +574,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent =
-        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
     intent.launch();
   }
 }
@@ -519,7 +588,14 @@ class SuggestedLocationCard extends StatelessWidget {
   final double price;
   final double distance;
   final Function callback;
-  SuggestedLocationCard({Key key, this.name, this.address, this.price, this.distance, this.callback}) : super(key: key);
+  SuggestedLocationCard(
+      {Key key,
+      this.name,
+      this.address,
+      this.price,
+      this.distance,
+      this.callback})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -529,7 +605,8 @@ class SuggestedLocationCard extends StatelessWidget {
       height: MediaQuery.of(context).size.height * .15,
       child: Card(
         elevation: 6.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         child: Container(
           padding: EdgeInsets.all(8),
           child: Column(
@@ -558,8 +635,12 @@ class SuggestedLocationCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  InkWell(onTap: callback, child: Text("Select Lot", style: TextStyle(fontSize: 16))),
-                  Text("${price.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
+                  InkWell(
+                      onTap: callback,
+                      child:
+                          Text("Select Lot", style: TextStyle(fontSize: 16))),
+                  Text("${price.toStringAsFixed(2)}/hour",
+                      style: TextStyle(fontSize: 16))
                 ],
               ),
             ],
@@ -596,7 +677,9 @@ class _NotificationListState extends State<NotificationList> {
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     margin: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(5.0)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -606,15 +689,19 @@ class _NotificationListState extends State<NotificationList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Text(
                                   'Parking space is now available',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                               Text(
                                 'Jan. 07,2020 12:33 pm',
-                                style: TextStyle(color: Colors.white70, fontSize: 10),
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 10),
                               )
                             ],
                           ),
@@ -634,7 +721,9 @@ class _NotificationListState extends State<NotificationList> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Notifications',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -646,5 +735,182 @@ class _NotificationListState extends State<NotificationList> {
         ],
       ),
     ));
+  }
+}
+
+class LotReservation extends StatefulWidget {
+  final lotId;
+  const LotReservation(this.lotId);
+  @override
+  _LotReservationState createState() => _LotReservationState();
+}
+
+class _LotReservationState extends State<LotReservation> {
+  Future<dynamic> _lotData;
+  var namedDays;
+
+  @override
+  void initState() {
+    super.initState();
+    _lotData = _getLotData(widget.lotId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+      child: Stack(
+        children: <Widget>[
+          FutureBuilder<dynamic>(
+            future: _lotData,
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                namedDays = daysToNamedDays(snapshot.data['availableDays']);
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                        child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '${snapshot.data['address']}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              snapshot.data['lotImage'],
+                              fit: BoxFit.fill,
+                              height: 175,
+                              width: 300,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text("Rating : \n${snapshot.data['rating']}",
+                              textAlign: TextAlign.center),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                              "Price :\n${snapshot.data['pricing']} Php",
+                              textAlign: TextAlign.center),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text("Availabile Days :\n${namedDays}",
+                              textAlign: TextAlign.center),
+                        ),
+                      ],
+                    )),
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FlatButton(
+                            onPressed: () {},
+                            color: themeData.secondaryHeaderColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Container(
+                              width: SizeConfig.widthMultiplier * 50,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Reserve',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            SizeConfig.textMultiplier * 2.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              } else {
+                return Container(
+                  child: Center(
+                      child: Container(
+                    height: 100,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          backgroundColor: themeData.primaryColor,
+                        ),
+                        Text(
+                          "Loading",
+                          style: TextStyle(color: themeData.primaryColor),
+                        )
+                      ],
+                    ),
+                  )),
+                );
+              }
+            },
+          ),
+          Positioned(
+              child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Reserve Lot',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.close)),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ));
+  }
+
+  daysToNamedDays(dynamic data) {
+    var numberDays = data;
+    var numberToNamed = [];
+    var namedToString;
+    var namedDays = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday'
+    ];
+    for (var i = 0; i < numberDays.length; i++) {
+      numberToNamed.add(namedDays[numberDays[i]]);
+    }
+    namedToString = numberToNamed.join(', ').toString();
+    return namedToString;
+  }
+
+  Future<dynamic> _getLotData(lotId) async {
+    var returnData;
+    await locator<ApiService>().getLot(uid: lotId).then((res) {
+      print(res.body);
+      returnData = res.body;
+    });
+    return returnData;
   }
 }
