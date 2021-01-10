@@ -18,6 +18,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
+import 'NotificationList.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -346,17 +347,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _showNotificationDialog() {
     return showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: new SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(child: NotificationList()),
-                ),
-              ),
-            ));
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: NotificationList(),
+      ),
+    );
   }
 
   BottomNavigationBar homeBottomNavBar() {
@@ -567,84 +564,5 @@ class SuggestedLocationCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class NotificationList extends StatefulWidget {
-  @override
-  _NotificationListState createState() => _NotificationListState();
-}
-
-class _NotificationListState extends State<NotificationList> {
-  List<Map<String, dynamic>> notifications = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: ListView.builder(
-                itemCount: 15,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    margin: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Parking space is now available',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Text(
-                                'Jan. 07,2020 12:33 pm',
-                                style: TextStyle(color: Colors.white70, fontSize: 10),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {},
-                            child: Icon(Icons.more_horiz),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          ),
-          Positioned(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.close)),
-              ],
-            ),
-          )),
-        ],
-      ),
-    ));
   }
 }

@@ -42,3 +42,31 @@ class Vehicle {
     };
   }
 }
+
+class VehicleAddAuth {
+  String plateNumber;
+  String vehicleImage;
+  String make;
+  String model;
+  String color;
+  String newUser;
+
+  VehicleAddAuth.fromJson(Map<String, dynamic> json)
+      : plateNumber = json['plateNumber'] as String,
+        vehicleImage = json['vehicleImage'] as String,
+        make = json['make'] as String,
+        model = json['model'] as String,
+        color = json['color'] as String,
+        newUser = json['newUser'] as String;
+
+  toJson() {
+    return {
+      "plateNumber": this.plateNumber,
+      "vehicleImage": this.vehicleImage,
+      "make": this.make,
+      "model": this.model,
+      "color": this.color,
+      "newUser": this.newUser
+    };
+  }
+}

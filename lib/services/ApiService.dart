@@ -30,6 +30,9 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/user/vehicles/{uid}')
   Future<Response> getVehicles({@Path('uid') String uid});
 
+  @Get(path: '/vehicle/owner/authorization/details/{uid}/{code}')
+  Future<Response> getVehicleAddAuthDetails({@Path('uid') String uid, @Path('code') String code});
+
   @Post(path: '/user/addVehicle/{uid}')
   Future<Response> addVehicle(@Path('uid') uid, @Body() Map<String, dynamic> body);
 
@@ -38,6 +41,9 @@ abstract class ApiService extends ChopperService {
 
   @Patch(path: '/vehicle/add-from-code/{uid}/{code}')
   Future<Response> addVehicleFromCode(@Path('uid') newUserUid, @Path('code') code);
+
+  @Patch(path: '/vehicle/authorize-vehicle-addition/{uid}/{code}')
+  Future<Response> authorizeVehicleAddition(@Path('uid') ownerUid, @Path('code') code);
   //User Operations
 
   @Get(path: '/user/all')
@@ -54,6 +60,12 @@ abstract class ApiService extends ChopperService {
 
   @Get(path: '/user/google/{uid}')
   Future<Response> checkExistence({@Path('uid') String uid});
+
+  @Get(path: '/user/notifications/{uid}')
+  Future<Response> getNotifications({@Path('uid') String uid});
+
+  @Patch(path: '/user/notifications/{uid}/{nUid}')
+  Future<Response> setNotificationAsSeen({@Path('uid') String uid, @Path('nUid') String notificationUid});
 
   @Get(path: '/user/exists/{email}')
   Future<Response> checkEmailUsage({@Path('email') String email});
