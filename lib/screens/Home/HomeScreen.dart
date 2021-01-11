@@ -840,7 +840,10 @@ class _LotReservationState extends State<LotReservation> {
                             padding: const EdgeInsets.all(4.0),
                             child: FlatButton(
                               onPressed: () {
-                                _reserveButton();
+                                if (selectedVehicle == "No Vehicle Selected")
+                                  _vehicleCheck();
+                                else
+                                  _reserveButton();
                               },
                               color: themeData.secondaryHeaderColor,
                               shape: RoundedRectangleBorder(
@@ -936,6 +939,32 @@ class _LotReservationState extends State<LotReservation> {
       namedToString = numberToNamed.join(', ').toString();
       return namedToString;
     }
+  }
+
+  Future<void> _vehicleCheck() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please select a vehicle'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _reserveButton() async {
