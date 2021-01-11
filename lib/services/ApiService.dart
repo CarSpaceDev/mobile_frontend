@@ -30,6 +30,12 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/user/vehicles/{uid}')
   Future<Response> getVehicles({@Path('uid') String uid});
 
+  @Get(path: '/user/{uid}')
+  Future<Response> getUserData({@Path('uid') String uid});
+
+  @Get(path: '/user/check-permissions/{uid}')
+  Future<Response> getVerificationStatus({@Path('uid') String uid});
+
   @Post(path: '/user/addVehicle/{uid}')
   Future<Response> addVehicle(
       @Path('uid') uid, @Body() Map<String, dynamic> body);
@@ -48,6 +54,9 @@ abstract class ApiService extends ChopperService {
 
   @Post(path: '/user/register/true')
   Future<Response> registerUser(@Body() Map<String, dynamic> body);
+
+  @Post(path: '/user/reserve/')
+  Future<Response> reserveLot(@Body() Map<String, dynamic> body);
 
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
