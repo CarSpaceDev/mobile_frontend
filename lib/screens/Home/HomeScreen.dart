@@ -7,8 +7,8 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/PushMessagingService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -47,14 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Marker destinationMarker;
   List<dynamic> lotsInRadius = [];
   PageController _pageController = new PageController();
-  StreamSubscription notificationSubscription;
   @override
   void initState() {
     super.initState();
-    notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
-      print("new event from stream");
-      print(event);
-    });
+
     _searchController = TextEditingController(text: "");
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
@@ -79,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     positionStream.cancel();
     _searchController.dispose();
-    notificationSubscription.cancel();
     super.dispose();
   }
 
@@ -98,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    _showNotificationDialog();
+                    showNotificationDialog();
                   },
                   child: Text("Notifications")),
             ),
@@ -125,9 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       backgroundColor: themeData.primaryColor,
-      appBar: homeAppBar(context, "Map", () {
-        _showNotificationDialog();
-      }),
+      appBar: homeAppBar(
+        context,
+        "Map",
+        NotificationLinkWidget(),
+      ),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
         child: Stack(
@@ -142,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onCameraMove: _onCameraMove,
                       myLocationButtonEnabled: true,
                       mapToolbarEnabled: false,
-                      zoomControlsEnabled: false,
+                      zoomControlsEnabled: true,
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
                         target: LatLng(1, 1),
@@ -218,6 +215,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ],
         ),
+      ),
+    );
+  }
+
+  showNotificationDialog() {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Dialog(
+        insetPadding: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: NotificationList(),
       ),
     );
   }
@@ -345,17 +354,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  _showNotificationDialog() {
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        child: NotificationList(),
-      ),
-    );
-  }
-
   BottomNavigationBar homeBottomNavBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -381,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
+  AppBar homeAppBar(BuildContext context, String appBarTitle, Widget action) {
     return AppBar(
       backgroundColor: themeData.primaryColor,
       brightness: Brightness.dark,
@@ -394,9 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Container(child: Icon(Icons.menu)),
               )),
-      actions: <Widget>[
-        IconButton(color: Colors.white, onPressed: onPressed, icon: Icon(Icons.notifications)),
-      ],
+      actions: <Widget>[action],
       bottom: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 52),
         child: LocationSearchWidget(

@@ -19,11 +19,22 @@ class _NotificationListState extends State<NotificationList> {
 
   @override
   void initState() {
+    _refreshList();
+    super.initState();
+  }
+
+  _refreshList() {
+    setState(() {
+      nWidgets = [];
+      notifications = [];
+      retrieval = false;
+    });
     locator<ApiService>().getNotifications(uid: locator<AuthService>().currentUser().uid).then((v) {
       if (v.statusCode == 200) {
         notifications = List<Map<String, dynamic>>.from(v.body);
         notifications.forEach((v) {
-          nWidgets.add(NotificationWidget(data: NotificationFromApi.fromJson(v)));
+          NotificationFromApi temp = NotificationFromApi.fromJson(v);
+          nWidgets.add(NotificationWidget(data: temp, callback: temp.type == 0 ? _refreshList : null));
         });
         setState(() {
           retrieval = true;
@@ -40,7 +51,6 @@ class _NotificationListState extends State<NotificationList> {
         retrieval = true;
       });
     });
-    super.initState();
   }
 
   @override
