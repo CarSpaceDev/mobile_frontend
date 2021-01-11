@@ -9,7 +9,7 @@ class PushMessagingService {
   Stream notificationStream;
 
   PushMessagingService() {
-    notificationsController = StreamController<Map<String, dynamic>>();
+    notificationsController = StreamController<Map<String, dynamic>>.broadcast();
     notificationStream = notificationsController.stream;
     firebaseMessaging = FirebaseMessaging();
     firebaseMessaging.configure(
