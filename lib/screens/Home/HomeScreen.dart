@@ -486,9 +486,10 @@ class _HomeScreenState extends State<HomeScreen> {
   generateLotCards() {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
+      print(lot);
       result.add(SuggestedLocationCard(
-        name: lot["lotId"],
-        address: lot["address"],
+        name: lot["address"],
+        address: "Available hours " + lot["availableFrom"].toString() + " - " + lot["availableTo"],
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
         callback: () {
@@ -533,6 +534,7 @@ class SuggestedLocationCard extends StatelessWidget {
               Text(
                 name,
                 style: TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
               Text(
                 address,

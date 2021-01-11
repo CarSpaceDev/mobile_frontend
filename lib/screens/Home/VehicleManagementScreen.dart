@@ -92,6 +92,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
           child: SizedBox(
             child: Card(
+              color: vehicles[index].isVerified ? Colors.white : Colors.grey[200],
               elevation: 4.0,
               child: Column(
                 children: [
@@ -102,11 +103,12 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Text(vehicles[index].plateNumber, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          child: Text(vehicles[index].plateNumber + " (${vehicles[index].isVerified ? 'verified' : 'unverified'})",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         ),
                         GestureDetector(
                           onTap: () {
-                            _showDialog(index: index);
+                            _showActionsDialog(index: index);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -184,7 +186,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     );
   }
 
-  _showDialog({int index}) {
+  _showActionsDialog({int index}) {
     return showDialog(
         context: context,
         builder: (_) => Dialog(
@@ -230,7 +232,12 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              generateQR(index);
+                              if (vehicles[index].isVerified) {
+                                generateQR(index);
+                              } else {
+                                Navigator.of(context).pop();
+                                showError(error: "This vehicle is not yet verified");
+                              }
                             },
                             child: Column(
                               children: [Icon(Icons.qr_code, color: Colors.green), Text('Generate Share Code', style: TextStyle(color: Colors.green))],
