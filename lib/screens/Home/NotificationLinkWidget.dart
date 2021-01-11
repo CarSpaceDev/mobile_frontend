@@ -40,6 +40,7 @@ class _NotificationLinkWidgetState extends State<NotificationLinkWidget> {
       setState(() {
         newNotification = true;
       });
+      _showToast();
     });
     super.initState();
   }
@@ -85,5 +86,20 @@ class _NotificationLinkWidgetState extends State<NotificationLinkWidget> {
         }).catchError((err) {
           print(err);
         }));
+  }
+
+  _showToast() {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('New Notification'),
+        action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              Scaffold.of(context).hideCurrentSnackBar();
+              showNotificationDialog();
+            }),
+      ),
+    );
   }
 }
