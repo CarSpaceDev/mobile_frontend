@@ -156,7 +156,7 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
-        //show an error dialog
+        showError(error: "We're currently having problems processing your request. Please try again");
         print(err);
         print("Error in add vehicle from code");
       });
