@@ -46,11 +46,20 @@ abstract class ApiService extends ChopperService {
   Future<Response> authorizeVehicleAddition(@Path('uid') ownerUid, @Path('code') code);
   //User Operations
 
+  @Get(path: '/user/{uid}')
+  Future<Response> getUserData({@Path('uid') String uid});
+
+  @Get(path: '/user/check-permissions/{uid}')
+  Future<Response> getVerificationStatus({@Path('uid') String uid});
+
   @Get(path: '/user/all')
   Future<Response> getAllUser();
 
   @Post(path: '/user/register/true')
   Future<Response> registerUser(@Body() Map<String, dynamic> body);
+
+  @Post(path: '/user/reserve/')
+  Future<Response> reserveLot(@Body() Map<String, dynamic> body);
 
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
@@ -86,6 +95,9 @@ abstract class ApiService extends ChopperService {
 
   @Get(path: '/partner/radius/{latitude}/{longitude}/{radiusInKm}')
   Future<Response> getLotsInRadius({@Path('latitude') double latitude, @Path('longitude') double longitude, @Path('radiusInKm') double kmRadius});
+
+  @Get(path: '/partner/lot/{uid}')
+  Future<Response> getLot({@Path('uid') String uid});
 
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);

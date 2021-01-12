@@ -19,6 +19,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
+import 'LotReservation.dart';
 import 'NotificationList.dart';
 import 'SuggestedLocationCard.dart';
 
@@ -270,13 +271,11 @@ class _HomeScreenState extends State<HomeScreen> {
       print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
-        print(res.body);
         if (res.body.length > 0) {
           for (int i = 0; i < res.body.length; i++) {
             _lotMarkers.add(Marker(
                 markerId: MarkerId(res.body[i]["lotId"]),
                 onTap: () {
-                  print(res.body[i]);
                   setState(() {
                     showLotCards = true;
                   });
@@ -354,6 +353,21 @@ class _HomeScreenState extends State<HomeScreen> {
           destinationPosition = searchPosition;
         });
     }
+  }
+
+  _showReservationDialog(dynamic lotId) {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: LotReservation(lotId)),
+                ),
+              ),
+            ));
   }
 
   BottomNavigationBar homeBottomNavBar() {
@@ -494,8 +508,9 @@ class _HomeScreenState extends State<HomeScreen> {
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
         callback: () {
-          print("calling intent");
-          navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
+          _showReservationDialog(lot["lotId"]);
+          // print("calling intent");
+          // navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
         },
       ));
     });
