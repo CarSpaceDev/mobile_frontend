@@ -19,9 +19,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
+import 'LotReservation.dart';
 import 'NotificationList.dart';
 import 'SuggestedLocationCard.dart';
-import 'LotReservation.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -353,21 +353,6 @@ class _HomeScreenState extends State<HomeScreen> {
           destinationPosition = searchPosition;
         });
     }
-  }
-
-  _showNotificationDialog() {
-    return showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: new SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(child: NotificationList()),
-                ),
-              ),
-            ));
   }
 
   _showReservationDialog(dynamic lotId) {
