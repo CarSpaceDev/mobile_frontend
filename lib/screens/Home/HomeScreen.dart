@@ -7,8 +7,9 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/PushMessagingService.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -18,6 +19,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
+import 'NotificationList.dart';
+import 'SuggestedLocationCard.dart';
 import 'LotReservation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,14 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Marker destinationMarker;
   List<dynamic> lotsInRadius = [];
   PageController _pageController = new PageController();
-  StreamSubscription notificationSubscription;
   @override
   void initState() {
     super.initState();
-    notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
-      print("new event from stream");
-      print(event);
-    });
+
     _searchController = TextEditingController(text: "");
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
@@ -79,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     positionStream.cancel();
     _searchController.dispose();
-    notificationSubscription.cancel();
     super.dispose();
   }
 
@@ -92,13 +90,13 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text("Profile"),
+              child: Text(locator<AuthService>().currentUser().displayName),
             ),
             ListTile(
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    _showNotificationDialog();
+                    showNotificationDialog();
                   },
                   child: Text("Notifications")),
             ),
@@ -125,9 +123,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       backgroundColor: themeData.primaryColor,
-      appBar: homeAppBar(context, "Map", () {
-        _showNotificationDialog();
-      }),
+      appBar: homeAppBar(
+        context,
+        "Map",
+        NotificationLinkWidget(),
+      ),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
         child: Stack(
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onCameraMove: _onCameraMove,
                       myLocationButtonEnabled: true,
                       mapToolbarEnabled: false,
-                      zoomControlsEnabled: false,
+                      zoomControlsEnabled: true,
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
                         target: LatLng(1, 1),
@@ -218,6 +218,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ],
         ),
+      ),
+    );
+  }
+
+  showNotificationDialog() {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Dialog(
+        insetPadding: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: NotificationList(),
       ),
     );
   }
@@ -398,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AppBar homeAppBar(BuildContext context, String appBarTitle, Function onPressed) {
+  AppBar homeAppBar(BuildContext context, String appBarTitle, Widget action) {
     return AppBar(
       backgroundColor: themeData.primaryColor,
       brightness: Brightness.dark,
@@ -411,9 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Container(child: Icon(Icons.menu)),
               )),
-      actions: <Widget>[
-        IconButton(color: Colors.white, onPressed: onPressed, icon: Icon(Icons.notifications)),
-      ],
+      actions: <Widget>[action],
       bottom: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 52),
         child: LocationSearchWidget(
@@ -506,9 +516,10 @@ class _HomeScreenState extends State<HomeScreen> {
   generateLotCards() {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
+      print(lot);
       result.add(SuggestedLocationCard(
-        name: lot["lotId"],
-        address: lot["address"],
+        name: lot["address"],
+        address: "Available hours " + lot["availableFrom"].toString() + " - " + lot["availableTo"],
         price: double.parse(lot["pricing"].toString()),
         distance: lot["distance"],
         callback: () {
@@ -525,141 +536,5 @@ class _HomeScreenState extends State<HomeScreen> {
     final AndroidIntent intent =
         AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
     intent.launch();
-  }
-}
-
-class SuggestedLocationCard extends StatelessWidget {
-  final String name;
-  final String address;
-  final double price;
-  final double distance;
-  final Function callback;
-  SuggestedLocationCard({Key key, this.name, this.address, this.price, this.distance, this.callback}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * .15,
-      child: Card(
-        elevation: 6.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        child: Container(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                name,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                address,
-                style: TextStyle(color: Colors.grey),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(Icons.location_on, size: 16),
-                      Text(
-                        '${distance.toStringAsFixed(2)} km',
-                        style: TextStyle(fontSize: 16),
-                      )
-                    ],
-                  ),
-                  InkWell(onTap: callback, child: Text("Select Lot", style: TextStyle(fontSize: 16))),
-                  Text("${price.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class NotificationList extends StatefulWidget {
-  @override
-  _NotificationListState createState() => _NotificationListState();
-}
-
-class _NotificationListState extends State<NotificationList> {
-  List<Map<String, dynamic>> notifications = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: ListView.builder(
-                itemCount: 15,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    margin: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Parking space is now available',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Text(
-                                'Jan. 07,2020 12:33 pm',
-                                style: TextStyle(color: Colors.white70, fontSize: 10),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {},
-                            child: Icon(Icons.more_horiz),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          ),
-          Positioned(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Notifications', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.close)),
-              ],
-            ),
-          )),
-        ],
-      ),
-    ));
   }
 }

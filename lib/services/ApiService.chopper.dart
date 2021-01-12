@@ -38,6 +38,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> getVehicleAddAuthDetails(
+      {String uid, String code}) {
+    final $url = '/vehicle/owner/authorization/details/$uid/$code';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> addVehicle(dynamic uid, Map<String, dynamic> body) {
     final $url = '/user/addVehicle/$uid';
     final $body = body;
@@ -72,6 +80,14 @@ class _$ApiService extends ApiService {
   Future<Response<dynamic>> getVerificationStatus({String uid}) {
     final $url = '/user/check-permissions/$uid';
     final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> authorizeVehicleAddition(
+      dynamic ownerUid, dynamic code) {
+    final $url = '/vehicle/authorize-vehicle-addition/$ownerUid/$code';
+    final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
@@ -121,6 +137,21 @@ class _$ApiService extends ApiService {
   Future<Response<dynamic>> checkExistence({String uid}) {
     final $url = '/user/google/$uid';
     final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getNotifications({String uid}) {
+    final $url = '/user/notifications/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> setNotificationAsSeen(
+      {String uid, String notificationUid}) {
+    final $url = '/user/notifications/$uid/$notificationUid';
+    final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
