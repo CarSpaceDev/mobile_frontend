@@ -15,12 +15,15 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
-
+  FocusNode fnEmail;
+  FocusNode fnPass;
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
+    fnEmail = FocusNode();
+    fnPass = FocusNode();
   }
 
   @override
@@ -37,13 +40,10 @@ class _LandingScreenState extends State<LandingScreen> {
           },
           child: RichText(
             text: TextSpan(
-              style: new TextStyle(
-                  color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
+              style: new TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
               children: <TextSpan>[
                 TextSpan(text: 'Already have an account? '),
-                TextSpan(
-                    text: 'Log In',
-                    style: new TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: 'Log In', style: new TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -55,33 +55,38 @@ class _LandingScreenState extends State<LandingScreen> {
 
   openBottomModal(LoginBloc loginBloc) {
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
         backgroundColor: Colors.white,
         isDismissible: true,
         context: context,
         builder: (context) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: MediaQuery.of(context).viewInsets,
             child: Container(
-              height: SizeConfig.heightMultiplier * 50,
+              padding: EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    'Login',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: SizeConfig.textMultiplier * 3.25),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Login',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: SizeConfig.textMultiplier * 3.25),
+                    ),
                   ),
                   TextField(
                     controller: _emailController,
-                    style: TextStyle(color: Colors.black, fontSize: 20),
+                    focusNode: fnEmail,
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    onEditingComplete: () {
+                      fnPass.requestFocus();
+                    },
                     decoration: InputDecoration(
-                      hintText: "enter email",
-                      hintStyle: TextStyle(fontSize: 20, color: Colors.black),
+                      hintText: "Email",
+                      hintStyle: TextStyle(fontSize: 16, color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -89,67 +94,126 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                   TextField(
                     controller: _passwordController,
-                    style: TextStyle(color: Colors.black, fontSize: 20),
+                    obscureText: true,
+                    focusNode: fnPass,
+                    onEditingComplete: () {
+                      fnPass.unfocus();
+                      if (_emailController.text.isEmpty) {
+                        showError(error: "Email cannot be empty");
+                      } else if (_passwordController.text.isEmpty) {
+                        showError(error: "Password cannot be empty");
+                      } else if (!validateEmail(_emailController.text)) {
+                        showError(error: 'Enter a valid email address');
+                      } else {
+                        Navigator.of(context).pop();
+                        loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                      }
+                    },
+                    style: TextStyle(color: Colors.black, fontSize: 16),
                     decoration: InputDecoration(
-                      hintText: "enter password",
-                      hintStyle: TextStyle(fontSize: 20, color: Colors.black),
+                      hintText: "Password",
+                      hintStyle: TextStyle(fontSize: 16, color: Colors.black),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
                     ),
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      loginBloc.add(LogInEmailEvent(
-                          email: _emailController.text,
-                          password: _passwordController.text));
-                    },
-                    color: themeData.secondaryHeaderColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Container(
-                      width: SizeConfig.widthMultiplier * 50,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(
-                            'Login with Email/Password',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: SizeConfig.textMultiplier * 2.5),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FlatButton(
+                      onPressed: () {
+                        if (_emailController.text.isEmpty) {
+                          showError(error: "Email cannot be empty");
+                        } else if (_passwordController.text.isEmpty) {
+                          showError(error: "Password cannot be empty");
+                        } else if (!validateEmail(_emailController.text)) {
+                          showError(error: 'Enter a valid email address');
+                        } else {
+                          Navigator.of(context).pop();
+                          loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                        }
+                      },
+                      color: themeData.secondaryHeaderColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      child: Container(
+                        width: SizeConfig.widthMultiplier * 50,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              'Sign in',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  FlatButton.icon(
-                    color: themeData.secondaryHeaderColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      loginBloc.add(LoginGoogleEvent());
-                    },
-                    icon: Icon(
-                      FontAwesomeIcons.google,
-                      color: Colors.white,
-                    ),
-                    label: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        'Login with Google',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: SizeConfig.textMultiplier * 2.5),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FlatButton.icon(
+                      color: themeData.secondaryHeaderColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        loginBloc.add(LoginGoogleEvent());
+                      },
+                      icon: Icon(
+                        FontAwesomeIcons.google,
+                        color: Colors.white,
+                      ),
+                      label: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          'Login with Google',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+          );
+        });
+  }
+
+  bool validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    return (!regex.hasMatch(value)) ? false : true;
+  }
+
+  void showError({@required String error}) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.error,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      error,
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }
@@ -186,22 +250,15 @@ class LandingContent extends StatelessWidget {
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: SizeConfig.textMultiplier * 2),
+                          style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
                           children: <TextSpan>[
                             TextSpan(
                               text: "CarSpace\n",
-                              style: TextStyle(
-                                  fontSize: SizeConfig.textMultiplier * 5,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: SizeConfig.textMultiplier * 5, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
                               text: "...because your parking matters",
-                              style: TextStyle(
-                                  fontSize: SizeConfig.textMultiplier * 2,
-                                  color: Colors.white),
+                              style: TextStyle(fontSize: SizeConfig.textMultiplier * 2, color: Colors.white),
                             )
                           ],
                         ),
@@ -212,8 +269,7 @@ class LandingContent extends StatelessWidget {
                           context.read<LoginBloc>().add(NavigateToEulaEvent());
                         },
                         color: themeData.secondaryHeaderColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         child: Container(
                           width: SizeConfig.widthMultiplier * 60,
                           height: SizeConfig.heightMultiplier * 6,
@@ -221,9 +277,7 @@ class LandingContent extends StatelessWidget {
                             child: Text(
                               "Get Started",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: SizeConfig.textMultiplier * 2),
+                              style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2),
                             ),
                           ),
                         ),
