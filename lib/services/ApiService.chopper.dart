@@ -38,20 +38,6 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> getUserData({String uid}) {
-    final $url = '/user/$uid';
-    final $request = Request('GET', $url, client.baseUrl);
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getVerificationStatus({String uid}) {
-    final $url = '/user/check-permissions/$uid';
-    final $request = Request('GET', $url, client.baseUrl);
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
   Future<Response<dynamic>> addVehicle(dynamic uid, Map<String, dynamic> body) {
     final $url = '/user/addVehicle/$uid';
     final $body = body;
@@ -72,6 +58,20 @@ class _$ApiService extends ApiService {
       dynamic newUserUid, dynamic code) {
     final $url = '/vehicle/add-from-code/$newUserUid/$code';
     final $request = Request('PATCH', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getUserData({String uid}) {
+    final $url = '/user/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getVerificationStatus({String uid}) {
+    final $url = '/user/check-permissions/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
