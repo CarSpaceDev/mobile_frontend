@@ -47,16 +47,19 @@ class _LotReservationState extends State<LotReservation> {
                 return Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                         child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 25, bottom: 8, right: 8, left: 8),
+                          padding: const EdgeInsets.only(
+                              top: 25, bottom: 8, right: 8, left: 8),
                           child: Text(
                             '${snapshot.data['address']}',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                         ClipRRect(
@@ -69,26 +72,35 @@ class _LotReservationState extends State<LotReservation> {
                             )),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Text("Rating : \n$_verificationStatus", textAlign: TextAlign.center),
+                          child: Text("Rating : \n$_verificationStatus",
+                              textAlign: TextAlign.center),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Text("Price :\n${snapshot.data['pricing']} Php / Hour", textAlign: TextAlign.center),
+                          child: Text(
+                              "Price :\n${snapshot.data['pricing']} Php / Hour",
+                              textAlign: TextAlign.center),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Text("Available Days :\n$namedDays", textAlign: TextAlign.center),
+                          child: Text("Available Days :\n$namedDays",
+                              textAlign: TextAlign.center),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Text("Available from: \n${snapshot.data['availableFrom']}H - ${snapshot.data['availableTo']}H ", textAlign: TextAlign.center),
+                          child: Text(
+                              "Available from: \n${snapshot.data['availableFrom']}H - ${snapshot.data['availableTo']}H ",
+                              textAlign: TextAlign.center),
                         ),
                         if (!noVehicles)
                           vehiclesPresent()
                         else
                           Padding(
-                            padding: const EdgeInsets.only(top: 20, right: 4, left: 4, bottom: 4),
-                            child: Text("No vehicles on file. Please register a vehicle to reserve a lot ", textAlign: TextAlign.center),
+                            padding: const EdgeInsets.only(
+                                top: 20, right: 4, left: 4, bottom: 4),
+                            child: Text(
+                                "No vehicles on file. Please register a vehicle to reserve a lot ",
+                                textAlign: TextAlign.center),
                           ),
                       ],
                     )),
@@ -105,7 +117,8 @@ class _LotReservationState extends State<LotReservation> {
                                   _reserveButton();
                               },
                               color: themeData.secondaryHeaderColor,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
                               child: Container(
                                 width: SizeConfig.widthMultiplier * 50,
                                 child: Center(
@@ -114,7 +127,10 @@ class _LotReservationState extends State<LotReservation> {
                                     child: Text(
                                       'Next',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize:
+                                              SizeConfig.textMultiplier * 2.5),
                                     ),
                                   ),
                                 ),
@@ -134,7 +150,8 @@ class _LotReservationState extends State<LotReservation> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                           backgroundColor: themeData.primaryColor,
                         ),
                         Text(
@@ -150,11 +167,14 @@ class _LotReservationState extends State<LotReservation> {
           ),
           Positioned(
               child: Padding(
-            padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
+            padding:
+                const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Reserve Lot', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Reserve Lot',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -229,7 +249,8 @@ class _LotReservationState extends State<LotReservation> {
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('Error proceeding to type selection - please have your account verified'),
+                    Text(
+                        'Error proceeding to type selection - please have your account verified'),
                   ],
                 ),
               ),
@@ -275,7 +296,13 @@ class _LotReservationState extends State<LotReservation> {
           }
         });
     if (choice == 0) {
-      var body = ({"userId": _userId, "lotId": _lotId, "partnerId": _partnerId, "vehicleId": selectedVehicle, "reservationType": 0});
+      var body = ({
+        "userId": _userId,
+        "lotId": _lotId,
+        "partnerId": _partnerId,
+        "vehicleId": selectedVehicle,
+        "reservationType": 0
+      });
       print(body);
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();
@@ -284,7 +311,13 @@ class _LotReservationState extends State<LotReservation> {
         print(err);
       });
     } else if (choice == 1) {
-      var body = ({"userId": _userId, "lotId": _lotId, "partnerId": _partnerId, "vehicleId": selectedVehicle, "reservationType": 1});
+      var body = ({
+        "userId": _userId,
+        "lotId": _lotId,
+        "partnerId": _partnerId,
+        "vehicleId": selectedVehicle,
+        "reservationType": 1
+      });
       print(body);
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();
@@ -302,8 +335,10 @@ class _LotReservationState extends State<LotReservation> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent =
-        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
     intent.launch();
   }
 
@@ -334,11 +369,14 @@ class _LotReservationState extends State<LotReservation> {
               ),
             ),
             actions: [
-              FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close")),
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close")),
               FlatButton(
                 child: Text("Navigate to Lot"),
                 onPressed: () {
-                  navigateViaGoogleMaps(_fullLotData['g']['geopoint']['_latitude'], _fullLotData['g']['geopoint']['_longitude']);
+                  navigateViaGoogleMaps(
+                      _fullLotData['g']['geopoint']['_latitude'],
+                      _fullLotData['g']['geopoint']['_longitude']);
                 },
               )
             ],
@@ -372,7 +410,10 @@ class _LotReservationState extends State<LotReservation> {
                 ),
               ),
             ),
-            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close"))
+            ],
           );
         });
   }
@@ -420,17 +461,21 @@ class _LotReservationState extends State<LotReservation> {
     return Column(children: [
       Padding(
         padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 0),
-        child: Text("----------------------------", textAlign: TextAlign.center),
+        child:
+            Text("----------------------------", textAlign: TextAlign.center),
       ),
       Padding(
         padding: const EdgeInsets.only(top: 2, left: 4, right: 4, bottom: 0),
-        child: Text("Selected Vehicle: $selectedVehicle ", textAlign: TextAlign.center),
+        child: Text("Selected Vehicle: $selectedVehicle ",
+            textAlign: TextAlign.center),
       ),
       Padding(
         padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 0),
         child: Text("Select Vehicle :", textAlign: TextAlign.center),
       ),
-      Padding(padding: const EdgeInsets.only(top: 0, left: 4, right: 4, bottom: 0), child: setupAlertDialogueContainer()),
+      Padding(
+          padding: const EdgeInsets.only(top: 0, left: 4, right: 4, bottom: 0),
+          child: setupAlertDialogueContainer()),
     ]);
   }
 
