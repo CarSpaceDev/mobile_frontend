@@ -54,8 +54,7 @@ class CSUser {
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
         credits = json['credits'] as int,
-        phoneNumber =
-            json['phoneNumber'] != null ? json['phoneNumber'] as String : null,
+        phoneNumber = json['phoneNumber'] != null ? json['phoneNumber'].toString() : null,
         photoUrl = json['photoUrl'] as String,
         partnerAccess = json['partnerAccess'] as int,
         userAccess = json['userAccess'] as int,

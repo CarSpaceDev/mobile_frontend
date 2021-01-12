@@ -150,16 +150,34 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
       User user = await authService.loginGoogle();
-      //case where a user is in the google auth cache
-      var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
-      if (userFromApi == null) {
-        //if said user is not registered in db
-        yield ShowEulaScreen();
-      } else {
-        //case where the user exists
-        CSUser userData = CSUser.fromJson(userFromApi);
-        yield checkUserDataForMissingInfo(user: userData);
-      }
+      if (user != null) {
+        //case where a user is in the google auth cache
+        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+        if (userFromApi == null) {
+          //if said user is not registered in db
+          yield ShowEulaScreen();
+        } else {
+          //case where the user exists
+          CSUser userData = CSUser.fromJson(userFromApi);
+          yield checkUserDataForMissingInfo(user: userData);
+        }
+      } else
+        yield LoggedOut();
+    } else if (event is LogInEmailEvent) {
+      yield LoginInProgress();
+      User user = await authService.signInWithEmail(event.email, event.password);
+      if (user != null) {
+        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+        if (userFromApi == null) {
+          //if said user is not registered in db
+          yield ShowEulaScreen();
+        } else {
+          //case where the user exists
+          CSUser userData = CSUser.fromJson(userFromApi);
+          yield checkUserDataForMissingInfo(user: userData);
+        }
+      } else
+        yield LoggedOut();
     } else if (event is SubmitRegistrationEvent) {
       yield WaitingLogin(message: "Creating your account");
       print(event.payload.toJson());
@@ -176,21 +194,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
       }
-      print(result.statusCode);
-      print(result.error);
-    } else if (event is LogInEmailEvent) {
-      yield LoginInProgress();
-      CSUser user = await authService.signInWithEmail(event.email, event.password);
-      print(user.toJson());
-      print(user != null);
-      if (user != null) {
-        yield AuthorizationSuccess();
-//        user = await getUserDataFromApi(user);
-        print("Logged in!!!!");
-        setPushTokenCache();
-        navService.pushReplaceNavigateTo(HomeRoute);
-      } else
-        yield LoggedOut();
     }
   }
 
