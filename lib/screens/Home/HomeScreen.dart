@@ -5,6 +5,7 @@ import 'package:android_intent/android_intent.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/model/Lot.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
@@ -48,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Marker> _lotMarkers = [];
   Marker driverMarker;
   Marker destinationMarker;
-  List<dynamic> lotsInRadius = [];
+  List<Lot> lotsInRadius = [];
   PageController _pageController = new PageController();
   @override
   void initState() {
@@ -202,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPageChanged: (index) {
                           mapController?.animateCamera(CameraUpdate.newCameraPosition(
                             CameraPosition(
-                              target: LatLng(lotsInRadius[index]["coordinates"][0], lotsInRadius[index]["coordinates"][1]),
+                              target: LatLng(lotsInRadius[index].coordinates[0], lotsInRadius[index].coordinates[1]),
                               zoom: 17.0,
                             ),
                           ));
@@ -271,6 +272,10 @@ class _HomeScreenState extends State<HomeScreen> {
       print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
+        List<Map<String, dynamic>>.from(res.body).forEach((element) {
+          lotsInRadius.add(Lot.fromJson(element));
+        });
+        print(lotsInRadius);
         if (res.body.length > 0) {
           for (int i = 0; i < res.body.length; i++) {
             _lotMarkers.add(Marker(
@@ -286,7 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
         setState(() {
-          lotsInRadius = res.body;
           if (destinationMarker != null) {
             print("destinationMarker is not null");
             _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
@@ -503,12 +507,12 @@ class _HomeScreenState extends State<HomeScreen> {
     lotsInRadius.forEach((lot) {
       print(lot);
       result.add(SuggestedLocationCard(
-        name: lot["address"],
-        address: "Available hours " + lot["availableFrom"].toString() + " - " + lot["availableTo"],
-        price: double.parse(lot["pricing"].toString()),
-        distance: lot["distance"],
+        name: lot.address.toString(),
+        address: "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
+        price: lot.pricing,
+        distance: lot.distance,
         callback: () {
-          _showReservationDialog(lot["lotId"]);
+          _showReservationDialog(lot.lotId);
           // print("calling intent");
           // navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
         },
