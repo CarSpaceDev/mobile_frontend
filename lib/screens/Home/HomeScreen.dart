@@ -272,10 +272,10 @@ class _HomeScreenState extends State<HomeScreen> {
       print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
+        lotsInRadius = [];
         List<Map<String, dynamic>>.from(res.body).forEach((element) {
           lotsInRadius.add(Lot.fromJson(element));
         });
-        print(lotsInRadius);
         if (res.body.length > 0) {
           for (int i = 0; i < res.body.length; i++) {
             _lotMarkers.add(Marker(
@@ -284,7 +284,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     showLotCards = true;
                   });
-                  _pageController.jumpToPage(i);
+                  setState(() {
+                    _pageController.jumpToPage(i);
+                  });
                 },
                 icon: _lotIcon,
                 position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
@@ -505,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
   generateLotCards() {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
-      print(lot);
+      print(lot.toString());
       result.add(SuggestedLocationCard(
         name: lot.address.toString(),
         address: "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),

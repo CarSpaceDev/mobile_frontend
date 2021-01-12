@@ -37,6 +37,29 @@ class Lot {
         capacity = json["capacity"] as int,
         coordinates = List<double>.from(json["coordinates"]),
         distance = json["distance"] as double;
+
+  Map<String, dynamic> toJson() {
+    return {
+      "lotId": lotId,
+      "partnerId": partnerId,
+      "isActive": isActive,
+      "isDisabled": isDisabled,
+      "lotImage": lotImage,
+      "address": address.toString(),
+      "pricing": pricing,
+      "parkingType": parkingType,
+      "vehicleTypeAccepted": vehicleTypeAccepted,
+      "rating": rating,
+      "numberOfRatings": numberOfRatings,
+      "availableFrom": availableFrom,
+      "availableTo": availableTo,
+      "availableDays": availableDays,
+      "availableSlots": availableSlots,
+      "capacity": capacity,
+      "coordinates": coordinates,
+      "distance": distance,
+    };
+  }
 }
 
 class LotAddress {
