@@ -4,7 +4,7 @@ class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
   // static const kApiUrl = "https://api.zdgph.tech";
-  static const kApiUrl = "https://dbdbd9055841.ngrok.io";
+  static const kApiUrl = "https://22146faed104.ngrok.io";
 }
 
 final ThemeData themeData = new ThemeData(

@@ -796,7 +796,7 @@ class _LotReservationState extends State<LotReservation> {
                             child: Image.network(
                               snapshot.data['lotImage'],
                               fit: BoxFit.fill,
-                              height: 175,
+                              height: 150,
                               width: 250,
                             )),
                         Padding(
@@ -854,7 +854,7 @@ class _LotReservationState extends State<LotReservation> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(10),
                                     child: Text(
-                                      'Reserve now',
+                                      'Next',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           color: Colors.white,
@@ -974,12 +974,12 @@ class _LotReservationState extends State<LotReservation> {
         builder: (_) {
           if (_verificationStatus < 210) {
             return AlertDialog(
-              title: Text('Error Reserving'),
+              title: Text('Error Proceeding'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
                     Text(
-                        'Error reserving lot - please have your account verified'),
+                        'Error proceeding to type selection - please have your account verified'),
                   ],
                 ),
               ),
@@ -994,49 +994,126 @@ class _LotReservationState extends State<LotReservation> {
             );
           } else {
             return AlertDialog(
-              title: Text('Confirm Reservation'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('Would you like to proceed with your reservation?'),
+                    Text('Please select type'),
                   ],
                 ),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Close'),
+                  child: Text('Back'),
                   onPressed: () {
-                    Navigator.of(context).pop(false);
+                    Navigator.of(context).pop(2);
                   },
                 ),
                 TextButton(
-                  child: Text('Confirm'),
+                  child: Text('Book'),
                   onPressed: () {
-                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop(1);
+                  },
+                ),
+                TextButton(
+                  child: Text('Reserve'),
+                  onPressed: () {
+                    Navigator.of(context).pop(0);
                   },
                 ),
               ],
             );
           }
         });
-    if (choice) {
+    if (choice == 0) {
       var body = ({
         "userId": _userId,
         "lotId": _lotId,
         "partnerId": _partnerId,
-        "vehicleId": selectedVehicle
+        "vehicleId": selectedVehicle,
+        "reservationType": 0
       });
       print(body);
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();
-        showSuccess(value.body);
+        showMessage(value.body);
       }).catchError((err) {
         print(err);
       });
+    } else if (choice == 1) {
+      var body = ({
+        "userId": _userId,
+        "lotId": _lotId,
+        "partnerId": _partnerId,
+        "vehicleId": selectedVehicle,
+        "reservationType": 1
+      });
+      print(body);
+      await locator<ApiService>().reserveLot(body).then((value) {
+        Navigator.of(context).pop();
+        if (value.body == "Reservation Success") {
+          showMessageAndUseIntent("Lot Booked");
+        } else {
+          showMessage(value.body);
+        }
+      }).catchError((err) {
+        print(err);
+      });
+    } else {
+      print('Back');
     }
   }
 
-  void showSuccess(dynamic v) {
+  navigateViaGoogleMaps(double lat, double lng) {
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
+  }
+
+  showMessageAndUseIntent(dynamic v) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "$v \n",
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close")),
+              FlatButton(
+                child: Text("Navigate to Lot"),
+                onPressed: () {
+                  navigateViaGoogleMaps(
+                      _fullLotData['g']['geopoint']['_latitude'],
+                      _fullLotData['g']['geopoint']['_longitude']);
+                },
+              )
+            ],
+          );
+        });
+  }
+
+  void showMessage(dynamic v) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1078,6 +1155,7 @@ class _LotReservationState extends State<LotReservation> {
       _lotId = res.body['lotId'];
       _partnerId = res.body['partnerId'];
       _fullLotData = res.body;
+      print(_fullLotData);
     });
     return returnData;
   }
@@ -1088,7 +1166,7 @@ class _LotReservationState extends State<LotReservation> {
     _userId = uid;
     populateVehicles();
     await locator<ApiService>().getVerificationStatus(uid: uid).then((data) {
-      _verificationStatus = data.body;
+      _verificationStatus = data.body['userAccess'];
       returnData = data.body;
     });
     return returnData;
@@ -1111,23 +1189,28 @@ class _LotReservationState extends State<LotReservation> {
   Widget vehiclesPresent() {
     return Column(children: [
       Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 0),
+        child:
+            Text("----------------------------", textAlign: TextAlign.center),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 2, left: 4, right: 4, bottom: 0),
         child: Text("Selected Vehicle: $selectedVehicle ",
             textAlign: TextAlign.center),
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 12, left: 4, right: 4, bottom: 2),
+        padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 0),
         child: Text("Select Vehicle :", textAlign: TextAlign.center),
       ),
       Padding(
-          padding: const EdgeInsets.all(2.0),
+          padding: const EdgeInsets.only(top: 0, left: 4, right: 4, bottom: 0),
           child: setupAlertDialogueContainer()),
     ]);
   }
 
   setupAlertDialogueContainer() {
     return Container(
-      height: 50.0, // Change as per your requirement
+      height: 40.0, // Change as per your requirement
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: vehicles.length,
