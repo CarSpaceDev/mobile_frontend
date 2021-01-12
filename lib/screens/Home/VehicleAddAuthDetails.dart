@@ -33,6 +33,8 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
         Navigator.of(context).pop();
         showError(error: json.decode(value.error)["error"]);
       }
+    }).catchError((err) {
+      showError(error: "We're currently having difficulty adding this vehicle. Please try again");
     });
     super.initState();
   }
@@ -149,15 +151,13 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
         if (value.statusCode == 200) {
           //show success dialog
           print("Success");
-          Navigator.of(context).pop();
-          showSuccess();
+          // showSuccess();
         } else {
           print("Fail");
-          Navigator.of(context).pop();
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
-        //show an error dialog
+        showError(error: "We're currently having problems processing your request. Please try again");
         print(err);
         print("Error in add vehicle from code");
       });

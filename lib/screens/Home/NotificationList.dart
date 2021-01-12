@@ -34,7 +34,7 @@ class _NotificationListState extends State<NotificationList> {
         notifications = List<Map<String, dynamic>>.from(v.body);
         notifications.forEach((v) {
           NotificationFromApi temp = NotificationFromApi.fromJson(v);
-          nWidgets.add(NotificationWidget(data: temp, callback: temp.type == 0 ? _refreshList : null));
+          nWidgets.add(NotificationWidget(data: temp, callback: _refreshList));
         });
         setState(() {
           retrieval = true;

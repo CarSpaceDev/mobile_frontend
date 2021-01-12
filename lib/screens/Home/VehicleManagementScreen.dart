@@ -510,6 +510,9 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
         Navigator.of(context).pop();
         showError(error: json.decode(value.error)["error"]);
       }
+    }).catchError((error) {
+      Navigator.of(context).pop();
+      showError(error: "Error retrieving data. Please try again.");
     });
     super.initState();
   }
@@ -621,7 +624,6 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           );
         });
     if (choice) {
-      Navigator.of(context).pop();
       locator<ApiService>().addVehicleFromCode(locator<AuthService>().currentUser().uid, code).then((value) {
         if (value.statusCode == 200) {
           //show success dialog
@@ -634,7 +636,8 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
-        //show an error dialog
+        Navigator.of(context).pop();
+        showError(error: "An error occurred in adding the vehicle, please try again.");
         print(err);
         print("Error in add vehicle from code");
       });
