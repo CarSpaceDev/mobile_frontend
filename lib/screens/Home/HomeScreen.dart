@@ -196,9 +196,9 @@ class _HomeScreenState extends State<HomeScreen> {
             lotsInRadius.length != 0 && showLotCards
                 ? Positioned(
                     bottom: SizeConfig.widthMultiplier * 8,
-                    child: SizedBox(
-                      width: SizeConfig.widthMultiplier * 100,
-                      height: SizeConfig.heightMultiplier * 15,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / (16 / 9),
                       child: PageView(
                         onPageChanged: (index) {
                           mapController?.animateCamera(CameraUpdate.newCameraPosition(
@@ -276,20 +276,18 @@ class _HomeScreenState extends State<HomeScreen> {
         List<Map<String, dynamic>>.from(res.body).forEach((element) {
           lotsInRadius.add(Lot.fromJson(element));
         });
-        if (res.body.length > 0) {
-          for (int i = 0; i < res.body.length; i++) {
+        if (lotsInRadius.length > 0) {
+          for (int i = 0; i < lotsInRadius.length; i++) {
             _lotMarkers.add(Marker(
-                markerId: MarkerId(res.body[i]["lotId"]),
+                markerId: MarkerId(lotsInRadius[i].lotId),
                 onTap: () {
                   setState(() {
-                    showLotCards = true;
+                    showLotCards = false;
                   });
-                  setState(() {
-                    _pageController.jumpToPage(i);
-                  });
+                  _showLotDialog(lotsInRadius[i]);
                 },
                 icon: _lotIcon,
-                position: LatLng(res.body[i]["coordinates"][0], res.body[i]["coordinates"][1])));
+                position: LatLng(lotsInRadius[i].coordinates[0], lotsInRadius[i].coordinates[1])));
           }
         }
         setState(() {
@@ -303,6 +301,24 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+  }
+
+  _showLotDialog(Lot v) {
+    return showDialog(
+        context: context,
+        builder: (_) => Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.symmetric(horizontal: 8),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: SuggestedLocationCard(
+                  lot: v,
+                  callback: () {
+                    _showReservationDialog(v.lotId);
+                  },
+                ),
+              ),
+            ));
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -508,12 +524,14 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
       print(lot.toString());
-      result.add(SuggestedLocationCard(
-        lot: lot,
-        callback: () {
-          _showReservationDialog(lot.lotId);
-        },
-      ));
+      result.add(
+        SuggestedLocationCard(
+          lot: lot,
+          callback: () {
+            _showReservationDialog(lot.lotId);
+          },
+        ),
+      );
     });
     return result;
   }

@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/model/Lot.dart';
 import "package:flutter/material.dart";
+import 'package:photo_view/photo_view.dart';
 
 class SuggestedLocationCard extends StatelessWidget {
   final Lot lot;
@@ -26,9 +28,29 @@ class SuggestedLocationCard extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              Text(
-                "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
-                style: TextStyle(color: Colors.grey),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: InkWell(
+                      onTap: () {
+                        _showExpandedImage(context);
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: lot.lotImage[0],
+                        progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
+                ),
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -53,5 +75,31 @@ class SuggestedLocationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _showExpandedImage(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (_) => Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.symmetric(horizontal: 8),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: InkWell(
+                    onTap: () {},
+                    child: PhotoView(
+                      // imageProvider: CachedNetworkImage(
+                      //   imageUrl: lot.lotImage[0],
+                      //   progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                      //   errorWidget: (context, url, error) => Icon(Icons.error),
+                      // ),
+                      imageProvider: CachedNetworkImageProvider(lot.lotImage[0]),
+                    ),
+                  ),
+                ),
+              ),
+            ));
   }
 }
