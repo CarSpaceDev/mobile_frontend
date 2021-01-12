@@ -81,22 +81,20 @@ class SuggestedLocationCard extends StatelessWidget {
     return showDialog(
         context: context,
         builder: (_) => Dialog(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               insetPadding: EdgeInsets.symmetric(horizontal: 8),
               child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: InkWell(
-                    onTap: () {},
-                    child: PhotoView(
-                      // imageProvider: CachedNetworkImage(
-                      //   imageUrl: lot.lotImage[0],
-                      //   progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
-                      //   errorWidget: (context, url, error) => Icon(Icons.error),
-                      // ),
-                      imageProvider: CachedNetworkImageProvider(lot.lotImage[0]),
-                    ),
+                aspectRatio: 4 / 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PhotoView(
+                    backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                    // imageProvider: CachedNetworkImage(
+                    //   imageUrl: lot.lotImage[0],
+                    //   progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                    //   errorWidget: (context, url, error) => Icon(Icons.error),
+                    // ),
+                    imageProvider: CachedNetworkImageProvider(lot.lotImage[0]),
                   ),
                 ),
               ),
