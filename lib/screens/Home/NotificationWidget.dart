@@ -123,8 +123,9 @@ class _NotificationWidgetState extends State<NotificationWidget> {
               InkWell(
                 onTap: () async {
                   print(data.data["code"]);
-                  Navigator.of(context).pop();
-                  locator<ApiService>().setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
+                  locator<ApiService>().setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid).then((value) {
+                    Navigator.of(context).pop();
+                  });
                   showDialog(
                       barrierDismissible: false,
                       context: context,

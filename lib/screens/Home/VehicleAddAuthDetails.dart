@@ -144,6 +144,7 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
           );
         });
     if (choice) {
+      Navigator.of(context).pop();
       locator<ApiService>().authorizeVehicleAddition(locator<AuthService>().currentUser().uid, code).then((value) {
         if (value.statusCode == 200) {
           //show success dialog

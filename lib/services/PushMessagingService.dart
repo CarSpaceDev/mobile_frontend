@@ -1,20 +1,81 @@
 import 'dart:async';
 
+import 'package:carspace/screens/Home/NotificationList.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+
+import '../navigation.dart';
+import '../serviceLocator.dart';
 
 class PushMessagingService {
   FirebaseMessaging firebaseMessaging;
   String token;
   StreamController<Map<String, dynamic>> notificationsController;
   Stream notificationStream;
-
+  bool notificationShowing = false;
   PushMessagingService() {
     notificationsController = StreamController<Map<String, dynamic>>.broadcast();
     notificationStream = notificationsController.stream;
     firebaseMessaging = FirebaseMessaging();
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
+        print("Mod: $message");
+        if (message["data"]["recipient"] == locator<AuthService>().currentUser().uid) {
+          if (!notificationShowing) {
+            notificationShowing = true;
+            showDialog(
+                context: locator<NavigationService>().navigatorKey.currentContext,
+                builder: (_) => AlertDialog(
+                      actions: [
+                        FlatButton(
+                            onPressed: () {
+                              notificationShowing = false;
+                              print("Navigate");
+                              Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop();
+                              showDialog(
+                                barrierDismissible: false,
+                                context: locator<NavigationService>().navigatorKey.currentContext,
+                                builder: (_) => Dialog(
+                                  insetPadding: EdgeInsets.all(16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                                  child: NotificationList(),
+                                ),
+                              );
+                            },
+                            child: Text("Open notification")),
+                        FlatButton(
+                            onPressed: () {
+                              Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop();
+                              notificationShowing = false;
+                            },
+                            child: Text("Close"))
+                      ],
+                      actionsOverflowDirection: VerticalDirection.down,
+                      content: SingleChildScrollView(
+                        child: Container(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Icon(
+                                  Icons.notification_important,
+                                  color: Colors.grey,
+                                  size: 50,
+                                ),
+                              ),
+                              Text(
+                                message["notification"]["body"],
+                                textAlign: TextAlign.center,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ));
+          }
+        }
         notificationsController.add(message);
       },
       onLaunch: (Map<String, dynamic> message) async {

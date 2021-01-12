@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:carspace/model/Notification.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
-import 'package:carspace/services/PushMessagingService.dart';
 import 'package:flutter/material.dart';
 
 import '../../serviceLocator.dart';
@@ -36,12 +35,12 @@ class _NotificationLinkWidgetState extends State<NotificationLinkWidget> {
     }).catchError((err) {
       print(err);
     });
-    notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
-      setState(() {
-        newNotification = true;
-      });
-      _showToast();
-    });
+    // notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
+    //   setState(() {
+    //     newNotification = true;
+    //   });
+    //   _showToast();
+    // });
     super.initState();
   }
 

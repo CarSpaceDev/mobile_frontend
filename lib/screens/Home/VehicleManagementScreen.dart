@@ -18,8 +18,7 @@ import 'VehicleQRCodeGeneration.dart';
 
 class VehicleManagementScreen extends StatefulWidget {
   @override
-  _VehicleManagementScreenState createState() =>
-      _VehicleManagementScreenState();
+  _VehicleManagementScreenState createState() => _VehicleManagementScreenState();
 }
 
 class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
@@ -33,9 +32,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
   }
 
   void populateVehicles() {
-    locator<ApiService>()
-        .getVehicles(uid: locator<AuthService>().currentUser().uid)
-        .then((data) {
+    locator<ApiService>().getVehicles(uid: locator<AuthService>().currentUser().uid).then((data) {
       List<dynamic> vehiclesFromApi = new List.from(data.body);
       if (vehiclesFromApi.isEmpty) {
         noVehicles = true;
@@ -114,8 +111,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                             _showActionsDialog(index: index);
                           },
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
                             child: Align(
                                 alignment: Alignment.bottomRight,
                                 child: Icon(
@@ -137,12 +133,8 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                             aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
                               imageUrl: vehicles[index].vehicleImage,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) =>
-                                      LinearProgressIndicator(
-                                          value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
+                              progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -154,45 +146,30 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: RichText(
-                                text: TextSpan(
-                                    style: TextStyle(color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: 'Make : ',
-                                          style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: vehicles[index].make)
-                                    ]),
+                                text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                  TextSpan(text: 'Make : ', style: TextStyle(color: Colors.grey)),
+                                  TextSpan(text: vehicles[index].make)
+                                ]),
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: RichText(
-                                text: TextSpan(
-                                    style: TextStyle(color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: 'Model : ',
-                                          style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: vehicles[index].model)
-                                    ]),
+                                text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                  TextSpan(text: 'Model : ', style: TextStyle(color: Colors.grey)),
+                                  TextSpan(text: vehicles[index].model)
+                                ]),
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: RichText(
-                                text: TextSpan(
-                                    style: TextStyle(color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: 'Color : ',
-                                          style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: vehicles[index].color)
-                                    ]),
+                                text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                  TextSpan(text: 'Color : ', style: TextStyle(color: Colors.grey)),
+                                  TextSpan(text: vehicles[index].color)
+                                ]),
                               ),
                             ),
                           ],
@@ -213,8 +190,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     return showDialog(
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -232,8 +208,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                                   Icons.edit,
                                   color: Colors.blueAccent,
                                 ),
-                                Text('Edit',
-                                    style: TextStyle(color: Colors.blueAccent))
+                                Text('Edit', style: TextStyle(color: Colors.blueAccent))
                               ],
                             ),
                           ),
@@ -265,11 +240,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                               }
                             },
                             child: Column(
-                              children: [
-                                Icon(Icons.qr_code, color: Colors.green),
-                                Text('Generate Share Code',
-                                    style: TextStyle(color: Colors.green))
-                              ],
+                              children: [Icon(Icons.qr_code, color: Colors.green), Text('Generate Share Code', style: TextStyle(color: Colors.green))],
                             ),
                           ),
                         ),
@@ -278,10 +249,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           child: GestureDetector(
                             onTap: () {},
                             child: Column(
-                              children: [
-                                Icon(Icons.more_horiz),
-                                Text('See more')
-                              ],
+                              children: [Icon(Icons.more_horiz), Text('See more')],
                             ),
                           ),
                         ),
@@ -295,15 +263,10 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
 
   void generateQR(int index) {
     print(vehicles[index].toJson());
-    print({
-      "vehicleId": vehicles[index].plateNumber,
-      "ownerId": vehicles[index].ownerId
-    });
+    print({"vehicleId": vehicles[index].plateNumber, "ownerId": vehicles[index].ownerId});
     if (locator<AuthService>().currentUser().uid != vehicles[index].ownerId) {
       Navigator.of(context).pop();
-      showError(
-          error:
-              "You do not own this vehicle, please contact the original owner");
+      showError(error: "You do not own this vehicle, please contact the original owner");
     } else {
       Navigator.of(context).pop();
       showDialog(
@@ -329,10 +292,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
               ),
             );
           });
-      locator<ApiService>()
-          .generateShareCode(
-              vehicles[index].plateNumber, vehicles[index].ownerId)
-          .then((Response data) {
+      locator<ApiService>().generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId).then((Response data) {
         if (data.statusCode == 200) {
           print(data.body);
           Navigator.of(context).pop();
@@ -340,8 +300,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
               context: context,
               builder: (_) {
                 return Dialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -350,14 +309,10 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                         child: Text(
                           "Share Code for ${vehicles[index].plateNumber}",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      VehicleTransferCodeScreen(
-                          payload: VehicleTransferQrPayLoad(
-                              code: data.body["code"],
-                              expiry: data.body["expiry"])),
+                      VehicleTransferCodeScreen(payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: FlatButton(
@@ -375,6 +330,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           Navigator.of(context).pop();
           showError(error: "Server error, please try again later");
         }
+      }).catchError((error) {
+        Navigator.of(context).pop();
+        showError(error: "Server error, please try again later");
       });
     }
   }
@@ -414,8 +372,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
         context: context,
         builder: (_) {
           return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -433,8 +390,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                                 Icons.qr_code,
                                 color: Colors.blueAccent,
                               ),
-                              Text('Add from code',
-                                  style: TextStyle(color: Colors.blueAccent))
+                              Text('Add from code', style: TextStyle(color: Colors.blueAccent))
                             ],
                           ),
                         ),
@@ -444,11 +400,8 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.of(context).pop();
-                            locator<NavigationService>()
-                                .pushNavigateTo(LoginRoute);
-                            context
-                                .read<LoginBloc>()
-                                .add(NavigateToVehicleAddEvent());
+                            locator<NavigationService>().pushNavigateTo(LoginRoute);
+                            context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
                           },
                           child: Column(
                             children: [
@@ -456,8 +409,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                                 Icons.add_circle_outline,
                                 color: Colors.blueAccent,
                               ),
-                              Text('Add new vehicle',
-                                  style: TextStyle(color: Colors.blueAccent))
+                              Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent))
                             ],
                           ),
                         ),
@@ -473,8 +425,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
 
   void scanQR() {
     Navigator.of(context).pop();
-    FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", false, ScanMode.QR)
-        .then((value) {
+    FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", false, ScanMode.QR).then((value) {
       RegExp regExp = new RegExp("\\w{28}_[0-9]{13}_[0-9]{6}");
       print(value);
       //if the scan is cancelled
@@ -486,24 +437,16 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       if (regExp.hasMatch(value)) {
         print(DateTime.now());
         print(value.substring(29, 42));
-        print(DateTime.fromMillisecondsSinceEpoch(
-            int.parse(value.substring(29, 42))));
+        print(DateTime.fromMillisecondsSinceEpoch(int.parse(value.substring(29, 42))));
         //check for code validity/expiration
-        if (DateTime.now().isBefore(DateTime.fromMillisecondsSinceEpoch(
-            int.parse(value.substring(29, 42))))) {
-          var payload = {
-            "code": value,
-            "uid": locator<AuthService>().currentUser().uid
-          };
+        if (DateTime.now().isBefore(DateTime.fromMillisecondsSinceEpoch(int.parse(value.substring(29, 42))))) {
+          var payload = {"code": value, "uid": locator<AuthService>().currentUser().uid};
           print(payload);
           showDialog(
               barrierDismissible: false,
               context: context,
               builder: (_) {
-                return Dialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: VehicleAddDetails(code: value));
+                return Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)), child: VehicleAddDetails(code: value));
               });
         } else {
           showError(error: "Code expired, please request a valid code");
@@ -586,41 +529,30 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                     child: Text(
                       "Vehicle Info",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: CachedNetworkImage(
                       imageUrl: vehicleDetails.vehicleImage,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Center(
-                              child: Container(
-                                  height: 50,
-                                  width: 50,
-                                  child: AspectRatio(
-                                      aspectRatio: 1,
-                                      child: CircularProgressIndicator(
-                                          value: downloadProgress.progress)))),
+                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                          child: Container(
+                              height: 50, width: 50, child: AspectRatio(aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        "${vehicleDetails.make} ${vehicleDetails.model}",
-                        textAlign: TextAlign.center),
+                    child: Text("${vehicleDetails.make} ${vehicleDetails.model}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Plate Number: ${vehicleDetails.plateNumber}",
-                        textAlign: TextAlign.center),
+                    child: Text("Plate Number: ${vehicleDetails.plateNumber}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Color: ${vehicleDetails.color}",
-                        textAlign: TextAlign.center),
+                    child: Text("Color: ${vehicleDetails.color}", textAlign: TextAlign.center),
                   ),
                   Container(
                     height: 50,
@@ -689,9 +621,8 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           );
         });
     if (choice) {
-      locator<ApiService>()
-          .addVehicleFromCode(locator<AuthService>().currentUser().uid, code)
-          .then((value) {
+      Navigator.of(context).pop();
+      locator<ApiService>().addVehicleFromCode(locator<AuthService>().currentUser().uid, code).then((value) {
         if (value.statusCode == 200) {
           //show success dialog
           print("Success");
@@ -755,10 +686,7 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }
@@ -789,10 +717,7 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }
