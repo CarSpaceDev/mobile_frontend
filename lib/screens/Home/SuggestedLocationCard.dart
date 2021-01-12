@@ -1,12 +1,10 @@
+import 'package:carspace/model/Lot.dart';
 import "package:flutter/material.dart";
 
 class SuggestedLocationCard extends StatelessWidget {
-  final String name;
-  final String address;
-  final double price;
-  final double distance;
+  final Lot lot;
   final Function callback;
-  SuggestedLocationCard({Key key, this.name, this.address, this.price, this.distance, this.callback}) : super(key: key);
+  SuggestedLocationCard({Key key, this.lot, this.callback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +22,12 @@ class SuggestedLocationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                name,
+                lot.address.toString(),
                 style: TextStyle(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               Text(
-                address,
+                "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
                 style: TextStyle(color: Colors.grey),
               ),
               Row(
@@ -41,13 +39,13 @@ class SuggestedLocationCard extends StatelessWidget {
                     children: <Widget>[
                       Icon(Icons.location_on, size: 16),
                       Text(
-                        '${distance.toStringAsFixed(2)} km',
+                        '${lot.distance.toStringAsFixed(2)} km',
                         style: TextStyle(fontSize: 16),
                       )
                     ],
                   ),
                   InkWell(onTap: callback, child: Text("Select Lot", style: TextStyle(fontSize: 16))),
-                  Text("${price.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
+                  Text("${lot.pricing.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
                 ],
               ),
             ],

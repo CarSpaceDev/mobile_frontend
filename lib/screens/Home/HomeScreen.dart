@@ -509,14 +509,9 @@ class _HomeScreenState extends State<HomeScreen> {
     lotsInRadius.forEach((lot) {
       print(lot.toString());
       result.add(SuggestedLocationCard(
-        name: lot.address.toString(),
-        address: "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
-        price: lot.pricing,
-        distance: lot.distance,
+        lot: lot,
         callback: () {
           _showReservationDialog(lot.lotId);
-          // print("calling intent");
-          // navigateViaGoogleMaps(lot["coordinates"][0], lot["coordinates"][1]);
         },
       ));
     });

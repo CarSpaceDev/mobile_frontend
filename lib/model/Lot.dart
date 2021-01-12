@@ -82,6 +82,12 @@ class LotAddress {
 
   @override
   String toString() {
-    return "$houseAndStreet, ${brgy != null ? brgy + "," : ""} $municipality, $city, $province, $zipCode";
+    return "" +
+        "${houseAndStreet != null ? " " + houseAndStreet + "," : ""}" +
+        "${brgy != null ? " " + brgy + "," : ""}" +
+        "${municipality != null ? " " + municipality + "," : ""}" +
+        "${city != null ? " " + city + "," : ""}" +
+        "${province != null ? " " + province + "," : ""}" +
+        "${zipCode != null ? " " + zipCode : ""}";
   }
 }
