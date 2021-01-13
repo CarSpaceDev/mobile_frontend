@@ -184,6 +184,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> unregisterDevice({String uid, String token}) {
+    final $url = '/user/remove-device/$uid/$token';
+    final $request = Request('PATCH', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> generateCode({String uid, String phoneNumber}) {
     final $url = '/user/generatecode/$uid/$phoneNumber';
     final $request = Request('PATCH', $url, client.baseUrl);

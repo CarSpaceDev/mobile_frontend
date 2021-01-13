@@ -9,6 +9,7 @@ import 'package:carspace/services/UploadService.dart';
 import 'package:chopper/chopper.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
@@ -40,14 +41,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = authService.currentUser();
       if (user != null) {
         //case where a user is in the google auth cache
-        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
-        if (userFromApi == null) {
-          //if said user is not registered in db
-          yield ShowEulaScreen();
-        } else {
-          //case where the user exists
-          CSUser userData = CSUser.fromJson(userFromApi);
-          yield checkUserDataForMissingInfo(user: userData);
+        try {
+          var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+          if (userFromApi == null) {
+            //if said user is not registered in db
+            yield ShowEulaScreen();
+          } else {
+            //case where the user exists
+            CSUser userData = CSUser.fromJson(userFromApi);
+            yield checkUserDataForMissingInfo(user: userData);
+          }
+        } catch (e) {
+          yield LoginError(message: "Error retrieving user data, please login");
         }
       } else {
         //head to login screen
@@ -70,9 +75,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is GeneratePhoneCodeEvent) {
       User user = authService.currentUser();
       yield WaitingLogin(message: "Generating code");
-      var result = await apiService.generateCode(uid: user.uid, phoneNumber: event.phoneNumber);
-      if (result.statusCode == 200) {
-        yield ShowPhoneCodeConfirmScreen();
+      try {
+        var result = await apiService.generateCode(uid: user.uid, phoneNumber: event.phoneNumber);
+        if (result.statusCode == 200) {
+          yield ShowPhoneCodeConfirmScreen();
+        } else {
+          showCodeGenerationErrorDialog();
+        }
+      } catch (e) {
+        showCodeGenerationErrorDialog();
       }
     }
     //V2 Update
@@ -115,6 +126,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //V2 Update
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
+      await apiService.unregisterDevice(uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
       await authService.logOut();
       cache.put("user", null);
       yield LoggedOut();
@@ -214,5 +226,43 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     String pushToken = locator<PushMessagingService>().token;
     User currentUser = locator<AuthService>().currentUser();
     await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
+  }
+
+  showCodeGenerationErrorDialog() {
+    showDialog(
+        context: navService.navigatorKey.currentContext,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.error,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "Error generating code, please try again.",
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    navService.goBack();
+                    navService.navigatorKey.currentContext.bloc<LoginBloc>().add(LoginStartEvent());
+                  },
+                  child: Text("Close"))
+            ],
+          );
+        });
   }
 }
