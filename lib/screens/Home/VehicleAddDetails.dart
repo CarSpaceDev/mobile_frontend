@@ -52,30 +52,41 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                     child: Text(
                       "Vehicle Info",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: CachedNetworkImage(
                       imageUrl: vehicleDetails.vehicleImage,
-                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                          child: Container(
-                              height: 50, width: 50, child: AspectRatio(aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                              child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: CircularProgressIndicator(
+                                          value: downloadProgress.progress)))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("${vehicleDetails.make} ${vehicleDetails.model}", textAlign: TextAlign.center),
+                    child: Text(
+                        "${vehicleDetails.make} ${vehicleDetails.model}",
+                        textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Plate Number: ${vehicleDetails.plateNumber}", textAlign: TextAlign.center),
+                    child: Text("Plate Number: ${vehicleDetails.plateNumber}",
+                        textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Color: ${vehicleDetails.color}", textAlign: TextAlign.center),
+                    child: Text("Color: ${vehicleDetails.color}",
+                        textAlign: TextAlign.center),
                   ),
                   Container(
                     height: 50,
@@ -144,7 +155,9 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           );
         });
     if (choice) {
-      locator<ApiService>().addVehicleFromCode(locator<AuthService>().currentUser().uid, code).then((value) {
+      locator<ApiService>()
+          .addVehicleFromCode(locator<AuthService>().currentUser().uid, code)
+          .then((value) {
         if (value.statusCode == 200) {
           //show success dialog
           print("Success");
@@ -156,7 +169,9 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
-        showError(error: "We're currently having problems processing your request. Please try again");
+        showError(
+            error:
+                "We're currently having problems processing your request. Please try again");
         print(err);
         print("Error in add vehicle from code");
       });
@@ -208,7 +223,10 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                 ),
               ),
             ),
-            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close"))
+            ],
           );
         });
   }
@@ -239,7 +257,10 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                 ),
               ),
             ),
-            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close"))
+            ],
           );
         });
   }
