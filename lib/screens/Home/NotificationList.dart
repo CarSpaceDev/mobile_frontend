@@ -40,13 +40,11 @@ class _NotificationListState extends State<NotificationList> {
           retrieval = true;
         });
       } else {
-        print(v.error);
         setState(() {
           retrieval = true;
         });
       }
     }).catchError((err) {
-      print(err);
       setState(() {
         retrieval = true;
       });

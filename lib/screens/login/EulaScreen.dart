@@ -59,8 +59,7 @@ class _EulaScreenState extends State<EulaScreen> {
       ),
       body: Center(
         child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Container(
@@ -101,7 +100,6 @@ class _EulaScreenState extends State<EulaScreen> {
   }
 
   sendResponse(BuildContext context, bool v) {
-    print('Sending Eula Response: $v');
     context.read<LoginBloc>().add(EulaResponseEvent(value: v));
   }
 }

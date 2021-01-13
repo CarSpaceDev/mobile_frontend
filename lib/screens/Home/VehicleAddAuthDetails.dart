@@ -25,7 +25,6 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
   void initState() {
     locator<ApiService>().getVehicleAddAuthDetails(uid: locator<AuthService>().currentUser().uid, code: code).then((Response value) {
       if (value.statusCode == 200) {
-        print(value.body);
         setState(() {
           vehicleDetails = VehicleAddAuth.fromJson(value.body);
         });
@@ -149,17 +148,11 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
       Navigator.of(context).pop();
       locator<ApiService>().authorizeVehicleAddition(locator<AuthService>().currentUser().uid, code).then((value) {
         if (value.statusCode == 200) {
-          //show success dialog
-          print("Success");
-          // showSuccess();
         } else {
-          print("Fail");
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
         showError(error: "We're currently having problems processing your request. Please try again");
-        print(err);
-        print("Error in add vehicle from code");
       });
     }
   }

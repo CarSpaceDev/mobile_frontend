@@ -11,8 +11,7 @@ class _TestScreenState extends State<TestScreen> {
   dynamic imageWidget;
 
   _TestScreenState() {
-    imageWidget = new ImageUploadWidget((92 / 60), saveUrl,
-        prompt: "Upload a something something");
+    imageWidget = new ImageUploadWidget((92 / 60), saveUrl, prompt: "Upload a something something");
   }
   String imageUrl;
 
@@ -21,20 +20,15 @@ class _TestScreenState extends State<TestScreen> {
     return Scaffold(
       body: Container(
         child: Column(
-          children: [
-            Padding(padding: EdgeInsets.all(16), child: imageWidget),
-            FlatButton(onPressed: () {print(imageUrl);}, child: Icon(Icons.image))
-          ],
+          children: [Padding(padding: EdgeInsets.all(16), child: imageWidget), FlatButton(onPressed: () {}, child: Icon(Icons.image))],
         ),
       ),
     );
   }
 
   saveUrl(String v) {
-    print("Saved url");
     setState(() {
       imageUrl = v;
     });
-    print(imageUrl);
   }
 }

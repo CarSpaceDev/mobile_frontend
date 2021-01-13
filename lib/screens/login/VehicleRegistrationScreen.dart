@@ -46,7 +46,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     colors = List<String>.from(cache.get("data")["colors"]);
     pType = 0;
     pColor = "Choose a color";
-    print(vehicleTypes);
     _plateNumberController = TextEditingController(text: "");
     _vehicleMake = TextEditingController(text: "");
     _vehicleModel = TextEditingController(text: "");
@@ -389,7 +388,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   }
 
   backToLogin(BuildContext context) {
-    print('Back to login');
     context.read<LoginBloc>().add(RestartLoginEvent());
   }
 
@@ -528,16 +526,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     } else if (pColor == null) {
       _showErrorDialog("Please enter your vehicle color");
     } else {
-      print({
-        "OR": orImageUrl,
-        "CR": crImageUrl,
-        "vehicleImage": vehicleImageUrl,
-        "plateNumber": _plateNumberController.text,
-        "make": _vehicleMake.text,
-        "model": _vehicleModel.text,
-        "type": pType,
-        "color": pColor
-      });
       var decision = await _showConfirmationDialog();
       if (decision == true) {
         context.read<LoginBloc>().add(AddVehicleEvent(

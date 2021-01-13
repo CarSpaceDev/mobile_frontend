@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
-import '../../blocs/login/login_bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../blocs/login/login_bloc.dart';
 
 class ReturnScreen extends StatefulWidget {
   @override
@@ -48,11 +49,7 @@ class _ReturnScreen extends State<ReturnScreen> {
               SizedBox(height: 22.0),
               Text(
                 "Email already registered....",
-                style: TextStyle(
-                    fontFamily: "Champagne & Limousines",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0,
-                    color: Colors.white),
+                style: TextStyle(fontFamily: "Champagne & Limousines", fontWeight: FontWeight.bold, fontSize: 30.0, color: Colors.white),
               ),
               SizedBox(height: 22.0),
               _nextButton(),
@@ -104,10 +101,7 @@ class _ReturnScreen extends State<ReturnScreen> {
     );
   }
 
-
-
   navigateToRegisterEvent(BuildContext context) {
-    print('Navigate to NavToReturnScreen');
     context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
   }
 }

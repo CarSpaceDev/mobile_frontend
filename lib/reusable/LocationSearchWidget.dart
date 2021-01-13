@@ -50,14 +50,11 @@ class _LocationSearchWidgetState extends State<LocationSearchWidget> {
               context: context,
               delegate: AddressSearch(sessionToken),
             );
-            print("RESULT OF SEARCH");
-            print(result);
             // This will change the text displayed in the TextField
             if (result != null) {
               final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
               setState(() {
                 _controller.text = result.description;
-                // print(placeDetails);
               });
               if (callback != null) callback(placeDetails);
             }
@@ -180,11 +177,8 @@ class PlaceApiProvider {
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
     final response = await locator<ApiMapService>().getAutoComplete(input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
-    // print(response.statusCode);
-    // print(response.body);
     if (response.statusCode == 200) {
       final result = response.body;
-      // print(result);
       if (result['status'] == 'OK') {
         // compose suggestions in a list
         return result['predictions'].map<Suggestion>((p) => Suggestion(p['place_id'], p['description'])).toList();
@@ -205,11 +199,9 @@ class PlaceApiProvider {
     double latitude = detail.result.geometry.location.lat;
     double longitude = detail.result.geometry.location.lng;
 
-    // print("ResQ2");
     var components = detail.result.addressComponents;
     final place = Place();
     components.forEach((c) {
-      print("${c.longName}, ${c.types},${c.shortName}");
       if (c.types.contains('street_number')) {
         place.streetNumber = c.longName;
       }

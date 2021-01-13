@@ -48,7 +48,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _emailController = TextEditingController(text: _auth.currentUser.email);
       _licenseExpiryController = TextEditingController(text: "");
     } else {
-      print("Not a google user registration");
       _firstNameController = TextEditingController(text: "");
       _lastNameController = TextEditingController(text: "");
       _emailController = TextEditingController(text: "");
@@ -237,7 +236,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         enabled: enabled != null ? enabled : true,
         controller: controller,
         onEditingComplete: () {
-          print("editComplete");
           showDialog(
               barrierDismissible: false,
               context: context,
@@ -261,7 +259,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 fn.unfocus();
               Navigator.of(context).pop();
             }
-            print(value.body["data"]);
           });
         },
         style: inputStyle,
@@ -277,12 +274,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   saveUrl(String v) {
-    print("Saved url");
     setState(() {
       imageUrl = v;
     });
     if (v != null) setExpiry(context);
-    print(imageUrl);
   }
 
   Widget _nextButton() {
@@ -367,7 +362,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   restartRegistration(BuildContext context) {
-    print('Navigate to Eula');
     context.read<LoginBloc>().add(RestartLoginEvent());
   }
 
@@ -396,9 +390,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               licenseExpiry: _licenseExpiryController.text);
         }
         context.read<LoginBloc>().add(SubmitRegistrationEvent(payload));
-      } else {
-        print(response);
-      }
+      } else {}
     }
   }
 

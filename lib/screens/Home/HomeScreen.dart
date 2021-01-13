@@ -296,7 +296,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await locator<ApiService>().getVerificationStatus(uid: uid).then((data) {
       _partnerAccess = data.body['partnerAccess'];
     });
-    print(_partnerAccess);
   }
 
   showNotificationDialog() {
@@ -319,16 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
-    print("Updating Location: ${location.latitude}, ${location.longitude}");
     driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
-      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
       setState(() {
         if (destinationMarker != null) {
-          print("destinationMarker is not null");
           _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
         } else {
-          print("destination marker is null");
           _markers = Set.from([driverMarker] + _lotMarkers);
         }
       });
@@ -336,7 +331,6 @@ class _HomeScreenState extends State<HomeScreen> {
       mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       if (destinationSearchMode) {
       } else {
-        print("Car should move");
         getLotsInRadius(location);
       }
     }
@@ -345,7 +339,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getLotsInRadius(LatLng location) async {
     locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
-      print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
         lotsInRadius = [];
@@ -368,10 +361,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         setState(() {
           if (destinationMarker != null) {
-            print("destinationMarker is not null");
             _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
           } else {
-            print("destination marker is null");
             _markers = Set.from([driverMarker] + _lotMarkers);
           }
         });
@@ -413,7 +404,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   locationSearchCallback(LocationSearchResult data) {
-    print(data.toJson());
     mapController.animateCamera(CameraUpdate.newLatLng(data.location));
     searchPosition = data.location;
     setSearchPositionMarker(data.location);
@@ -518,7 +508,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void bottomNavBarCallBack(index) {
-    print(index);
     if (destinationPosition != null) {
       if (index == 0) {
         setState(() {
@@ -573,12 +562,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
             .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
             .then((addresses) {
-          print(addresses.first.addressLine);
           setState(() {
             _searchController.text = addresses.first.addressLine;
           });
         });
-        print("Moved camera, new position is ${searchPosition.toString()}");
         destinationMarker = Marker(
           markerId: MarkerId("destination"),
           position: searchPosition,
@@ -587,10 +574,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         setState(() {
           if (destinationMarker != null) {
-            print("destinationMarker is not null");
             _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
           } else {
-            print("destination marker is null");
             _markers = Set.from([driverMarker] + _lotMarkers);
           }
           showCrossHair = false;
@@ -603,7 +588,6 @@ class _HomeScreenState extends State<HomeScreen> {
   generateLotCards() {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
-      print(lot.toString());
       result.add(
         SuggestedLocationCard(
           lot: lot,
