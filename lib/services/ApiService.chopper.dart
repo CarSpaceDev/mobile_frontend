@@ -70,6 +70,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> authorizeVehicleAddition(
+      dynamic ownerUid, dynamic code) {
+    final $url = '/vehicle/authorize-vehicle-addition/$ownerUid/$code';
+    final $request = Request('PATCH', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getUserData({String uid}) {
     final $url = '/user/$uid';
     final $request = Request('GET', $url, client.baseUrl);
@@ -84,16 +92,15 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> authorizeVehicleAddition(
-      dynamic ownerUid, dynamic code) {
-    final $url = '/vehicle/authorize-vehicle-addition/$ownerUid/$code';
-    final $request = Request('PATCH', $url, client.baseUrl);
+  Future<Response<dynamic>> getAllUser() {
+    final $url = '/user/all';
+    final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
   @override
-  Future<Response<dynamic>> getAllUser() {
-    final $url = '/user/all';
+  Future<Response<dynamic>> getUserReservations({String uid}) {
+    final $url = '/user/userReservations/$uid';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
@@ -199,8 +206,24 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> getPartnerReservations({String uid}) {
+    final $url = '/partner/partnerReservations/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getLot({String uid}) {
     final $url = '/partner/lot/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> markAsComplete(
+      {String userId, String lotId, String vehicleId, String reservationId}) {
+    final $url =
+        '/partner/markAsComplete/$userId/$lotId/$vehicleId/$reservationId';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
