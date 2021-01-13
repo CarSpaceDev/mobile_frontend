@@ -559,40 +559,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void mapOnPointerDown(e) {
     if (!destinationLocked) {
-      setState(() {
-        showCrossHair = true;
-      });
+      if (searchPosition != null) {
+        setState(() {
+          showCrossHair = true;
+        });
+      }
     }
   }
 
   void mapOnPointerUp(e) {
     if (!destinationLocked) {
-      Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
-          .then((addresses) {
-        print(addresses.first.addressLine);
-        setState(() {
-          _searchController.text = addresses.first.addressLine;
+      if (searchPosition != null) {
+        Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
+            .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+            .then((addresses) {
+          print(addresses.first.addressLine);
+          setState(() {
+            _searchController.text = addresses.first.addressLine;
+          });
         });
-      });
-      print("Moved camera, new position is ${searchPosition.toString()}");
-      destinationMarker = Marker(
-        markerId: MarkerId("destination"),
-        position: searchPosition,
-        icon: _destination,
-        draggable: true,
-      );
-      setState(() {
-        if (destinationMarker != null) {
-          print("destinationMarker is not null");
-          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-        } else {
-          print("destination marker is null");
-          _markers = Set.from([driverMarker] + _lotMarkers);
-        }
-        showCrossHair = false;
-      });
-      getLotsInRadius(searchPosition);
+        print("Moved camera, new position is ${searchPosition.toString()}");
+        destinationMarker = Marker(
+          markerId: MarkerId("destination"),
+          position: searchPosition,
+          icon: _destination,
+          draggable: true,
+        );
+        setState(() {
+          if (destinationMarker != null) {
+            print("destinationMarker is not null");
+            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
+          } else {
+            print("destination marker is null");
+            _markers = Set.from([driverMarker] + _lotMarkers);
+          }
+          showCrossHair = false;
+        });
+        getLotsInRadius(searchPosition);
+      }
     }
   }
 
