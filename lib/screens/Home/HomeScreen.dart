@@ -9,8 +9,6 @@ import 'package:carspace/model/Lot.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
-import 'package:carspace/screens/Home/ReservationScreen.dart';
-import 'package:carspace/screens/ReservationScreen/ReservationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,18 +64,43 @@ class _HomeScreenState extends State<HomeScreen> {
     Geolocator.isLocationServiceEnabled().then((bool value) {
       if (value) {
         Geolocator.checkPermission().then((v) {
-          if (v != null ||
-              v == LocationPermission.denied ||
-              v == LocationPermission.deniedForever) {
+          if (v != null || v == LocationPermission.denied || v == LocationPermission.deniedForever) {
             Geolocator.requestPermission().then((locationPermission) {
-              if (locationPermission != LocationPermission.denied &&
-                  locationPermission != LocationPermission.deniedForever)
-                startPositionStream();
+              if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
             });
           } else {
             startPositionStream();
           }
         });
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                content: SingleChildScrollView(
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(
+                            Icons.error,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
+                        ),
+                        Text(
+                          "Location Services Disabled. Please enable it and restart CarSpace",
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+              );
+            });
       }
     });
   }
@@ -133,8 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    locator<NavigationService>()
-                        .pushNavigateTo(VehicleManagement);
+                    locator<NavigationService>().pushNavigateTo(VehicleManagement);
                   },
                   child: Text("Vehicles")),
             ),
@@ -151,16 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      locator<NavigationService>()
-                          .pushNavigateTo(PartnerReservations);
+                      locator<NavigationService>().pushNavigateTo(PartnerReservations);
                     },
                     child: Text("Partner Reservations")),
               ),
             ListTile(
               title: InkWell(
                   onTap: () {
-                    locator<NavigationService>()
-                        .pushReplaceNavigateTo(LoginRoute);
+                    locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
                     context.read<LoginBloc>().add(LogoutEvent());
                   },
                   child: Text("Sign Out")),
@@ -241,22 +261,23 @@ class _HomeScreenState extends State<HomeScreen> {
             lotsInRadius.length != 0 && showLotCards
                 ? Positioned(
                     bottom: SizeConfig.widthMultiplier * 8,
+                    left: (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.height * .55)) / 2,
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width / (16 / 9),
-                      child: PageView(
-                        onPageChanged: (index) {
-                          mapController
-                              ?.animateCamera(CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(lotsInRadius[index].coordinates[0],
-                                  lotsInRadius[index].coordinates[1]),
-                              zoom: 17.0,
-                            ),
-                          ));
-                        },
-                        controller: _pageController,
-                        children: generateLotCards(),
+                      width: MediaQuery.of(context).size.height * .55,
+                      height: MediaQuery.of(context).size.height * .55 / (16 / 9),
+                      child: Center(
+                        child: PageView(
+                          onPageChanged: (index) {
+                            mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(lotsInRadius[index].coordinates[0], lotsInRadius[index].coordinates[1]),
+                                zoom: 17.0,
+                              ),
+                            ));
+                          },
+                          controller: _pageController,
+                          children: generateLotCards(),
+                        ),
                       ),
                     ),
                   )
@@ -284,30 +305,24 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (_) => Dialog(
         insetPadding: EdgeInsets.all(16),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         child: NotificationList(),
       ),
     );
   }
 
   startPositionStream() {
-    positionStream = Geolocator.getPositionStream(
-            desiredAccuracy: LocationAccuracy.bestForNavigation,
-            distanceFilter: 1,
-            intervalDuration: Duration(seconds: 15))
-        .listen(positionChangeHandler);
+    positionStream =
+        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
+            .listen(positionChangeHandler);
   }
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
     print("Updating Location: ${location.latitude}, ${location.longitude}");
-    driverMarker = Marker(
-        markerId: MarkerId("user"), icon: _driverIcon, position: location);
+    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
-      print(Geolocator.distanceBetween(currentLocation.latitude,
-              currentLocation.longitude, location.latitude, location.longitude)
-          .toStringAsFixed(5));
+      print(Geolocator.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude).toStringAsFixed(5));
       setState(() {
         if (destinationMarker != null) {
           print("destinationMarker is not null");
@@ -318,8 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     } else {
-      mapController.moveCamera(CameraUpdate.newLatLng(
-          new LatLng(location.latitude, location.longitude)));
+      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
       if (destinationSearchMode) {
       } else {
         print("Car should move");
@@ -330,12 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getLotsInRadius(LatLng location) async {
-    locator<ApiService>()
-        .getLotsInRadius(
-            latitude: location.latitude,
-            longitude: location.longitude,
-            kmRadius: 0.5)
-        .then((res) {
+    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
       print(res.statusCode);
       if (res.statusCode == 200) {
         _lotMarkers = [];
@@ -354,15 +363,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   _showLotDialog(lotsInRadius[i]);
                 },
                 icon: _lotIcon,
-                position: LatLng(lotsInRadius[i].coordinates[0],
-                    lotsInRadius[i].coordinates[1])));
+                position: LatLng(lotsInRadius[i].coordinates[0], lotsInRadius[i].coordinates[1])));
           }
         }
         setState(() {
           if (destinationMarker != null) {
             print("destinationMarker is not null");
-            _markers =
-                Set.from([destinationMarker, driverMarker] + _lotMarkers);
+            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
           } else {
             print("destination marker is null");
             _markers = Set.from([driverMarker] + _lotMarkers);
@@ -418,15 +425,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _setMarkerIcon() async {
-    _lotIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)),
-        'assets/launcher_icon/pushpin.png');
-    _driverIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)),
-        'assets/launcher_icon/driver.png');
-    _destination = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(10, 10)),
-        'assets/launcher_icon/destination.png');
+    _lotIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png');
+    _driverIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png');
+    _destination = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png');
   }
 
   void autoCompleteWidgetAction() {
@@ -457,8 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
         barrierDismissible: false,
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -476,33 +476,18 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                   icon: lotsInRadius.length == 0
                       ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction,
-                          color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0
-                      ? "No lots nearby"
-                      : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.assistant_direction,
-                      color: Color.fromARGB(255, 0, 0, 0)),
-                  label: 'Show Destination'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.gps_fixed,
-                      color: Color.fromARGB(255, 0, 0, 0)),
-                  label: 'My Location')
+                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
+              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location')
             ]
           : [
               BottomNavigationBarItem(
                   icon: lotsInRadius.length == 0
                       ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction,
-                          color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0
-                      ? "No lots nearby"
-                      : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.gps_fixed,
-                      color: Color.fromARGB(255, 0, 0, 0)),
-                  label: 'My Location'),
+                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+              BottomNavigationBarItem(icon: Icon(Icons.gps_fixed, color: Color.fromARGB(255, 0, 0, 0)), label: 'My Location'),
             ],
       onTap: bottomNavBarCallBack,
     );
@@ -583,8 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void mapOnPointerUp(e) {
     if (!destinationLocked) {
       Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-          .findAddressesFromCoordinates(
-              Coordinates(searchPosition.latitude, searchPosition.longitude))
+          .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
           .then((addresses) {
         print(addresses.first.addressLine);
         setState(() {
@@ -629,10 +613,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent = AndroidIntent(
-        action: 'action_view',
-        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
-        package: 'com.google.android.apps.maps');
+    final AndroidIntent intent =
+        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
     intent.launch();
   }
 }
