@@ -19,7 +19,6 @@ class PushMessagingService {
     firebaseMessaging = FirebaseMessaging();
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("Mod: $message");
         if (message["data"]["recipient"] == locator<AuthService>().currentUser().uid) {
           if (!notificationShowing) {
             notificationShowing = true;
@@ -61,21 +60,13 @@ class PushMessagingService {
         }
         notificationsController.add(message);
       },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
+      onLaunch: (Map<String, dynamic> message) async {},
+      onResume: (Map<String, dynamic> message) async {},
     );
     firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: true));
-    firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
+    firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {});
     firebaseMessaging.getToken().then((String token) async {
       assert(token != null);
-      print("Push Messaging Initialization Success");
-      print(token);
       this.token = token;
     });
   }

@@ -33,7 +33,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   final UploadService uploadService = locator<UploadService>();
   @override
   Widget build(BuildContext context) {
-    // print(aspectRatio);
     return imageUrl == null
         ? FDottedLine(
             color: Colors.black54,
@@ -75,7 +74,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   }
 
   getImageFile() {
-    print(imageUrl);
     return imageUrl;
   }
 
@@ -214,7 +212,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                             _showWaiting("Uploading Image");
                                             await _cropImage();
                                             await uploadService.uploadItemImage(imageFile.path).then((result) {
-                                              print(result.body["url"]);
                                               setState(() {
                                                 imageUrl = result.body["url"];
                                               });
@@ -223,7 +220,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                               this.callback(result.body["url"]);
                                             });
                                           } catch (e) {
-                                            print(e);
                                             Navigator.pop(context);
                                             _showErrorDialog(e.toString());
                                           }
@@ -263,7 +259,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     File existingFile;
     if (await File(getStoragePath(imageFile.path) + 'compressed_.jpg').exists()) {
       existingFile = await File(getStoragePath(imageFile.path) + 'compressed_.jpg').delete();
-      print("Deleting temp compressed file: " + existingFile.toString());
     }
   }
 
@@ -384,7 +379,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     var picture = await picker.getImage(source: ImageSource.gallery);
     if (picture != null) {
       if (await File(getStoragePath(picture.path) + "compressed_.jpg").exists()) {
-        print("Old compressed file" + "compressed_.jpg exists, deleting");
         await File(getStoragePath(picture.path) + "compressed_.jpg").delete();
       }
 
@@ -411,7 +405,6 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     var picture = await picker.getImage(source: ImageSource.camera);
     if (picture != null) {
       if (await File(getStoragePath(picture.path) + "compressed_.jpg").exists()) {
-        print("Old compressed file.jpg exists, deleting");
         await File(getStoragePath(picture.path) + "compressed_.jpg").delete();
       }
       setState(() {

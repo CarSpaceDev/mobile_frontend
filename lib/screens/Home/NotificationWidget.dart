@@ -20,7 +20,6 @@ class _NotificationWidgetState extends State<NotificationWidget> {
   final Function callback;
   NotificationFromApi data;
   _NotificationWidgetState(NotificationFromApi data, this.callback) {
-    print(data.toJson());
     this.data = data;
   }
   @override
