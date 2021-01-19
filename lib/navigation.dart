@@ -1,8 +1,9 @@
 import 'package:carspace/screens/Home/HomeScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
+import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/screens/Home/VehicleManagementScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/Home/ReservationScreen.dart';
+import 'package:carspace/screens/Navigation/NavigationScreen.dart';
 import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ const String VehicleManagement = '/vehicle-manage';
 const String Reservations = '/user-reservations';
 const String HomeRoute = '/home';
 const String PartnerReservations = '/partner-reservations';
+const String BetaFunctions = '/beta';
 // ignore: missing_return
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -30,6 +32,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(ReservationScreen(), settings);
     case PartnerReservations:
       return _getPageRoute(PartnerReservationScreen(), settings);
+    case BetaFunctions:
+      return _getPageRoute(NavigationScreen(), settings);
   }
 }
 

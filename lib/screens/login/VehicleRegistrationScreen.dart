@@ -125,9 +125,21 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                         elevation: 5,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: ImageUploadWidget(16 / 9, saveVehicleImage, prompt: "Upload photo of vehicle"),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Vehicle Photo",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: ImageUploadWidget(16 / 9, saveVehicleImage, prompt: "Upload photo of vehicle"),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -138,9 +150,21 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                         elevation: 5,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: ImageUploadWidget(1, saveOR, prompt: "Upload photo of OR"),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Owner's Receipt(OR)",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: ImageUploadWidget(1, saveOR, prompt: "Upload photo of OR"),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -151,9 +175,21 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                         elevation: 5,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: ImageUploadWidget(1, saveCR, prompt: "Upload photo of CR"),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Certification of Registration(CR)",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: ImageUploadWidget(1, saveCR, prompt: "Upload photo of CR"),
+                              ),
+                            ],
                           ),
                         ),
                       ),

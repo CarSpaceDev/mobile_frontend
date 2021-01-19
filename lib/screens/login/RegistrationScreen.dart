@@ -466,7 +466,7 @@ class RegistrationPayload {
       "uid": this.gUid,
       "firstName": this.firstName,
       "lastName": this.lastName,
-      "email": this.email,
+      "emailAddress": this.email,
       "password": this.password,
       "licenseImage": this.licenseImage,
       "licenseExpiry": this.licenseExpiry.toIso8601String(),

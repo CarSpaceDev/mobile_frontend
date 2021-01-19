@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -66,7 +67,11 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
             ),
           )
         : InkWell(
-            child: Image.network(imageUrl),
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
             onTap: () {
               _showImageViewer(context, true);
             },

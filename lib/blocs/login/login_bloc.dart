@@ -104,6 +104,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (event.fromHomeScreen) {
           navService.goBack();
         } else {
+          setPushTokenCache();
+          cache.put(authService.currentUser().uid, {"skipVehicle": false});
           navService.pushReplaceNavigateTo(HomeRoute);
         }
       } else
@@ -119,7 +121,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //V2 Update
     else if (event is SkipVehicleAddEvent) {
       User user = authService.currentUser();
-      cache.put(user.email, {"skipVehicle": true});
+      cache.put(user.uid, {"skipVehicle": true});
       setPushTokenCache();
       navService.pushReplaceNavigateTo(HomeRoute);
     }
@@ -194,18 +196,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
         userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
-      }
+      } else
+        print(result.statusCode);
     }
   }
 
   LoginState checkUserDataForMissingInfo({CSUser user}) {
     LoginState result;
     if (user.phoneNumber == null) {
+      setPushTokenCache();
       result = ShowPhoneNumberInputScreen();
     } else if (user.vehicles.length == 0) {
-      var userSettings = cache.get(user.emailAddress);
+      var userSettings = cache.get(user.uid);
       if (userSettings == null) {
-        cache.put(user.emailAddress, {"skipVehicle": false});
+        cache.put(user.uid, {"skipVehicle": false});
+        setPushTokenCache();
         result = ShowVehicleRegistration();
       } else {
         if (userSettings["skipVehicle"] == true) {
