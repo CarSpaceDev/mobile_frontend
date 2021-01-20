@@ -55,14 +55,17 @@ class _PartnerReservationScreenScreenState
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
-              locator<NavigationService>().goBack();
+              Navigator.of(context).pop();
             },
           ),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () {
-                setState(() {});
+                setState(() {
+                  _fetching = false;
+                  getUserReservations();
+                });
               },
             )
           ],

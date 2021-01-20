@@ -60,14 +60,17 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
-              locator<NavigationService>().goBack();
+              Navigator.of(context).pop();
             },
           ),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () {
-                setState(() {});
+                setState(() {
+                  _fetching = false;
+                  getUserReservations();
+                });
               },
             )
           ],
@@ -307,75 +310,84 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (_reservationData[index]['reservationStatus'] == 1)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                navigateViaGoogleMaps(
-                                    _reservationData[index]['g']['geopoint']
-                                        ['_latitude'],
-                                    _reservationData[index]['g']['geopoint']
-                                        ['_longitude']);
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.map_outlined,
-                                    color: Colors.blueAccent,
+                          Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    navigateViaGoogleMaps(
+                                        _reservationData[index]['g']['geopoint']
+                                            ['_latitude'],
+                                        _reservationData[index]['g']['geopoint']
+                                            ['_longitude']);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.map_outlined,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Navigate to Lot',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
                                   ),
-                                  Text('Navigate to Lot',
-                                      style:
-                                          TextStyle(color: Colors.blueAccent))
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              onTheWay(
-                                  this._uid,
-                                  this._driverName,
-                                  _reservationData[index]['vehicleId'],
-                                  _reservationData[index]['lotAddress'],
-                                  _reservationData[index]['partnerId']);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.chat,
-                                  color: Colors.blueAccent,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    onTheWay(
+                                        this._uid,
+                                        this._driverName,
+                                        _reservationData[index]['vehicleId'],
+                                        _reservationData[index]['lotAddress'],
+                                        _reservationData[index]['partnerId']);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.chat,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Notify on the way',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
                                 ),
-                                Text('Notify on the way',
-                                    style: TextStyle(color: Colors.blueAccent))
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              arrived(
-                                  this._uid,
-                                  this._driverName,
-                                  _reservationData[index]['vehicleId'],
-                                  _reservationData[index]['lotAddress'],
-                                  _reservationData[index]['partnerId']);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.car_repair,
-                                  color: Colors.blueAccent,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    arrived(
+                                        this._uid,
+                                        this._driverName,
+                                        _reservationData[index]['vehicleId'],
+                                        _reservationData[index]['lotAddress'],
+                                        _reservationData[index]['partnerId']);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.car_repair,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Notify arrived',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
                                 ),
-                                Text('Notify arrived',
-                                    style: TextStyle(color: Colors.blueAccent))
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
                       ],
                     ),
                   ),
