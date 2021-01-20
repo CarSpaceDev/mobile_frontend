@@ -303,7 +303,8 @@ class _LotReservationState extends State<LotReservation> {
         "lotId": _lotId,
         "partnerId": _partnerId,
         "vehicleId": selectedVehicle,
-        "reservationType": 0
+        "reservationType": 0,
+        "lotAddress": _fullLotData['address']
       });
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();
@@ -317,7 +318,8 @@ class _LotReservationState extends State<LotReservation> {
         "lotId": _lotId,
         "partnerId": _partnerId,
         "vehicleId": selectedVehicle,
-        "reservationType": 1
+        "reservationType": 1,
+        "lotAddress": _fullLotData['address']
       });
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();

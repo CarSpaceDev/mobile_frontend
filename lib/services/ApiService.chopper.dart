@@ -205,6 +205,22 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> notifyOnTheWay(Map<String, dynamic> body) {
+    final $url = '/user/notifications/notify-ontheway';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> notifyArrived(Map<String, dynamic> body) {
+    final $url = '/user/notifications/notify-ontheway';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getLotsInRadius(
       {double latitude, double longitude, double kmRadius}) {
     final $url = '/partner/radius/$latitude/$longitude/$kmRadius';
@@ -227,11 +243,10 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> markAsComplete(
-      {String userId, String lotId, String vehicleId, String reservationId}) {
-    final $url =
-        '/partner/markAsComplete/$userId/$lotId/$vehicleId/$reservationId';
-    final $request = Request('GET', $url, client.baseUrl);
+  Future<Response<dynamic>> markAsComplete(Map<String, dynamic> body) {
+    final $url = '/partner/markAsComplete/';
+    final $body = body;
+    final $request = Request('GET', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
   }
 
