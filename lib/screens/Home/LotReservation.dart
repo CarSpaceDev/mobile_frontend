@@ -282,13 +282,13 @@ class _LotReservationState extends State<LotReservation> {
                   },
                 ),
                 TextButton(
-                  child: Text('Book'),
+                  child: Text('Reserve'),
                   onPressed: () {
                     Navigator.of(context).pop(1);
                   },
                 ),
                 TextButton(
-                  child: Text('Reserve'),
+                  child: Text('Recurring'),
                   onPressed: () {
                     Navigator.of(context).pop(0);
                   },
@@ -322,7 +322,7 @@ class _LotReservationState extends State<LotReservation> {
       await locator<ApiService>().reserveLot(body).then((value) {
         Navigator.of(context).pop();
         if (value.body == "Reservation Success") {
-          showMessageAndUseIntent("Lot Booked");
+          showMessageAndUseIntent("Lot Reserved");
         } else {
           showMessage(value.body);
         }
