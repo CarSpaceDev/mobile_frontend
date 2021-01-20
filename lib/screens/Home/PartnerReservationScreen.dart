@@ -361,7 +361,9 @@ class _PartnerReservationScreenScreenState
                                     _reservationData[index]['userId'],
                                     _reservationData[index]['lotId'],
                                     _reservationData[index]['vehicleId'],
-                                    _reservationData[index]['reservationId']);
+                                    _reservationData[index]['reservationId'],
+                                    _reservationData[index]['lotAddress'],
+                                    _reservationData[index]['partnerId']);
                               },
                               child: Column(
                                 children: [
@@ -383,14 +385,16 @@ class _PartnerReservationScreenScreenState
   }
 
   markAsComplete(String userId, String lotId, String vehicleId,
-      String reservationId) async {
-    await locator<ApiService>()
-        .markAsComplete(
-            userId: userId,
-            lotId: lotId,
-            vehicleId: vehicleId,
-            reservationId: reservationId)
-        .then((data) {
+      String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().markAsComplete(body).then((data) {
       showMessage(data.body);
     });
   }

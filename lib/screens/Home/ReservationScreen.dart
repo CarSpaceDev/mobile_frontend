@@ -18,6 +18,8 @@ class ReservationScreen extends StatefulWidget {
 class _ReservationScreenScreenState extends State<ReservationScreen> {
   var _reservationData;
   var _partnerAccess;
+  var _uid;
+  var _driverName;
   bool _fetching;
   @override
   void initState() {
@@ -28,8 +30,12 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
   }
 
   _initPartnerAccess() async {
-    var uid = locator<AuthService>().currentUser().uid;
+    var userData = locator<AuthService>().currentUser();
+    var uid = userData.uid;
+    _driverName = userData.displayName;
+
     await locator<ApiService>().getVerificationStatus(uid: uid).then((data) {
+      _uid = uid;
       _partnerAccess = data.body['partnerAccess'];
     });
   }
@@ -324,12 +330,125 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                               ),
                             ),
                           ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              onTheWay(
+                                  this._uid,
+                                  this._driverName,
+                                  _reservationData[index]['vehicleId'],
+                                  _reservationData[index]['lotAddress'],
+                                  _reservationData[index]['partnerId']);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.chat,
+                                  color: Colors.blueAccent,
+                                ),
+                                Text('Notify on the way',
+                                    style: TextStyle(color: Colors.blueAccent))
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              arrived(
+                                  this._uid,
+                                  this._driverName,
+                                  _reservationData[index]['vehicleId'],
+                                  _reservationData[index]['lotAddress'],
+                                  _reservationData[index]['partnerId']);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.car_repair,
+                                  color: Colors.blueAccent,
+                                ),
+                                Text('Notify arrived',
+                                    style: TextStyle(color: Colors.blueAccent))
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
             ));
+  }
+
+  onTheWay(String userId, String driverName, String vehicleId,
+      String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "driverName": driverName,
+      "vehicleId": vehicleId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().notifyOnTheWay(body).then((data) {
+      showMessage("Lot owner notified");
+    });
+  }
+
+  arrived(String userId, String driverName, String vehicleId, String lotAddress,
+      String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "driverName": driverName,
+      "vehicleId": vehicleId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().notifyArrived(body).then((data) {
+      showMessage("Lot owner notified");
+    });
+  }
+
+  showMessage(dynamic v) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "$v",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(height: 5, fontSize: 20),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    locator<NavigationService>().pushNavigateTo(Reservations);
+                  },
+                  child: Text("Close"))
+            ],
+          );
+        });
   }
 
   void showError({@required String error}) {

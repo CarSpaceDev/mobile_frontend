@@ -31,19 +31,24 @@ abstract class ApiService extends ChopperService {
   Future<Response> getVehicles({@Path('uid') String uid});
 
   @Get(path: '/vehicle/owner/authorization/details/{uid}/{code}')
-  Future<Response> getVehicleAddAuthDetails({@Path('uid') String uid, @Path('code') String code});
+  Future<Response> getVehicleAddAuthDetails(
+      {@Path('uid') String uid, @Path('code') String code});
 
   @Post(path: '/user/addVehicle/{uid}')
-  Future<Response> addVehicle(@Path('uid') uid, @Body() Map<String, dynamic> body);
+  Future<Response> addVehicle(
+      @Path('uid') uid, @Body() Map<String, dynamic> body);
 
   @Patch(path: '/vehicle/generate-share-code/{vehicleId}/{ownerId}')
-  Future<Response> generateShareCode(@Path('vehicleId') vehicleId, @Path('ownerId') ownerId);
+  Future<Response> generateShareCode(
+      @Path('vehicleId') vehicleId, @Path('ownerId') ownerId);
 
   @Patch(path: '/vehicle/add-from-code/{uid}/{code}')
-  Future<Response> addVehicleFromCode(@Path('uid') newUserUid, @Path('code') code);
+  Future<Response> addVehicleFromCode(
+      @Path('uid') newUserUid, @Path('code') code);
 
   @Patch(path: '/vehicle/authorize-vehicle-addition/{uid}/{code}')
-  Future<Response> authorizeVehicleAddition(@Path('uid') ownerUid, @Path('code') code);
+  Future<Response> authorizeVehicleAddition(
+      @Path('uid') ownerUid, @Path('code') code);
   //User Operations
 
   @Get(path: '/user/{uid}')
@@ -68,7 +73,8 @@ abstract class ApiService extends ChopperService {
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
 
   @Post(path: '/user/requestUserInfo')
-  Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt, @Body() Map<String, dynamic> body);
+  Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt,
+      @Body() Map<String, dynamic> body);
 
   @Get(path: '/user/google/{uid}')
   Future<Response> checkExistence({@Path('uid') String uid});
@@ -77,7 +83,8 @@ abstract class ApiService extends ChopperService {
   Future<Response> getNotifications({@Path('uid') String uid});
 
   @Patch(path: '/user/notifications/{uid}/{nUid}')
-  Future<Response> setNotificationAsSeen({@Path('uid') String uid, @Path('nUid') String notificationUid});
+  Future<Response> setNotificationAsSeen(
+      {@Path('uid') String uid, @Path('nUid') String notificationUid});
 
   @Get(path: '/user/exists/{email}')
   Future<Response> checkEmailUsage({@Path('email') String email});
@@ -86,21 +93,34 @@ abstract class ApiService extends ChopperService {
   Future<Response> registerViaGoogle({@Path('uid') String uid});
 
   @Patch(path: '/user/device/{uid}/{token}')
-  Future<Response> registerDevice({@Path('uid') String uid, @Path('token') String token});
+  Future<Response> registerDevice(
+      {@Path('uid') String uid, @Path('token') String token});
 
   @Patch(path: '/user/remove-device/{uid}/{token}')
-  Future<Response> unregisterDevice({@Path('uid') String uid, @Path('token') String token});
+  Future<Response> unregisterDevice(
+      {@Path('uid') String uid, @Path('token') String token});
 
   @Patch(path: '/user/generatecode/{uid}/{phoneNumber}')
-  Future<Response> generateCode({@Path('uid') String uid, @Path('phoneNumber') String phoneNumber});
+  Future<Response> generateCode(
+      {@Path('uid') String uid, @Path('phoneNumber') String phoneNumber});
 
   @Patch(path: '/user/confirmcode/{uid}/{code}')
-  Future<Response> confirmCode({@Path('uid') String uid, @Path('code') String code});
+  Future<Response> confirmCode(
+      {@Path('uid') String uid, @Path('code') String code});
+
+  @Post(path: '/user/notifications/notify-ontheway')
+  Future<Response> notifyOnTheWay(@Body() Map<String, dynamic> body);
+
+  @Post(path: '/user/notifications/notify-ontheway')
+  Future<Response> notifyArrived(@Body() Map<String, dynamic> body);
 
   //Partner Operations
 
   @Get(path: '/partner/radius/{latitude}/{longitude}/{radiusInKm}')
-  Future<Response> getLotsInRadius({@Path('latitude') double latitude, @Path('longitude') double longitude, @Path('radiusInKm') double kmRadius});
+  Future<Response> getLotsInRadius(
+      {@Path('latitude') double latitude,
+      @Path('longitude') double longitude,
+      @Path('radiusInKm') double kmRadius});
 
   @Get(path: '/partner/partnerReservations/{uid}')
   Future<Response> getPartnerReservations({@Path('uid') String uid});
@@ -108,9 +128,8 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/partner/lot/{uid}')
   Future<Response> getLot({@Path('uid') String uid});
 
-  @Get(path: '/partner/markAsComplete/{userId}/{lotId}/{vehicleId}/{reservationId}')
-  Future<Response> markAsComplete(
-      {@Path('userId') String userId, @Path('lotId') String lotId, @Path('vehicleId') String vehicleId, @Path('reservationId') String reservationId});
+  @Get(path: '/partner/markAsComplete/')
+  Future<Response> markAsComplete(@Body() Map<String, dynamic> body);
 
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
