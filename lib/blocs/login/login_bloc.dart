@@ -65,7 +65,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         //the register screen automatically populates data if it is a login via google event
         yield NavToRegister();
       } else {
-        //false
+        await authService.logOut();
         yield LoggedOut();
       }
     } else if (event is NavigateToEulaEvent) {
