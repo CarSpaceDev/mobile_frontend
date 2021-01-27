@@ -46,6 +46,8 @@ dependencies:
   flutter_barcode_scanner: ^1.0.2
   cached_network_image: ^2.5.0
   photo_view: ^0.10.3
+  mqtt_client: ^8.1.0
+  flutter_mapbox_navigation: ^0.0.19
 dev_dependencies:
   flutter_test:
     sdk: flutter

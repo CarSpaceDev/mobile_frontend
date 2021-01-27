@@ -63,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _mapStylePOI = string;
     });
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
-      print(string);
       _mapStyle = string;
     });
     _setMarkerIcon();
@@ -196,7 +195,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     locator<NavigationService>().pushNavigateTo(BetaFunctions);
                   },
-                  child: Text("Beta Functions")),
+                  child: Text("Partner-Customer Reservation View(Beta)")),
+            ),
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    locator<NavigationService>().pushNavigateTo(BetaFunctions2);
+                  },
+                  child: Text("Driver Navigation Screen(Beta)")),
             ),
           ],
         ),
