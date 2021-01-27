@@ -67,6 +67,12 @@ class MqttService {
     client.unsubscribe(topic);
   }
 
+  send(String topic, message) {
+    final builder = MqttClientPayloadBuilder();
+    builder.addString(message);
+    client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
+  }
+
   /// The subscribed callback
   void onSubscribed(String topic) {
     print('Subscription confirmed for topic $topic');

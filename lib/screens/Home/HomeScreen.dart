@@ -11,6 +11,7 @@ import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/MqttService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -348,12 +349,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   startPositionStream() {
     positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 15))
+        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 5))
             .listen(positionChangeHandler);
   }
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
+    locator<MqttService>().send("test", location.toString());
     driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
       setState(() {
