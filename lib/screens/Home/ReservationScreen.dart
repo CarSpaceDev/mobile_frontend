@@ -441,7 +441,18 @@ navigateViaMapBox(double lat, double lng) async {
   wayPoints.add(_destination);
   await _directions.startNavigation(
       wayPoints: wayPoints,
-      options: MapBoxOptions(mode: MapBoxNavigationMode.drivingWithTraffic, simulateRoute: false, language: "en", units: VoiceUnits.metric));
+      options: MapBoxOptions(
+          mode: MapBoxNavigationMode.driving,
+          simulateRoute: false,
+          tilt: 0.0,
+          bearing: 0.0,
+          language: "en",
+          units: VoiceUnits.metric,
+          zoom: 23,
+          animateBuildRoute: true,
+          initialLatitude: currentPosition.latitude,
+          initialLongitude: currentPosition.longitude,
+          enableRefresh: true));
   // final AndroidIntent intent =
   //     AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
   // intent.launch();
