@@ -31,6 +31,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _mapStyle;
+  String _mapStylePOI;
+  bool showPointOfInterest;
   GoogleMapController mapController;
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
@@ -57,7 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _initPartnerAccess();
     _searchController = TextEditingController(text: "");
+    rootBundle.loadString('assets/mapPOI.txt').then((string) {
+      _mapStylePOI = string;
+    });
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
+      print(string);
       _mapStyle = string;
     });
     _setMarkerIcon();
@@ -248,6 +254,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  Positioned(
+                    right: 8,
+                    top: 66,
+                    child: InkWell(
+                      onTap: _showPOI,
+                      child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: new BoxDecoration(
+                            color: themeData.primaryColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                          ),
+                          child: Icon(Icons.place, color: Colors.white, size: 25)),
+                    ),
+                  ),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
@@ -399,7 +422,22 @@ class _HomeScreenState extends State<HomeScreen> {
     mapController = controller;
     setState(() {
       mapController.setMapStyle(_mapStyle);
+      showPointOfInterest = false;
     });
+  }
+
+  _showPOI() {
+    if (showPointOfInterest) {
+      setState(() {
+        mapController.setMapStyle(_mapStyle);
+        showPointOfInterest = false;
+      });
+    } else {
+      setState(() {
+        mapController.setMapStyle(_mapStylePOI);
+        showPointOfInterest = true;
+      });
+    }
   }
 
   setSearchPositionMarker(LatLng coordinates) {

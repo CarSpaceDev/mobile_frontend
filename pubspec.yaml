@@ -83,6 +83,7 @@ flutter:
     - assets/logo/
     - assets/login_screen_assets/
     - assets/mapStyle.txt
+    - assets/mapPOI.txt
     - assets/launcher_icon/
     - assets/images/
 #
