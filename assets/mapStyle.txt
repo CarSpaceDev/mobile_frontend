@@ -8,6 +8,14 @@
     ]
   },
   {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
     "elementType": "labels.text.fill",
     "stylers": [
       {
@@ -34,19 +42,19 @@
   },
   {
     "featureType": "poi",
-    "elementType": "labels.text.fill",
+    "elementType": "labels.icon",
     "stylers": [
       {
-        "color": "#d59563"
+        "visibility": "off"
       }
     ]
   },
   {
-    "featureType": "poi.park",
-    "elementType": "geometry",
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#263c3f"
+        "color": "#d59563"
       }
     ]
   },

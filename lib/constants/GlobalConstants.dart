@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
-  static const kApiUrl = "http://carspaceapi.zenithdevgroup.me";
-  static const kGmapsApiKey = "AIzaSyActXaJmZ251hnenQ6Qjnoui-tcyct9qZ4";
+  static const kApiUrl = "https://api.zdgph.tech";
+  // static const kApiUrl = "https://5a045f4d8448.ngrok.io";
 }
 
 final ThemeData themeData = new ThemeData(
-  fontFamily: 'Champagne & Limousines',
+  // fontFamily: 'Roboto',
   brightness: Brightness.light,
   primarySwatch: MaterialColor(AppColors.indigo[900].value, AppColors.indigo),
   primaryColor: Colors.indigo[1000],

@@ -1,7 +1,9 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'login_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+
+import '../../blocs/login/login_bloc.dart';
 
 class EulaScreen extends StatefulWidget {
   @override
@@ -10,11 +12,14 @@ class EulaScreen extends StatefulWidget {
 
 class _EulaScreenState extends State<EulaScreen> {
   final scrollController = new ScrollController();
+  final cache = Hive.box("localCache");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: themeData.primaryColor,
       appBar: AppBar(
+        brightness: Brightness.dark,
+        elevation: 0,
         centerTitle: true,
         title: Text(
           "End User License Agreement",
@@ -29,7 +34,7 @@ class _EulaScreenState extends State<EulaScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               FlatButton(
-                onPressed: () => {navigateToLandingPage(context)},
+                onPressed: () => {sendResponse(context, false)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -39,7 +44,7 @@ class _EulaScreenState extends State<EulaScreen> {
                 ),
               ),
               FlatButton(
-                onPressed: () => {navigateToRegistration(context)},
+                onPressed: () => {sendResponse(context, true)},
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
@@ -54,8 +59,7 @@ class _EulaScreenState extends State<EulaScreen> {
       ),
       body: Center(
         child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Container(
@@ -76,7 +80,7 @@ class _EulaScreenState extends State<EulaScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Text(
-                            "loremwhatever",
+                            cache.get("data")["eula"],
                             style: TextStyle(
                               fontSize: 16.0,
                               color: Colors.black87,
@@ -95,13 +99,7 @@ class _EulaScreenState extends State<EulaScreen> {
     );
   }
 
-  navigateToRegistration(BuildContext context) {
-    print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToRegisterEvent());
-  }
-
-  navigateToLandingPage(BuildContext context) {
-    print('Navigate to registration');
-    context.bloc<LoginBloc>().add(NavigateToLandingPageEvent());
+  sendResponse(BuildContext context, bool v) {
+    context.read<LoginBloc>().add(EulaResponseEvent(value: v));
   }
 }

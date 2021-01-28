@@ -1,100 +1,84 @@
 import 'dart:core';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-//import 'package:json_annotation/json_annotation.dart';
-//part 'User.g.dart';
-//
-//@JsonSerializable()
-class User {
-  //these variables come from the login data
+class CSUser {
   String uid;
-  DateTime lastSignInTime;
-
-  //TODO encrypt the email
-  String email;
-
-  //these variables can be overwritten and sent to the API
-  String photoUrl;
   String displayName;
-
-  //these variables are taken from the API
-  bool isSanctioned;
-  DateTime sanctionEnds;
-  String filterData;
-  String recommendationProfile;
-  int boosters;
-  int rating;
+  String emailAddress;
+  String firstName;
+  String lastName;
+  int credits;
+  String phoneNumber;
+  String photoUrl;
+  //internal attributes
+  int partnerAccess;
+  int userAccess;
   String subscriptionType;
-  DateTime subscriptionEnd;
-  //these variables don't need to be sent to API
-  String jwt;
-//  Filter filter;
-  double distance;
+  //List Items
+  List<dynamic> reservations;
+  List<dynamic> vehicles;
+  //metaData
+  DateTime dateCreated;
+  DateTime dateUpdated;
 
-  User(
+  CSUser(
       {this.uid,
-        this.lastSignInTime,
-        this.displayName,
-        this.email,
-        this.photoUrl,
-        this.filterData,
-        this.recommendationProfile,
-        this.boosters,
-        this.rating,
-        this.subscriptionType,
-        this.subscriptionEnd,
-      });
+      this.displayName,
+      this.emailAddress,
+      this.firstName,
+      this.lastName,
+      this.credits,
+      this.phoneNumber,
+      this.photoUrl,
+      this.partnerAccess,
+      this.userAccess,
+      this.subscriptionType,
+      this.reservations,
+      this.vehicles,
+      this.dateCreated,
+      this.dateUpdated});
 
-  User.fromAuthService(FirebaseUser user, String token) {
-    this.uid = user.uid;
-    this.photoUrl = user.photoUrl;
-    this.lastSignInTime = user.metadata.lastSignInTime;
-    this.displayName = user.displayName;
-    this.email = user.email;
-    this.jwt = token;
+  CSUser.fromUser(User v) {
+    this.uid = v.uid;
+    this.phoneNumber = v.phoneNumber;
+    this.displayName = v.displayName;
+    this.photoUrl = v.photoURL;
+    this.emailAddress = v.email;
   }
 
+  CSUser.fromJson(Map<String, dynamic> json)
+      : uid = json['uid'] as String,
+        displayName = json['displayName'] as String,
+        emailAddress = json['emailAddress'] as String,
+        firstName = json['firstName'] as String,
+        lastName = json['lastName'] as String,
+        credits = json['credits'] as int,
+        phoneNumber = json['phoneNumber'] != null ? json['phoneNumber'].toString() : null,
+        photoUrl = json['photoUrl'] as String,
+        partnerAccess = json['partnerAccess'] as int,
+        userAccess = json['userAccess'] as int,
+        subscriptionType = json['subscriptionType'] as String,
+        reservations = json['reservations'] as List<dynamic>,
+        vehicles = json['vehicles'] as List<dynamic>;
 
-  User fromJson(Map<String, dynamic> user) => _$UserFromJson(user);
-
-  Map<String, dynamic> toJson() => _$UserToJson(this);
-
-  User _$UserFromJson(Map<String, dynamic> json) {
-    return User(
-      uid: json['authId'] as String,
-      lastSignInTime: json['lastSignInTime'] == null ? null : DateTime.parse(json['lastSignInTime'] as String),
-      displayName: json['displayName'] as String,
-      email: json['email'] as String,
-      photoUrl: json['photoUrl'] as String,
-      filterData: json['filterData'] as String,
-      recommendationProfile: json['recommendationProfile'] as String,
-      boosters: json['boosters'] as int,
-      rating: json['rating'] as int,
-      subscriptionType: json['subscriptionType'] as String,
-      subscriptionEnd: json['subscriptionEnd'] == null ? null : DateTime.parse(json['subscriptionEnd'] as String),
-    )
-      ..isSanctioned = json['isSanctioned'] as bool
-      ..sanctionEnds = json['sanctionEnds'] == null ? null : DateTime.parse(json['sanctionEnds'] as String)
-      ..jwt = json['jwt'] as String
-      ..distance = (json['distance'] as num)?.toDouble();
+  Map<String, dynamic> toJson() {
+    return {
+      "userId": this.uid,
+      "displayName": this.displayName,
+      "emailAddress": this.emailAddress,
+      "firstName": this.firstName,
+      "lastName": this.lastName,
+      "credits": this.credits,
+      "phoneNumber": this.phoneNumber,
+      "photoUrl": this.photoUrl,
+      "partnerAccess": this.partnerAccess,
+      "userAccess": this.userAccess,
+      "subscriptionType": this.subscriptionType,
+      "reservations": this.reservations,
+      "vehicles": this.vehicles,
+      "dateCreated": this.dateCreated.toIso8601String(),
+      "dateUpdated": this.dateUpdated.toIso8601String()
+    };
   }
-
-  Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-    'uid': instance.uid,
-    'lastSignInTime': instance.lastSignInTime?.toIso8601String(),
-    'email': instance.email,
-    'photoUrl': instance.photoUrl,
-    'displayName': instance.displayName,
-    'isSanctioned': instance.isSanctioned,
-    'sanctionEnds': instance.sanctionEnds?.toIso8601String(),
-    'filterData': instance.filterData,
-    'recommendationProfile': instance.recommendationProfile,
-    'boosters': instance.boosters,
-    'rating': instance.rating,
-    'subscriptionType': instance.subscriptionType,
-    'subscriptionEnd': instance.subscriptionEnd?.toIso8601String(),
-    'jwt': instance.jwt,
-    'distance': instance.distance,
-  };
 }

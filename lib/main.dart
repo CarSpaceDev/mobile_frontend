@@ -1,26 +1,28 @@
-import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/login/LandingScreen.dart';
-import 'package:carspace/screens/registration/number_registration_screen.dart';
-import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
-import 'package:device_preview/device_preview.dart';
+import 'package:carspace/serviceLocator.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'constants/SizeConfig.dart';
+import 'blocs/init/initialization_bloc.dart';
+import 'blocs/login/login_bloc.dart';
 import 'constants/GlobalConstants.dart';
-import 'model/GlobalData.dart';
+import 'constants/SizeConfig.dart';
+import 'navigation.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var path = await getApplicationDocumentsDirectory();
+  Hive..init(path.path);
+  await Hive.openBox('localCache');
+  await Firebase.initializeApp();
+  setUpServiceLocator();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: Colors.indigo[900], statusBarColor: Colors.indigo[900]));
 
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-  //     .copyWith(systemNavigationBarColor: Colors.indigo[900], statusBarColor: Colors.indigo[900]));
-  // runApp(CarSpaceApp());
-
-  runApp(DevicePreview(builder: (context)=> CarSpaceApp()));
+  runApp(CarSpaceApp());
 }
 
 class CarSpaceApp extends StatelessWidget {
@@ -30,25 +32,28 @@ class CarSpaceApp extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return OrientationBuilder(builder: (context, orientation) {
         SizeConfig().init(constraints, orientation);
-        return  MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: PhoneNumberRegistration());
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<InitializationBloc>(
+              create: (BuildContext context) => InitializationBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => LoginBloc(),
+            ),
+          ],
+          child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: themeData,
+              builder: (context, child) => child,
+              navigatorKey: locator<NavigationService>().navigatorKey,
+              onGenerateRoute: generateRoute,
+              initialRoute: InitializationRoute),
+          //     MaterialApp(
+          //   debugShowCheckedModeBanner: false,
+          //   home: HomeScreen(),
+          // ),
+        );
       });
     });
-  }
-}
-
-class GlobalDataHandler extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Provider<GlobalData>(
-      create: (_) => GlobalData(),
-      child: Provider(
-        create: (_) => ApiService.create(),
-        dispose: (_, ApiService service) => service.client.dispose(),
-        child: Provider<AuthService>(
-          create: (_) => AuthService(),
-          child: MaterialApp(debugShowCheckedModeBanner: false, theme: themeData, home: InitializationBlocHandler()),
-        ),
-      ),
-    );
   }
 }
