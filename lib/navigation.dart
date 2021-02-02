@@ -3,7 +3,7 @@ import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/screens/Home/VehicleManagementScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/Navigation/NavigationScreenDriver.dart';
+import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/screens/Navigation/NavigationScreenPartner.dart';
 import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +36,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(PartnerReservationScreen(), settings);
     case BetaFunctions:
       return _getPageRoute(NavigationScreenPartner(), settings);
-    case BetaFunctions2:
-      return _getPageRoute(NavigationScreenDriver(), settings);
   }
 }
 

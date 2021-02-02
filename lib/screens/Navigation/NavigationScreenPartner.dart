@@ -27,36 +27,55 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   LatLng driverLoc;
   LatLng tempDriverLoc;
   String _mapStyle;
-  String _mapStylePOI;
   Set<Marker> _markers = HashSet<Marker>();
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
-  BitmapDescriptor _destination;
   GoogleMapController mapController;
+  LatLngBounds mapBounds;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> mqttUpdates;
   _NavigationScreenPartnerState(this.partnerLoc, this.reservationId);
 
   @override
   void initState() {
-    tempPartnerLoc = LatLng(10.269003129465927, 123.81134209897097);
+    tempPartnerLoc = LatLng(10.258173349737774, 123.8179593690133);
     partnerLoc = tempPartnerLoc;
-    tempDriverLoc = LatLng(10.258173349737774, 123.8179593690133);
+    tempDriverLoc = LatLng(10.269003129465927, 123.81134209897097);
     driverLoc = tempDriverLoc;
+    _setMapBounds();
     _setMarkerIcon();
-    rootBundle.loadString('assets/mapPOI.txt').then((string) {
-      _mapStylePOI = string;
-    });
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
     });
     mqttUpdates = locator<MqttService>().client.updates.listen(handleMessage);
-    locator<MqttService>().subscribe("test");
+    locator<MqttService>().subscribe(reservationId);
     super.initState();
+  }
+
+  _setMapBounds() {
+    double swLat = 0;
+    double swLng = 0;
+    double neLat = 0;
+    double neLng = 0;
+    if (partnerLoc.latitude <= driverLoc.latitude) {
+      swLat = partnerLoc.latitude;
+      neLat = driverLoc.latitude;
+    } else {
+      swLat = driverLoc.latitude;
+      neLat = partnerLoc.latitude;
+    }
+    if (partnerLoc.longitude <= driverLoc.longitude) {
+      swLng = partnerLoc.longitude;
+      neLng = driverLoc.longitude;
+    } else {
+      swLng = driverLoc.longitude;
+      neLng = partnerLoc.longitude;
+    }
+    this.mapBounds = LatLngBounds(southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
   }
 
   @override
   void dispose() {
-    locator<MqttService>().unSubscribe("test");
+    locator<MqttService>().unSubscribe(reservationId);
     mqttUpdates.cancel();
     super.dispose();
   }
@@ -84,12 +103,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height - (MediaQuery.of(context).size.height * .55 / (16 / 9)),
+              height: MediaQuery.of(context).size.width,
               child: GoogleMap(
-                // onCameraMove: _onCameraMove,
+                cameraTargetBounds: CameraTargetBounds(mapBounds),
+                scrollGesturesEnabled: false,
+                zoomGesturesEnabled: false,
                 myLocationButtonEnabled: true,
-                mapToolbarEnabled: false,
-                zoomControlsEnabled: true,
+                zoomControlsEnabled: false,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
                   target: partnerLoc,
@@ -138,11 +158,9 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     markerFiles = await Future.wait([
       BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
       BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png'),
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/destination.png')
     ]);
     _lotIcon = markerFiles[0];
     _driverIcon = markerFiles[1];
-    _destination = markerFiles[2];
     _markers.add(Marker(markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: partnerLoc));
     _markers.add(Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc));
   }
@@ -151,6 +169,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     setState(() {
       mapController = controller;
       mapController.setMapStyle(_mapStyle);
+      mapController.moveCamera(CameraUpdate.newLatLngBounds(mapBounds, 90));
     });
   }
 }

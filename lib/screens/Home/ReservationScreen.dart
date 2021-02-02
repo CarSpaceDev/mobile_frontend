@@ -1,13 +1,12 @@
-import 'package:android_intent/android_intent.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/DriverReservation.dart';
+import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mapbox_navigation/library.dart';
-import 'package:geolocator/geolocator.dart';
 
 import '../../navigation.dart';
 
@@ -17,7 +16,7 @@ class ReservationScreen extends StatefulWidget {
 }
 
 class _ReservationScreenScreenState extends State<ReservationScreen> {
-  var _reservationData;
+  List<DriverReservation> _reservationData;
   var _partnerAccess;
   var _uid;
   var _driverName;
@@ -43,8 +42,12 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
 
   void getUserReservations() async {
     await locator<ApiService>().getUserReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
-      _reservationData = data.body;
+      List<DriverReservation> result = [];
+      List.from(data.body).forEach((reservation) {
+        result.add(DriverReservation.fromJson(reservation));
+      });
       setState(() {
+        _reservationData = result;
         _fetching = false;
       });
     });
@@ -84,10 +87,10 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
         return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
             child: SizedBox(
-              height: (_reservationData[index]['timeUpdated'] != _reservationData[index]['timeCreated']) ? 250 : 225,
+              height: (_reservationData[index].timeUpdated != _reservationData[index].timeCreated) ? 250 : 225,
               width: 200,
               child: Card(
-                color: (_reservationData[index]['reservationStatus'] == 1) ? Colors.white : Colors.grey[200],
+                color: (_reservationData[index].status == DriverReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
                 elevation: 4.0,
                 child: InkWell(
                   onTap: () {
@@ -101,7 +104,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Expanded(
-                              child: Text(_reservationData[index]['lotAddress'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              child: Text(_reservationData[index].lotAddress, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
@@ -116,7 +119,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 aspectRatio: 16 / 9,
                                 child: CachedNetworkImage(
                                   fit: BoxFit.contain,
-                                  imageUrl: _reservationData[index]['lotImage'],
+                                  imageUrl: _reservationData[index].lotImage,
                                   progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
                                   errorWidget: (context, url, error) => Icon(Icons.error),
                                 ),
@@ -134,7 +137,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index]['vehicleId'])
+                                      TextSpan(text: _reservationData[index].vehicleId)
                                     ]),
                                   ),
                                 ),
@@ -143,7 +146,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index]['dateCreated'])
+                                      TextSpan(text: _reservationData[index].dateCreated)
                                     ]),
                                   ),
                                 ),
@@ -152,27 +155,27 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Time Placed: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index]['timeCreated'])
+                                      TextSpan(text: _reservationData[index].timeCreated)
                                     ]),
                                   ),
                                 ),
-                                if (_reservationData[index]['dateUpdated'] != _reservationData[index]['dateCreated'])
+                                if (_reservationData[index].dateUpdated != _reservationData[index].dateCreated)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                                     child: RichText(
                                       text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                         TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
-                                        TextSpan(text: _reservationData[index]['dateUpdated'])
+                                        TextSpan(text: _reservationData[index].dateUpdated)
                                       ]),
                                     ),
                                   ),
-                                if (_reservationData[index]['timeUpdated'] != _reservationData[index]['timeCreated'])
+                                if (_reservationData[index].timeUpdated != _reservationData[index].timeCreated)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                                     child: RichText(
                                       text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                         TextSpan(text: 'Time Exited: ', style: TextStyle(color: Colors.grey)),
-                                        TextSpan(text: _reservationData[index]['timeUpdated'])
+                                        TextSpan(text: _reservationData[index].timeUpdated)
                                       ]),
                                     ),
                                   ),
@@ -181,7 +184,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: (_reservationData[index]['reservationType'] == 1) ? "Reservation" : "Recurring")
+                                      TextSpan(text: (_reservationData[index].type == DriverReservationType.BOOKING) ? "Reservation" : "Recurring")
                                     ]),
                                   ),
                                 ),
@@ -191,8 +194,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
                                       TextSpan(
-                                          text: (_reservationData[index]['reservationStatus'] == 1) ? "Active" : "Completed",
-                                          style: (_reservationData[index]['reservationStatus'] == 1)
+                                          text: (_reservationData[index].status == DriverReservationStatus.BOOKED) ? "Active" : "Completed",
+                                          style: (_reservationData[index].status == DriverReservationStatus.BOOKED)
                                               ? TextStyle(color: Colors.green[400])
                                               : TextStyle(color: Colors.deepOrange[400])),
                                     ]),
@@ -224,15 +227,15 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_reservationData[index]['reservationStatus'] == 1)
+                        if (_reservationData[index].status == DriverReservationStatus.BOOKED)
                           Column(
                             children: [
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    navigateViaMapBox(
-                                        _reservationData[index]['g']['geopoint']['_latitude'], _reservationData[index]['g']['geopoint']['_longitude']);
+                                    Navigator.of(context).pop();
+                                    DriverNavigationService().navigateViaMapBox(_reservationData[index].coordinates, _reservationData[index].reservationId);
                                   },
                                   child: Column(
                                     children: [
@@ -249,8 +252,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    navigateViaGoogleMaps(
-                                        _reservationData[index]['g']['geopoint']['_latitude'], _reservationData[index]['g']['geopoint']['_longitude']);
+                                    DriverNavigationService().navigateViaGoogleMaps(_reservationData[index].coordinates);
                                   },
                                   child: Column(
                                     children: [
@@ -267,8 +269,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    onTheWay(this._uid, this._driverName, _reservationData[index]['vehicleId'], _reservationData[index]['lotAddress'],
-                                        _reservationData[index]['partnerId']);
+                                    onTheWay(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
+                                        _reservationData[index].partnerId);
                                   },
                                   child: Column(
                                     children: [
@@ -285,8 +287,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    arrived(this._uid, this._driverName, _reservationData[index]['vehicleId'], _reservationData[index]['lotAddress'],
-                                        _reservationData[index]['partnerId']);
+                                    arrived(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
+                                        _reservationData[index].partnerId);
                                   },
                                   child: Column(
                                     children: [
@@ -422,64 +424,6 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
       ],
     );
   }
-}
-
-navigateViaGoogleMaps(double lat, double lng) {
-  final AndroidIntent intent =
-      AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
-  intent.launch();
-}
-
-navigateViaMapBox(double lat, double lng) async {
-  Position currentPosition = await _determinePosition();
-  print(currentPosition.toString());
-  MapBoxNavigation _directions = MapBoxNavigation();
-  var wayPoints = List<WayPoint>();
-  var _origin = WayPoint(name: "Start", latitude: currentPosition.latitude, longitude: currentPosition.longitude);
-  var _destination = WayPoint(name: "Start", latitude: lat, longitude: lng);
-  wayPoints.add(_origin);
-  wayPoints.add(_destination);
-  await _directions.startNavigation(
-      wayPoints: wayPoints,
-      options: MapBoxOptions(
-          mode: MapBoxNavigationMode.driving,
-          simulateRoute: false,
-          tilt: 0.0,
-          bearing: 0.0,
-          language: "en",
-          units: VoiceUnits.metric,
-          zoom: 23,
-          animateBuildRoute: true,
-          initialLatitude: currentPosition.latitude,
-          initialLongitude: currentPosition.longitude,
-          enableRefresh: true));
-  // final AndroidIntent intent =
-  //     AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
-  // intent.launch();
-}
-
-Future<Position> _determinePosition() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    return Future.error('Location services are disabled.');
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.deniedForever) {
-    return Future.error('Location permissions are permanently denied, we cannot request permissions.');
-  }
-
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-      return Future.error('Location permissions are denied (actual value: $permission).');
-    }
-  }
-
-  return await Geolocator.getCurrentPosition();
 }
 
 class ViewReservedLot extends StatefulWidget {
