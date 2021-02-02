@@ -21,11 +21,9 @@ class NavigationScreenPartner extends StatefulWidget {
 }
 
 class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
-  LatLng partnerLoc;
-  String reservationId;
-  LatLng tempPartnerLoc;
+  final LatLng partnerLoc;
+  final String reservationId;
   LatLng driverLoc;
-  LatLng tempDriverLoc;
   String _mapStyle;
   double distanceRemaining;
   double durationRemaining;
@@ -35,18 +33,12 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
   GoogleMapController mapController;
-  LatLngBounds mapBounds;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> mqttUpdates;
   _NavigationScreenPartnerState(this.partnerLoc, this.reservationId);
 
   @override
   void initState() {
-    reservationId = "joqz49prRaVn71gFqHjN";
-    tempPartnerLoc = LatLng(10.2697797, 123.8121911);
-    partnerLoc = tempPartnerLoc;
-    tempDriverLoc = LatLng(10.269003129465927, 123.81134209897097);
-    driverLoc = tempDriverLoc;
-    _setMapBounds();
+    print(partnerLoc.toJson());
     _setMarkerIcon();
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
@@ -56,7 +48,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     super.initState();
   }
 
-  _setMapBounds() {
+  LatLngBounds _getMapBounds() {
     double swLat = 0;
     double swLng = 0;
     double neLat = 0;
@@ -75,7 +67,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       swLng = driverLoc.longitude;
       neLng = partnerLoc.longitude;
     }
-    this.mapBounds = LatLngBounds(southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
+    return LatLngBounds(southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
   }
 
   @override
@@ -110,7 +102,6 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.width,
               child: GoogleMap(
-                cameraTargetBounds: CameraTargetBounds(mapBounds),
                 scrollGesturesEnabled: false,
                 zoomGesturesEnabled: false,
                 zoomControlsEnabled: true,
@@ -130,8 +121,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                          "Straight Line Distance: ${(Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) / 1000).toStringAsFixed(10)} km"),
+                      Text("Straight Line Distance: ${getDistanceBetween()} km"),
                       Text("Distance remaining: ${distanceRemaining != null ? distanceRemaining / 1000 : "unknown"} km"),
                       Text("Time remaining: ${durationRemaining != null ? durationRemaining / 60 : "unknown"} m"),
                     ],
@@ -141,6 +131,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         ),
       ),
     );
+  }
+
+  String getDistanceBetween() {
+    if (driverLoc == null)
+      return "unknown";
+    else
+      return (Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) / 1000).toStringAsFixed(10);
   }
 
   handleMessage(List<MqttReceivedMessage<MqttMessage>> v) {
@@ -154,6 +151,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       driverLoc = LatLng(payload["latitude"], payload["longitude"]);
       driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
       _markers = Set.from([lotMarker, driverMarker]);
+      mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
     });
   }
 
@@ -166,16 +164,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     _lotIcon = markerFiles[0];
     _driverIcon = markerFiles[1];
     lotMarker = Marker(markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: partnerLoc);
-    driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
     _markers.add(lotMarker);
-    _markers.add(driverMarker);
   }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       mapController = controller;
       mapController.setMapStyle(_mapStyle);
-      mapController.moveCamera(CameraUpdate.newLatLngBounds(mapBounds, 90));
     });
   }
 }

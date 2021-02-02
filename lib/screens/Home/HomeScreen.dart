@@ -190,20 +190,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text("Sign Out")),
             ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    locator<NavigationService>().pushNavigateTo(BetaFunctions);
-                  },
-                  child: Text("Partner-Customer Reservation View(Beta)")),
-            ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    locator<NavigationService>().pushNavigateTo(BetaFunctions2);
-                  },
-                  child: Text("Driver Navigation Screen(Beta)")),
-            ),
           ],
         ),
       ),

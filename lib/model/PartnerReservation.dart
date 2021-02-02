@@ -2,11 +2,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'Enums.dart';
 
-class DriverReservation {
+class PartnerReservation {
   String reservationId;
   String lotId;
   String partnerId;
+  String driverId;
   String vehicleId;
+  String displayName;
+  String emailAddress;
+  String photoUrl;
+  String phoneNumber;
   String dateCreated;
   String dateUpdated;
   String timeCreated;
@@ -17,13 +22,18 @@ class DriverReservation {
   ReservationType type;
   LatLng coordinates;
 
-  DriverReservation();
+  PartnerReservation();
 
-  DriverReservation.fromJson(Map<String, dynamic> json)
+  PartnerReservation.fromJson(Map<String, dynamic> json)
       : reservationId = json["reservationId"] as String,
         lotId = json["lotId"] as String,
         partnerId = json["partnerId"] as String,
+        driverId = json["userId"] as String,
         vehicleId = json["vehicleId"] as String,
+        displayName = json["displayName"] as String,
+        emailAddress = json["emailAddress"] as String,
+        photoUrl = json["photoUrl"] as String,
+        phoneNumber = json["phoneNumber"] as String,
         dateCreated = json["dateCreated"] as String,
         dateUpdated = json["dateUpdated"] as String,
         timeCreated = json["timeCreated"] as String,
@@ -40,6 +50,11 @@ class DriverReservation {
       "lotId": lotId,
       "partnerId": partnerId,
       "vehicleId": vehicleId,
+      "driverId": driverId,
+      "displayName": displayName,
+      "emailAddress": emailAddress,
+      "photoUrl": photoUrl,
+      "phoneNumber": phoneNumber,
       "dateCreated": dateCreated,
       "dateUpdated": dateUpdated,
       "timeCreated": timeCreated,

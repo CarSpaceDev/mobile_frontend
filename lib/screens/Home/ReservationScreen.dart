@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/DriverReservation.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -90,7 +91,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
               height: (_reservationData[index].timeUpdated != _reservationData[index].timeCreated) ? 250 : 225,
               width: 200,
               child: Card(
-                color: (_reservationData[index].status == DriverReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
+                color: (_reservationData[index].status == ReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
                 elevation: 4.0,
                 child: InkWell(
                   onTap: () {
@@ -184,7 +185,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: (_reservationData[index].type == DriverReservationType.BOOKING) ? "Reservation" : "Recurring")
+                                      TextSpan(text: (_reservationData[index].type == ReservationType.BOOKING) ? "Reservation" : "Recurring")
                                     ]),
                                   ),
                                 ),
@@ -194,8 +195,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                       TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
                                       TextSpan(
-                                          text: (_reservationData[index].status == DriverReservationStatus.BOOKED) ? "Active" : "Completed",
-                                          style: (_reservationData[index].status == DriverReservationStatus.BOOKED)
+                                          text: (_reservationData[index].status == ReservationStatus.BOOKED) ? "Active" : "Completed",
+                                          style: (_reservationData[index].status == ReservationStatus.BOOKED)
                                               ? TextStyle(color: Colors.green[400])
                                               : TextStyle(color: Colors.deepOrange[400])),
                                     ]),
@@ -227,7 +228,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_reservationData[index].status == DriverReservationStatus.BOOKED)
+                        if (_reservationData[index].status == ReservationStatus.BOOKED)
                           Column(
                             children: [
                               Padding(
