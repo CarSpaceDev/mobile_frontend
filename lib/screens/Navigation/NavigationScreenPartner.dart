@@ -22,12 +22,16 @@ class NavigationScreenPartner extends StatefulWidget {
 
 class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   LatLng partnerLoc;
-  final String reservationId;
+  String reservationId;
   LatLng tempPartnerLoc;
   LatLng driverLoc;
   LatLng tempDriverLoc;
   String _mapStyle;
+  double distanceRemaining;
+  double durationRemaining;
   Set<Marker> _markers = HashSet<Marker>();
+  Marker lotMarker;
+  Marker driverMarker;
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
   GoogleMapController mapController;
@@ -37,7 +41,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
 
   @override
   void initState() {
-    tempPartnerLoc = LatLng(10.258173349737774, 123.8179593690133);
+    reservationId = "joqz49prRaVn71gFqHjN";
+    tempPartnerLoc = LatLng(10.2697797, 123.8121911);
     partnerLoc = tempPartnerLoc;
     tempDriverLoc = LatLng(10.269003129465927, 123.81134209897097);
     driverLoc = tempDriverLoc;
@@ -46,8 +51,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
     });
-    mqttUpdates = locator<MqttService>().client.updates.listen(handleMessage);
     locator<MqttService>().subscribe(reservationId);
+    mqttUpdates = locator<MqttService>().client.updates.listen(handleMessage);
     super.initState();
   }
 
@@ -108,8 +113,9 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 cameraTargetBounds: CameraTargetBounds(mapBounds),
                 scrollGesturesEnabled: false,
                 zoomGesturesEnabled: false,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: false,
+                zoomControlsEnabled: true,
+                myLocationEnabled: false,
+                myLocationButtonEnabled: false,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
                   target: partnerLoc,
@@ -121,9 +127,15 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             Expanded(
               child: Container(
                   color: Colors.white,
-                  child: Text((Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) / 1000)
-                          .toStringAsFixed(2) +
-                      " km")),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          "Straight Line Distance: ${(Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) / 1000).toStringAsFixed(10)} km"),
+                      Text("Distance remaining: ${distanceRemaining != null ? distanceRemaining / 1000 : "unknown"} km"),
+                      Text("Time remaining: ${durationRemaining != null ? durationRemaining / 60 : "unknown"} m"),
+                    ],
+                  )),
             ),
           ],
         ),
@@ -136,21 +148,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     String pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
     var payload = jsonDecode(pt);
     print(payload);
-    // print(payload["type"]);
-    // print(payload["destination"]);
-    // print(payload["message"]);
-
-    // this.setState(() {
-    //   if (payload["type"] == 0) {
-    //     messages.insert(0, "Message to be sent to ${payload['destination']}:\n ${payload["message"]}");
-    //     if (payload['destination'] != null && payload['message'] != null) {
-    //       print('Sending a message');
-    //       _sendMessage(dest: payload["destination"], smsContent: payload["message"]);
-    //     }
-    //   } else {
-    //     messages.insert(0, "Unformatted message received $payload");
-    //   }
-    // });
+    setState(() {
+      distanceRemaining = payload["distanceRemaining"] != null ? payload["distanceRemaining"] : null;
+      durationRemaining = payload["durationRemaining"] != null ? payload["durationRemaining"] : null;
+      driverLoc = LatLng(payload["latitude"], payload["longitude"]);
+      driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
+      _markers = Set.from([lotMarker, driverMarker]);
+    });
   }
 
   void _setMarkerIcon() async {
@@ -161,8 +165,10 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     ]);
     _lotIcon = markerFiles[0];
     _driverIcon = markerFiles[1];
-    _markers.add(Marker(markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: partnerLoc));
-    _markers.add(Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc));
+    lotMarker = Marker(markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: partnerLoc);
+    driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
+    _markers.add(lotMarker);
+    _markers.add(driverMarker);
   }
 
   void _onMapCreated(GoogleMapController controller) {

@@ -30,9 +30,7 @@ class MqttService {
     client.autoReconnect = true;
     final connMess = MqttConnectMessage()
         .authenticateAs(username, password)
-        .withClientIdentifier('Mqtt_MyClientUniqueId')
-        .withWillTopic('willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
+        .withClientIdentifier(DateTime.now().millisecondsSinceEpoch.toString())
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atLeastOnce);
     print('EXAMPLE::Mosquitto client connecting....');

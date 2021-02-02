@@ -235,7 +235,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.of(context).pop();
-                                    DriverNavigationService().navigateViaMapBox(_reservationData[index].coordinates, _reservationData[index].reservationId);
+                                    DriverNavigationService(reservationId: _reservationData[index].reservationId)
+                                        .navigateViaMapBox(_reservationData[index].coordinates);
                                   },
                                   child: Column(
                                     children: [
@@ -252,7 +253,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    DriverNavigationService().navigateViaGoogleMaps(_reservationData[index].coordinates);
+                                    DriverNavigationService(reservationId: _reservationData[index].reservationId)
+                                        .navigateViaGoogleMaps(_reservationData[index].coordinates);
                                   },
                                   child: Column(
                                     children: [
