@@ -8,8 +8,12 @@ class NavigationScreenDriver extends StatefulWidget {
 
 class _NavigationScreenDriverState extends State<NavigationScreenDriver> {
   String _instruction = "";
-  final _origin = WayPoint(name: "Start", latitude: 10.269003129465927, longitude: 123.81134209897097);
-  final _destination = WayPoint(name: "End", latitude: 10.258173349737774, longitude: 123.8179593690133);
+  final _origin = WayPoint(
+      name: "Start",
+      latitude: 10.269003129465927,
+      longitude: 123.81134209897097);
+  final _destination = WayPoint(
+      name: "End", latitude: 10.258173349737774, longitude: 123.8179593690133);
 
   MapBoxNavigation _directions;
   MapBoxOptions _options;
@@ -85,8 +89,11 @@ class _NavigationScreenDriverState extends State<NavigationScreenDriver> {
 
                       await _directions.startNavigation(
                           wayPoints: wayPoints,
-                          options:
-                              MapBoxOptions(mode: MapBoxNavigationMode.drivingWithTraffic, simulateRoute: false, language: "en", units: VoiceUnits.metric));
+                          options: MapBoxOptions(
+                              mode: MapBoxNavigationMode.drivingWithTraffic,
+                              simulateRoute: false,
+                              language: "en",
+                              units: VoiceUnits.metric));
                     },
                   ),
                 ]),
@@ -101,7 +108,8 @@ class _NavigationScreenDriverState extends State<NavigationScreenDriver> {
       case MapBoxEvent.progress_change:
         var progressEvent = e.data as RouteProgressEvent;
         _arrived = progressEvent.arrived;
-        if (progressEvent.currentStepInstruction != null) _instruction = progressEvent.currentStepInstruction;
+        if (progressEvent.currentStepInstruction != null)
+          _instruction = progressEvent.currentStepInstruction;
         break;
       case MapBoxEvent.route_building:
       case MapBoxEvent.route_built:
