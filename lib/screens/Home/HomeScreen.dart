@@ -248,23 +248,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Icon(Icons.place, color: Colors.white, size: 25)),
                     ),
                   ),
-                  Positioned(
-                    right: 8,
-                    bottom: 16,
-                    child: InkWell(
-                      onTap: _showPOI,
-                      child: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: new BoxDecoration(
-                            color: themeData.primaryColor,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(25.0),
-                            ),
-                          ),
-                          child: Icon(Icons.gps_fixed, color: Colors.white, size: 25)),
-                    ),
-                  ),
+                  // Positioned(
+                  //   right: 8,
+                  //   bottom: 16,
+                  //   child: InkWell(
+                  //     onTap: _showPOI,
+                  //     child: Container(
+                  //         width: 50,
+                  //         height: 50,
+                  //         decoration: new BoxDecoration(
+                  //           color: themeData.primaryColor,
+                  //           borderRadius: BorderRadius.all(
+                  //             Radius.circular(25.0),
+                  //           ),
+                  //         ),
+                  //         child: Icon(Icons.gps_fixed, color: Colors.white, size: 25)),
+                  //   ),
+                  // ),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
