@@ -578,24 +578,14 @@ class _HomeScreenState extends State<HomeScreen> {
   BottomNavigationBar homeBottomNavBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      items: destinationPosition != null
-          ? [
-              BottomNavigationBarItem(
-                  icon: lotsInRadius.length == 0
-                      ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(icon: Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)), label: 'Show Destination'),
-              BottomNavigationBarItem(icon: Icon(Icons.car_rental, color: Color.fromARGB(255, 0, 0, 0)), label: _selectedVehicle)
-            ]
-          : [
-              BottomNavigationBarItem(
-                  icon: lotsInRadius.length == 0
-                      ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
-                      : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
-                  label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
-              BottomNavigationBarItem(icon: Icon(Icons.car_rental, color: Color.fromARGB(255, 0, 0, 0)), label: _selectedVehicle),
-            ],
+      items: [
+        BottomNavigationBarItem(
+            icon: lotsInRadius.length == 0
+                ? Icon(Icons.warning, color: Color.fromARGB(255, 0, 0, 0))
+                : Icon(Icons.assistant_direction, color: Color.fromARGB(255, 0, 0, 0)),
+            label: lotsInRadius.length == 0 ? "No lots nearby" : 'Lots found ' + lotsInRadius.length.toString()),
+        BottomNavigationBarItem(icon: Icon(Icons.car_rental, color: Color.fromARGB(255, 0, 0, 0)), label: _selectedVehicle),
+      ],
       onTap: bottomNavBarCallBack,
     );
   }
@@ -625,31 +615,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void bottomNavBarCallBack(index) {
-    if (destinationPosition != null) {
-      if (index == 0) {
-        setState(() {
-          showLotCards = !showLotCards;
-        });
-      } else if (index == 1) {
-        if (destinationPosition != null) {
-          mapController?.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: destinationPosition,
-              zoom: 15.0,
-            ),
-          ));
-        }
-      } else if (index == 2) {
-        _showVehicleDialog();
-      }
-    } else {
-      if (index == 0) {
-        setState(() {
-          showLotCards = !showLotCards;
-        });
-      } else if (index == 1) {
-        _showVehicleDialog();
-      }
+    if (index == 0) {
+      setState(() {
+        showLotCards = !showLotCards;
+      });
+    } else if (index == 1) {
+      _showVehicleDialog();
     }
   }
 
