@@ -23,7 +23,6 @@ class _LocationSearchWidgetState extends State<LocationSearchWidget> {
   _LocationSearchWidgetState(this.callback, this._controller);
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 

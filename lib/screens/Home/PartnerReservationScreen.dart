@@ -37,10 +37,18 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
   }
 
   void getUserReservations() async {
-    await locator<ApiService>().getPartnerReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
+    locator<ApiService>().getPartnerReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
       List<PartnerReservation> result = [];
       List.from(data.body).forEach((reservation) {
         result.add(PartnerReservation.fromJson(reservation));
+      });
+      result.sort((PartnerReservation a, PartnerReservation b) {
+        if (a.status == ReservationStatus.BOOKED || a.status == ReservationStatus.RESERVED)
+          return -1;
+        else if (a.status == b.status)
+          return 0;
+        else
+          return 1;
       });
       setState(() {
         _reservationData = result;
@@ -239,64 +247,77 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
   }
 
   _showActionsDialog({int index}) {
-    return showDialog(
+    if (_reservationData[index].status != ReservationStatus.COMPLETED)
+      return showDialog(
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_reservationData[index].status == ReservationStatus.BOOKED)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                markAsComplete(_reservationData[index].driverId, _reservationData[index].lotId, _reservationData[index].vehicleId,
-                                    _reservationData[index].reservationId, _reservationData[index].lotAddress, _reservationData[index].partnerId);
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(Icons.check, color: Colors.redAccent),
-                                  Text(
-                                    'Mark as Completed',
-                                    style: TextStyle(color: Colors.redAccent),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (_reservationData[index].status == ReservationStatus.BOOKED)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    locator<NavigationService>().navigatorKey.currentContext,
-                                    MaterialPageRoute(
-                                        builder: (context) => NavigationScreenPartner(
-                                            partnerLoc: _reservationData[index].coordinates, reservationId: _reservationData[index].reservationId)));
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(Icons.map_outlined, color: Colors.redAccent),
-                                  Text(
-                                    'Track Progress',
-                                    style: TextStyle(color: Colors.redAccent),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          markAsComplete(_reservationData[index].driverId, _reservationData[index].lotId, _reservationData[index].vehicleId,
+                              _reservationData[index].reservationId, _reservationData[index].lotAddress, _reservationData[index].partnerId);
+                        },
+                        child: Column(
+                          children: [
+                            Icon(Icons.check, color: Colors.redAccent),
+                            Text(
+                              'Mark as Completed',
+                              style: TextStyle(color: Colors.redAccent),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              locator<NavigationService>().navigatorKey.currentContext,
+                              MaterialPageRoute(
+                                  builder: (context) => NavigationScreenPartner(
+                                      partnerLoc: _reservationData[index].coordinates, reservationId: _reservationData[index].reservationId)));
+                        },
+                        child: Column(
+                          children: [
+                            Icon(Icons.map_outlined, color: Colors.redAccent),
+                            Text(
+                              'Track Progress',
+                              style: TextStyle(color: Colors.redAccent),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ));
+            ),
+          ),
+        ),
+      );
+    else
+      return showDialog(
+        context: context,
+        builder: (_) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(child: Text("This transaction has been completed")),
+            ),
+          ),
+        ),
+      );
   }
 
   markAsComplete(String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {

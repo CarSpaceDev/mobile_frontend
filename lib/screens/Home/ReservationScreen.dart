@@ -47,6 +47,14 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
       List.from(data.body).forEach((reservation) {
         result.add(DriverReservation.fromJson(reservation));
       });
+      result.sort((DriverReservation a, DriverReservation b) {
+        if (a.status == ReservationStatus.BOOKED || a.status == ReservationStatus.RESERVED)
+          return -1;
+        else if (a.status == b.status)
+          return 0;
+        else
+          return 1;
+      });
       setState(() {
         _reservationData = result;
         _fetching = false;
@@ -86,129 +94,125 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
       itemCount: _reservationData.length,
       itemBuilder: (BuildContext context, index) {
         return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: SizedBox(
-              height: (_reservationData[index].timeUpdated != _reservationData[index].timeCreated) ? 250 : 225,
-              width: 200,
-              child: Card(
-                color: (_reservationData[index].status == ReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
-                elevation: 4.0,
-                child: InkWell(
-                  onTap: () {
-                    _showActionsDialog(index: index);
-                  },
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(_reservationData[index].lotAddress, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: [
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              color: (_reservationData[index].status == ReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
+              elevation: 4.0,
+              child: InkWell(
+                onTap: () {
+                  _showActionsDialog(index: index);
+                },
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 30.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
                           Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.contain,
-                                  imageUrl: _reservationData[index].lotImage,
-                                  progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                ),
+                            child: Text(_reservationData[index].lotAddress, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: CachedNetworkImage(
+                                fit: BoxFit.contain,
+                                imageUrl: _reservationData[index].lotImage,
+                                progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: RichText(
+                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                    TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
+                                    TextSpan(text: _reservationData[index].vehicleId)
+                                  ]),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: RichText(
+                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                    TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
+                                    TextSpan(text: _reservationData[index].dateCreated)
+                                  ]),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: RichText(
+                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                    TextSpan(text: 'Time Placed: ', style: TextStyle(color: Colors.grey)),
+                                    TextSpan(text: _reservationData[index].timeCreated)
+                                  ]),
+                                ),
+                              ),
+                              if (_reservationData[index].dateUpdated != _reservationData[index].dateCreated)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index].vehicleId)
+                                      TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
+                                      TextSpan(text: _reservationData[index].dateUpdated)
                                     ]),
                                   ),
                                 ),
+                              if (_reservationData[index].timeUpdated != _reservationData[index].timeCreated)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: RichText(
                                     text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index].dateCreated)
+                                      TextSpan(text: 'Time Exited: ', style: TextStyle(color: Colors.grey)),
+                                      TextSpan(text: _reservationData[index].timeUpdated)
                                     ]),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: RichText(
-                                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Time Placed: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index].timeCreated)
-                                    ]),
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: RichText(
+                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                    TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
+                                    TextSpan(text: (_reservationData[index].type == ReservationType.BOOKING) ? "Reservation" : "Recurring")
+                                  ]),
                                 ),
-                                if (_reservationData[index].dateUpdated != _reservationData[index].dateCreated)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                    child: RichText(
-                                      text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                        TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
-                                        TextSpan(text: _reservationData[index].dateUpdated)
-                                      ]),
-                                    ),
-                                  ),
-                                if (_reservationData[index].timeUpdated != _reservationData[index].timeCreated)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                    child: RichText(
-                                      text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                        TextSpan(text: 'Time Exited: ', style: TextStyle(color: Colors.grey)),
-                                        TextSpan(text: _reservationData[index].timeUpdated)
-                                      ]),
-                                    ),
-                                  ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: RichText(
-                                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: (_reservationData[index].type == ReservationType.BOOKING) ? "Reservation" : "Recurring")
-                                    ]),
-                                  ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: RichText(
+                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                                    TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
+                                    TextSpan(
+                                        text: (_reservationData[index].status == ReservationStatus.BOOKED) ? "Active" : "Completed",
+                                        style: (_reservationData[index].status == ReservationStatus.BOOKED)
+                                            ? TextStyle(color: Colors.green[400])
+                                            : TextStyle(color: Colors.deepOrange[400])),
+                                  ]),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: RichText(
-                                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(
-                                          text: (_reservationData[index].status == ReservationStatus.BOOKED) ? "Active" : "Completed",
-                                          style: (_reservationData[index].status == ReservationStatus.BOOKED)
-                                              ? TextStyle(color: Colors.green[400])
-                                              : TextStyle(color: Colors.deepOrange[400])),
-                                    ]),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ));
@@ -217,101 +221,97 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
   }
 
   _showActionsDialog({int index}) {
-    return showDialog(
+    if (_reservationData[index].status != ReservationStatus.COMPLETED)
+      return showDialog(
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
                       children: [
-                        if (_reservationData[index].status == ReservationStatus.BOOKED)
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    DriverNavigationService(reservationId: _reservationData[index].reservationId)
-                                        .navigateViaMapBox(_reservationData[index].coordinates);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.map_outlined,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      Text('Navigate to Lot(BETA)', style: TextStyle(color: Colors.blueAccent))
-                                    ],
-                                  ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              DriverNavigationService(reservationId: _reservationData[index].reservationId)
+                                  .navigateViaMapBox(_reservationData[index].coordinates);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.map_outlined,
+                                  color: Colors.blueAccent,
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    DriverNavigationService(reservationId: _reservationData[index].reservationId)
-                                        .navigateViaGoogleMaps(_reservationData[index].coordinates);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.map_outlined,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      Text('Navigate to Lot', style: TextStyle(color: Colors.blueAccent))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    onTheWay(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
-                                        _reservationData[index].partnerId);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.chat,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      Text('Notify on the way', style: TextStyle(color: Colors.blueAccent))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    arrived(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
-                                        _reservationData[index].partnerId);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.car_repair,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      Text('Notify arrived', style: TextStyle(color: Colors.blueAccent))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                                Text('Navigate to Lot', style: TextStyle(color: Colors.blueAccent))
+                              ],
+                            ),
                           ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              onTheWay(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
+                                  _reservationData[index].partnerId);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.chat,
+                                  color: Colors.blueAccent,
+                                ),
+                                Text('Notify on the way', style: TextStyle(color: Colors.blueAccent))
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              arrived(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
+                                  _reservationData[index].partnerId);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.car_repair,
+                                  color: Colors.blueAccent,
+                                ),
+                                Text('Notify arrived', style: TextStyle(color: Colors.blueAccent))
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ));
+            ),
+          ),
+        ),
+      );
+    else
+      return showDialog(
+        context: context,
+        builder: (_) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(child: Text("This transaction has been completed")),
+            ),
+          ),
+        ),
+      );
   }
 
   onTheWay(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {

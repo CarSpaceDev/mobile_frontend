@@ -12,7 +12,6 @@ import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
-import 'package:carspace/services/MqttService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -72,6 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
     lotsLocated = 0;
     _selectedVehicle = "No Vehicle Selected";
     _searchController = TextEditingController(text: "");
+    _initMapAssets();
+    WidgetsBinding.instance.addPostFrameCallback((_) async => Future.delayed(Duration(seconds: 2), () {
+          if (vehicles.length > 0) _showVehicleDialog();
+        }));
+  }
+
+  void _initMapAssets() {
     rootBundle.loadString('assets/mapPOI.txt').then((string) {
       _mapStylePOI = string;
     });
@@ -121,9 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
             });
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) async => Future.delayed(Duration(seconds: 2), () {
-          if (vehicles.length > 0) _showVehicleDialog();
-        }));
   }
 
   @override
@@ -137,78 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            if (_partnerAccess == 0)
-              Container(
-                child: Center(
-                    child: Container(
-                  height: 100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: themeData.primaryColor,
-                      ),
-                      Text(
-                        "Loading",
-                        style: TextStyle(color: themeData.primaryColor),
-                      )
-                    ],
-                  ),
-                )),
-              )
-            else
-              DrawerHeader(
-                child: Text(locator<AuthService>().currentUser().displayName),
-              ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    showNotificationDialog();
-                  },
-                  child: Text("Notifications")),
-            ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(VehicleManagement);
-                  },
-                  child: Text("Vehicles")),
-            ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(Reservations);
-                  },
-                  child: Text("Reservations")),
-            ),
-            if (_partnerAccess > 200)
-              ListTile(
-                title: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      locator<NavigationService>().pushNavigateTo(PartnerReservations);
-                    },
-                    child: Text("Partner Reservations")),
-              ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
-                    context.read<LoginBloc>().add(LogoutEvent());
-                  },
-                  child: Text("Sign Out")),
-            ),
-          ],
-        ),
-      ),
+      drawer: homeNavigationDrawer(context),
       backgroundColor: themeData.primaryColor,
       appBar: homeAppBar(
         context,
@@ -233,9 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPointerUp: mapOnPointerUp,
                     child: GoogleMap(
                       onCameraMove: _onCameraMove,
-                      myLocationButtonEnabled: true,
+                      myLocationButtonEnabled: false,
                       mapToolbarEnabled: false,
-                      zoomControlsEnabled: true,
+                      zoomControlsEnabled: false,
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
                         target: LatLng(1, 1),
@@ -244,23 +176,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       markers: _markers,
                     ),
                   ),
-                  Positioned(
-                      right: 205,
-                      bottom: 40,
-                      child: InkWell(
-                          onTap: () {
-                            checkBeforeReserve(lotsLocated);
-                          },
-                          child: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: new BoxDecoration(
-                                color: themeData.primaryColor,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(35.0),
-                                ),
-                              ),
-                              child: Icon(Icons.airport_shuttle_rounded, color: Colors.white, size: 70)))),
+                  // Positioned(
+                  //     right: 205,
+                  //     bottom: 40,
+                  //     child: InkWell(
+                  //         onTap: () {
+                  //           checkBeforeReserve(lotsLocated);
+                  //         },
+                  //         child: Container(
+                  //             width: 80,
+                  //             height: 80,
+                  //             decoration: new BoxDecoration(
+                  //               color: themeData.primaryColor,
+                  //               borderRadius: BorderRadius.all(
+                  //                 Radius.circular(35.0),
+                  //               ),
+                  //             ),
+                  //             child: Icon(Icons.airport_shuttle_rounded, color: Colors.white, size: 70)))),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
@@ -316,6 +248,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Icon(Icons.place, color: Colors.white, size: 25)),
                     ),
                   ),
+                  Positioned(
+                    right: 8,
+                    bottom: 16,
+                    child: InkWell(
+                      onTap: _showPOI,
+                      child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: new BoxDecoration(
+                            color: themeData.primaryColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                          ),
+                          child: Icon(Icons.gps_fixed, color: Colors.white, size: 25)),
+                    ),
+                  ),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
@@ -336,10 +285,9 @@ class _HomeScreenState extends State<HomeScreen> {
             lotsInRadius.length != 0 && showLotCards
                 ? Positioned(
                     bottom: SizeConfig.widthMultiplier * 8,
-                    left: (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.height * .55)) / 2,
                     child: Container(
-                      width: MediaQuery.of(context).size.height * .55,
-                      height: MediaQuery.of(context).size.height * .55 / (16 / 9),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / (16 / 9),
                       child: Center(
                         child: PageView(
                           onPageChanged: (index) {
@@ -362,6 +310,81 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ],
         ),
+      ),
+    );
+  }
+
+  Drawer homeNavigationDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          if (_partnerAccess == 0)
+            Container(
+              child: Center(
+                  child: Container(
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: themeData.primaryColor,
+                    ),
+                    Text(
+                      "Loading",
+                      style: TextStyle(color: themeData.primaryColor),
+                    )
+                  ],
+                ),
+              )),
+            )
+          else
+            DrawerHeader(
+              child: Text(locator<AuthService>().currentUser().displayName),
+            ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  showNotificationDialog();
+                },
+                child: Text("Notifications")),
+          ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  locator<NavigationService>().pushNavigateTo(VehicleManagement);
+                },
+                child: Text("Vehicles")),
+          ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  locator<NavigationService>().pushNavigateTo(Reservations);
+                },
+                child: Text("Reservations")),
+          ),
+          if (_partnerAccess > 200)
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    locator<NavigationService>().pushNavigateTo(PartnerReservations);
+                  },
+                  child: Text("Partner Reservations")),
+            ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
+                  locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+                  context.read<LoginBloc>().add(LogoutEvent());
+                },
+                child: Text("Sign Out")),
+          ),
+        ],
       ),
     );
   }
@@ -396,8 +419,6 @@ class _HomeScreenState extends State<HomeScreen> {
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
     driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
-    locator<MqttService>().send("test", location.toString());
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (currentLocation != null) {
       setState(() {
         if (destinationMarker != null) {
@@ -417,31 +438,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getLotsInRadius(LatLng location) async {
+    _lotMarkers = [];
+    List<Lot> resultLotsInRadius = [];
     locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
       if (res.statusCode == 200) {
-        _lotMarkers = [];
-        lotsInRadius = [];
+        lotsLocated = res.body;
         List<Map<String, dynamic>>.from(res.body).forEach((element) {
-          lotsInRadius.add(Lot.fromJson(element));
-          setState(() {
-            lotsLocated = res.body;
-          });
+          resultLotsInRadius.add(Lot.fromJson(element));
         });
-        if (lotsInRadius.length > 0) {
-          for (int i = 0; i < lotsInRadius.length; i++) {
+        if (resultLotsInRadius.length > 0) {
+          for (int i = 0; i < resultLotsInRadius.length; i++) {
             _lotMarkers.add(Marker(
-                markerId: MarkerId(lotsInRadius[i].lotId),
+                markerId: MarkerId(resultLotsInRadius[i].lotId),
                 onTap: () {
                   setState(() {
                     showLotCards = false;
                   });
-                  _showLotDialog(lotsInRadius[i]);
+                  _showLotDialog(resultLotsInRadius[i]);
                 },
                 icon: _lotIcon,
-                position: LatLng(lotsInRadius[i].coordinates[0], lotsInRadius[i].coordinates[1])));
+                position: LatLng(resultLotsInRadius[i].coordinates[0], resultLotsInRadius[i].coordinates[1])));
           }
         }
         setState(() {
+          lotsInRadius = resultLotsInRadius;
           if (destinationMarker != null) {
             _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
           } else {
@@ -724,20 +744,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 200,
                 width: 125,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.white),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25)),
                   child: AspectRatio(
                     aspectRatio: 2 / 2,
                     child: Column(
                       children: [
-                        Container(
-                            child: SizedBox(
-                          height: 25,
-                          width: 250,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(color: Colors.white),
-                            child: Text("Tap to select vehicle to use", textAlign: TextAlign.center),
-                          ),
-                        )),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Select Default Vehicle", textAlign: TextAlign.center),
+                        ),
                         Expanded(
                           child: ListView.builder(
                               itemCount: vehicles.length,
@@ -755,12 +770,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Row(
                                           children: [
                                             ClipRRect(
-                                                child: Image.network(
-                                              vehicles[index]['vehicleImage'],
-                                              fit: BoxFit.fill,
-                                              height: 100,
-                                              width: 140,
-                                            )),
+                                              child: Image.network(
+                                                vehicles[index]['vehicleImage'],
+                                                fit: BoxFit.fill,
+                                                height: 100,
+                                                width: 140,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         Row(
