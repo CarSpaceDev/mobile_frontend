@@ -1,12 +1,11 @@
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:carspace/resusables/AppBarLayout.dart';
+import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CodeConfirmation extends StatefulWidget {
   @override
-  _CodeConfirmationState createState() =>
-      _CodeConfirmationState();
+  _CodeConfirmationState createState() => _CodeConfirmationState();
 }
 
 class _CodeConfirmationState extends State<CodeConfirmation> {
@@ -25,21 +24,17 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                    height: (size.height / 100) * 20,
-                    child: Image.asset('assets/images/mobile.png')),
+                Container(height: (size.height / 100) * 20, child: Image.asset('assets/images/mobile.png')),
                 Padding(
                   padding: const EdgeInsets.all(30.0),
-                  child: Text('Please enter your confirmation code below',
-                      style: TextStyle(color: Colors.white)),
+                  child: Text('Please enter your confirmation code below', style: TextStyle(color: Colors.white)),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 30.0),
+                      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
                       child: TextField(
                         style: TextStyle(color: Colors.white),
                         textAlign: TextAlign.center,
@@ -47,27 +42,17 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
                         decoration: InputDecoration(
                             hintText: '*          *         *         *         *         * ',
                             hintStyle: TextStyle(color: Colors.white),
-                            enabledBorder: new UnderlineInputBorder(
-                                borderSide: new BorderSide(
-                                    color: Colors.white, width: 4.0)),
-                            focusedBorder: new UnderlineInputBorder(
-                                borderSide: new BorderSide(
-                                    color: Colors.white, width: 4.0))),
+                            enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0)),
+                            focusedBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0))),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 50.0),
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50.0),
                       child: Center(
                         child: RichText(
-                          text:TextSpan(
-                            text: 'Resend my code in',
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: ' .30s',
-                                  style: TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold)),
-                            ]
-                          ) ,
-
+                          text: TextSpan(text: 'Resend my code in', children: <TextSpan>[
+                            TextSpan(text: ' .30s', style: TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold)),
+                          ]),
                         ),
                       ),
                     )
