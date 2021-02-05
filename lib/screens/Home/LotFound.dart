@@ -267,13 +267,6 @@ class _LotFoundState extends State<LotFound> {
             actions: [
               FlatButton(
                   onPressed: Navigator.of(context).pop, child: Text("Close")),
-              FlatButton(
-                child: Text("Navigate to Lot"),
-                onPressed: () {
-                  // navigateViaGoogleMaps(_lotData['g']['geopoint']['_latitude'],
-                  //     _lotData['g']['geopoint']['_longitude']);
-                },
-              )
             ],
           );
         });
