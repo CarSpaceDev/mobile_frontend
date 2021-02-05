@@ -14,6 +14,7 @@ import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/MqttService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -132,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) async => Future.delayed(Duration(seconds: 3), () {
+        (_) async => Future.delayed(Duration(seconds: 2), () {
               if (vehicles.length > 0) _showVehicleDialog();
             }));
   }
@@ -414,7 +415,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
+    driverMarker = Marker(
+        markerId: MarkerId("user"), icon: _driverIcon, position: location);
     locator<MqttService>().send("test", location.toString());
     driverMarker = Marker(
         markerId: MarkerId("user"), icon: _driverIcon, position: location);
