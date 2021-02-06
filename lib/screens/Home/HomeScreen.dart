@@ -53,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Set<Marker> _markers = HashSet<Marker>();
   List<Marker> _lotMarkers = [];
   Marker driverMarker;
-  Marker destinationMarker;
   List<Lot> lotsInRadius = [];
   PageController _pageController = new PageController();
   bool noVehicles;
@@ -72,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedVehicle = "No Vehicle Selected";
     _searchController = TextEditingController(text: "");
     _initMapAssets();
+    _initGeolocatorStream();
     WidgetsBinding.instance.addPostFrameCallback((_) async => Future.delayed(Duration(seconds: 2), () {
           if (vehicles.length > 0) _showVehicleDialog();
         }));
@@ -85,11 +85,14 @@ class _HomeScreenState extends State<HomeScreen> {
       _mapStyle = string;
     });
     _setMarkerIcon();
+  }
+
+  void _initGeolocatorStream() {
     Geolocator.isLocationServiceEnabled().then((bool value) {
       if (value) {
-        Geolocator.checkPermission().then((v) {
-          if (v != null || v == LocationPermission.denied || v == LocationPermission.deniedForever) {
-            Geolocator.requestPermission().then((locationPermission) {
+        Geolocator.checkPermission().then((LocationPermission v) {
+          if (v != null && v == LocationPermission.denied || v == LocationPermission.deniedForever) {
+            Geolocator.requestPermission().then((LocationPermission locationPermission) {
               if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
             });
           } else {
@@ -97,36 +100,40 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         });
       } else {
-        showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                content: SingleChildScrollView(
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Icon(
-                            Icons.error,
-                            color: Colors.grey,
-                            size: 50,
-                          ),
-                        ),
-                        Text(
-                          "Location Services Disabled. Please enable it and restart CarSpace",
-                          textAlign: TextAlign.center,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
-              );
-            });
+        showLocationDisabledError();
       }
     });
+  }
+
+  Future showLocationDisabledError() {
+    return showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.error,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "Location Services Disabled. Please enable it and restart CarSpace",
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+          );
+        });
   }
 
   @override
@@ -176,23 +183,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       markers: _markers,
                     ),
                   ),
-                  // Positioned(
-                  //     right: 205,
-                  //     bottom: 40,
-                  //     child: InkWell(
-                  //         onTap: () {
-                  //           checkBeforeReserve(lotsLocated);
-                  //         },
-                  //         child: Container(
-                  //             width: 80,
-                  //             height: 80,
-                  //             decoration: new BoxDecoration(
-                  //               color: themeData.primaryColor,
-                  //               borderRadius: BorderRadius.all(
-                  //                 Radius.circular(35.0),
-                  //               ),
-                  //             ),
-                  //             child: Icon(Icons.airport_shuttle_rounded, color: Colors.white, size: 70)))),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
@@ -248,23 +238,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Icon(Icons.place, color: Colors.white, size: 25)),
                     ),
                   ),
-                  // Positioned(
-                  //   right: 8,
-                  //   bottom: 16,
-                  //   child: InkWell(
-                  //     onTap: _showPOI,
-                  //     child: Container(
-                  //         width: 50,
-                  //         height: 50,
-                  //         decoration: new BoxDecoration(
-                  //           color: themeData.primaryColor,
-                  //           borderRadius: BorderRadius.all(
-                  //             Radius.circular(25.0),
-                  //           ),
-                  //         ),
-                  //         child: Icon(Icons.gps_fixed, color: Colors.white, size: 25)),
-                  //   ),
-                  // ),
                   showCrossHair
                       ? Positioned(
                           top: MediaQuery.of(context).size.height * .5 - 128.5,
@@ -419,22 +392,8 @@ class _HomeScreenState extends State<HomeScreen> {
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
     driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
-    if (currentLocation != null) {
-      setState(() {
-        if (destinationMarker != null) {
-          _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-        } else {
-          _markers = Set.from([driverMarker] + _lotMarkers);
-        }
-      });
-    } else {
-      mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
-      if (destinationSearchMode) {
-      } else {
-        getLotsInRadius(location);
-      }
-    }
-    currentLocation = LatLng(location.latitude, location.longitude);
+    mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+    getLotsInRadius(location);
   }
 
   Future<void> getLotsInRadius(LatLng location) async {
@@ -462,11 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         setState(() {
           lotsInRadius = resultLotsInRadius;
-          if (destinationMarker != null) {
-            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-          } else {
-            _markers = Set.from([driverMarker] + _lotMarkers);
-          }
+          _markers = Set.from([driverMarker] + _lotMarkers);
         });
       }
     });
@@ -512,18 +467,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  setSearchPositionMarker(LatLng coordinates) {
-    destinationMarker = Marker(
-      markerId: MarkerId("destination"),
-      position: coordinates,
-      icon: _destination,
-    );
-  }
-
   locationSearchCallback(LocationSearchResult data) {
     mapController.animateCamera(CameraUpdate.newLatLng(data.location));
     searchPosition = data.location;
-    setSearchPositionMarker(data.location);
     getLotsInRadius(data.location);
   }
 
@@ -549,7 +495,6 @@ class _HomeScreenState extends State<HomeScreen> {
           zoom: 15.0,
         ),
       ));
-      destinationMarker = null;
       getLotsInRadius(currentLocation);
     } else {
       if (_searchController.text != "")
@@ -644,18 +589,9 @@ class _HomeScreenState extends State<HomeScreen> {
             _searchController.text = addresses.first.addressLine;
           });
         });
-        destinationMarker = Marker(
-          markerId: MarkerId("destination"),
-          position: searchPosition,
-          icon: _destination,
-          draggable: true,
-        );
+
         setState(() {
-          if (destinationMarker != null) {
-            _markers = Set.from([destinationMarker, driverMarker] + _lotMarkers);
-          } else {
-            _markers = Set.from([driverMarker] + _lotMarkers);
-          }
+          _markers = Set.from([driverMarker] + _lotMarkers);
           showCrossHair = false;
         });
         getLotsInRadius(searchPosition);
