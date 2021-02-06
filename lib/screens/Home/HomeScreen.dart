@@ -188,20 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       markers: _markers,
                     ),
                   ),
-                  showCrossHair
-                      ? Positioned(
-                          top: MediaQuery.of(context).size.height * .5 - 128.5,
-                          left: MediaQuery.of(context).size.width * .5 - 16,
-                          child: Icon(
-                            Icons.gps_fixed,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        )
-                      : Container(
-                          width: 0,
-                          height: 0,
-                        ),
                   Positioned(
                     left: 8,
                     top: 8,
@@ -279,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           left: MediaQuery.of(context).size.width * .5 - 16,
                           child: Icon(
                             Icons.gps_fixed,
-                            color: Colors.white,
+                            color: Colors.black87,
                             size: 32,
                           ),
                         )
@@ -564,7 +550,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget homeBottomNavBar() {
     return BottomAppBar(
       child: FlatButton(
-        color: lotsInRadius.length == 0 ? themeData.secondaryHeaderColor : Colors.green,
+        color: lotsInRadius.length == 0 ? themeData.secondaryHeaderColor : Color(0xff6200EE),
         onPressed: () {
           checkBeforeReserve(lotsLocated);
         },
