@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
         NotificationLinkWidget(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: !showLotCards
+      floatingActionButton: !showLotCards && lotsInRadius.length > 0
           ? FloatingActionButton(
               child: Text(lotsInRadius.length.toString()),
               onPressed: () {
