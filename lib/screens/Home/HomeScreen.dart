@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
         lotsLocated = res.body;
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           if (v['capacity'] == 0) continue;
-          if (!checkIfDayIncluded(v['availableDays'])) continue;
+          if (!checkIfDayIncluded(List<int>.from(v['availableDays']))) continue;
           if (!checkIfWithinTime(v['availableFrom'], v['availableTo'])) continue;
           resultLotsInRadius.add(Lot.fromJson(v));
         }
@@ -814,11 +814,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
   }
 
-  checkIfDayIncluded(dynamic v) {
+  checkIfDayIncluded(List<int> v) {
+    print("Days");
     print(v);
     DateTime now = new DateTime.now();
     print(now.day - 1);
-    var returnValue = false;
+    bool returnValue = false;
     for (var day in v) {
       if (day == now.day - 1) {
         returnValue = true;
