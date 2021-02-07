@@ -424,6 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Lot> resultLotsInRadius = [];
     locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
       if (res.statusCode == 200) {
+        print(res.body);
         lotsLocated = res.body;
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           if (v['capacity'] == 0) continue;
@@ -814,10 +815,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   checkIfDayIncluded(dynamic v) {
+    print(v);
     DateTime now = new DateTime.now();
+    print(now.day - 1);
     var returnValue = false;
     for (var day in v) {
-      if (day == now.day) {
+      if (day == now.day - 1) {
         returnValue = true;
         break;
       }
