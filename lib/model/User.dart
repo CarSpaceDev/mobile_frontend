@@ -80,8 +80,6 @@ class CSUser {
       "currentReservation": this.currentReservation,
       "reservations": this.reservations,
       "vehicles": this.vehicles,
-      "dateCreated": this.dateCreated.toIso8601String(),
-      "dateUpdated": this.dateUpdated.toIso8601String()
     };
   }
 }

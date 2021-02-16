@@ -176,15 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
         NotificationLinkWidget(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: !showLotCards && lotsInRadius.length > 0
-          ? FloatingActionButton(
-              child: Text(lotsInRadius.length.toString()),
-              onPressed: () {
-                setState(() {
-                  showLotCards = !showLotCards;
-                });
-              })
-          : null,
+      floatingActionButton: actionButton(),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
         child: Stack(
@@ -347,6 +339,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  actionButton() {
+    if (userData != null) if (userData.currentReservation == null) if (!showLotCards && lotsInRadius.length > 0)
+      return FloatingActionButton(
+          child: Text(lotsInRadius.length.toString()),
+          onPressed: () {
+            setState(() {
+              showLotCards = !showLotCards;
+            });
+          });
+    return null;
+  }
+
   Drawer homeNavigationDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -426,8 +430,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<bool> _initAccess() async {
     bool result;
     await locator<ApiService>().getUserData(uid: locator<AuthService>().currentUser().uid).then((data) {
-      if (data.isSuccessful) {
+      if (data.statusCode == 200) {
         userData = CSUser.fromJson(data.body);
+        print(userData.toJson());
         result = true;
       } else
         result = false;
@@ -485,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     showLotCards = false;
                   });
-                  _showLotDialog(resultLotsInRadius[i]);
+                  if (userData != null) if (userData.currentReservation == null) _showLotDialog(resultLotsInRadius[i]);
                 },
                 icon: _lotIcon,
                 position: LatLng(resultLotsInRadius[i].coordinates[0], resultLotsInRadius[i].coordinates[1])));
