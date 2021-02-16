@@ -83,11 +83,11 @@ class LotAddress {
   @override
   String toString() {
     return "" +
-        "${houseAndStreet != null ? " " + houseAndStreet + "," : ""}" +
-        "${brgy != null ? " " + brgy + "," : ""}" +
-        "${municipality != null ? " " + municipality + "," : ""}" +
-        "${city != null ? " " + city + "," : ""}" +
-        "${province != null ? " " + province + "," : ""}" +
-        "${zipCode != null ? " " + zipCode : ""}";
+        "${(houseAndStreet != null && houseAndStreet != '') ? " " + houseAndStreet + "," : ""}" +
+        "${(brgy != null && brgy != '') ? " " + brgy + "," : ""}" +
+        "${(municipality != null && municipality != '') ? " " + municipality + "," : ""}" +
+        "${(city != null && city != '') ? " " + city + "," : ""}" +
+        "${(province != null && province != '') ? " " + province : ""}" +
+        "${(zipCode != null && zipCode != '') ? ", " + zipCode : ""}";
   }
 }
