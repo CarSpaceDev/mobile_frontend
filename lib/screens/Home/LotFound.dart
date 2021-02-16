@@ -1,229 +1,193 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
+import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 
 import '../../serviceLocator.dart';
 
 class LotFound extends StatefulWidget {
-  final lotId;
-  final vehicleId;
-  final uid;
-  const LotFound(this.lotId, this.vehicleId, this.uid);
+  final Lot lot;
+  final Vehicle vehicle;
+  final CSUser user;
+  const LotFound(this.lot, this.vehicle, this.user);
   @override
   _LotFoundState createState() => _LotFoundState();
 }
 
 class _LotFoundState extends State<LotFound> {
-  var _vehicleId;
-  var _uid;
   var namedDays;
-  var _lotData;
-  bool dataLoaded = false;
   bool noVehicles = true;
+  bool working = false;
 
   @override
   void initState() {
     super.initState();
-    initData();
-    print(_lotData);
-  }
-
-  initData() async {
-    await locator<ApiService>().getLot(uid: widget.lotId).then((res) async {
-      _lotData = res.body;
-      setState(() {
-        dataLoaded = true;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: (dataLoaded)
-            ? Container(
-                child: Stack(
-                  children: <Widget>[
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+        body: Container(
+      child: Stack(
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                  child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 25, bottom: 8, right: 8, left: 8),
+                    child: Text(
+                      widget.lot.address.toString(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        widget.lot.lotImage[0],
+                        fit: BoxFit.fill,
+                        height: 150,
+                        width: 250,
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text("Price :\n${widget.lot.pricing}Php / Hour", textAlign: TextAlign.center),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text("Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H", textAlign: TextAlign.center),
+                  ),
+                ],
+              )),
+              working
+                  ? loading()
+                  : Column(
                       children: [
-                        Container(
-                            child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 25, bottom: 8, right: 8, left: 8),
-                              child: Text(
-                                _lotData['address'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  _lotData['lotImage'],
-                                  fit: BoxFit.fill,
-                                  height: 150,
-                                  width: 250,
-                                )),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                  "Price :\n${_lotData['pricing']}Php / Hour",
-                                  textAlign: TextAlign.center),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                  "Available from: \n${_lotData['availableFrom']}H to ${_lotData['availableTo']}H",
-                                  textAlign: TextAlign.center),
-                            ),
-                          ],
-                        )),
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: FlatButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(1);
-                                },
-                                color: themeData.secondaryHeaderColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Container(
-                                  width: SizeConfig.widthMultiplier * 50,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Text(
-                                        'Cancel',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                SizeConfig.textMultiplier *
-                                                    2.5),
-                                      ),
-                                    ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(1);
+                            },
+                            color: themeData.secondaryHeaderColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            child: Container(
+                              width: SizeConfig.widthMultiplier * 50,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Cancel',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
                                   ),
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: FlatButton(
-                                onPressed: () {
-                                  reserve();
-                                },
-                                color: themeData.secondaryHeaderColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Container(
-                                  width: SizeConfig.widthMultiplier * 50,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Text(
-                                        'Book',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                SizeConfig.textMultiplier *
-                                                    2.5),
-                                      ),
-                                    ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FlatButton(
+                            onPressed: () {
+                              reserve();
+                            },
+                            color: themeData.secondaryHeaderColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            child: Container(
+                              width: SizeConfig.widthMultiplier * 50,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    'Book',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                    Positioned(
-                        child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 4, left: 4, right: 4, bottom: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Lot Found',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              )),
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Icon(Icons.close)),
-                        ],
-                      ),
+            ],
+          ),
+          Positioned(
+              child: Padding(
+            padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Lot Found',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     )),
-                  ],
-                ),
-              )
-            : loading());
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.close)),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ));
   }
 
   Widget loading() {
-    return Column(
+    return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                height: 150,
-                width: 150,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  backgroundColor: themeData.primaryColor,
-                ),
-              ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            height: 50,
+            width: 50,
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              backgroundColor: themeData.primaryColor,
             ),
-          ],
+          ),
         ),
-        Text(
-          "Loading",
-          style: TextStyle(color: themeData.primaryColor),
-        )
       ],
     );
   }
 
   reserve() async {
     var body = ({
-      "userId": widget.uid,
-      "lotId": _lotData['lotId'],
-      "partnerId": _lotData['partnerId'],
-      "vehicleId": widget.vehicleId,
+      "userId": widget.user.uid,
+      "lotId": widget.lot.lotId,
+      "partnerId": widget.lot.partnerId,
+      "vehicleId": widget.vehicle.plateNumber,
       "reservationType": 1,
-      "lotAddress": _lotData['address']
+      "lotAddress": widget.lot.address.toString()
+    });
+    setState(() {
+      working = true;
     });
     await locator<ApiService>().reserveLot(body).then((value) {
+      print(value.body);
+      print(value.statusCode);
       Navigator.of(context).pop();
-      if (value.body == "Reservation Success") {
-        showMessageAndUseIntent("Lot Booked");
+      if (value.body["code"] == 200) {
+        successfulBooking(DriverReservation.fromJson(value.body["reservationData"]));
       } else {
-        showMessage(value.body);
+        showMessage(value.body["message"]);
       }
     }).catchError((err) {
       print(err);
@@ -231,14 +195,13 @@ class _LotFoundState extends State<LotFound> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent = AndroidIntent(
-        action: 'action_view',
-        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
-        package: 'com.google.android.apps.maps');
+    final AndroidIntent intent =
+        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
     intent.launch();
   }
 
-  showMessageAndUseIntent(dynamic v) {
+  successfulBooking(DriverReservation v) {
+    print(v.toJson());
     showDialog(
         context: context,
         builder: (_) {
@@ -257,7 +220,7 @@ class _LotFoundState extends State<LotFound> {
                       ),
                     ),
                     Text(
-                      "$v \n",
+                      "Lot booked",
                       textAlign: TextAlign.center,
                     )
                   ],
@@ -265,8 +228,7 @@ class _LotFoundState extends State<LotFound> {
               ),
             ),
             actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close")),
+              FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close")),
             ],
           );
         });
@@ -298,10 +260,7 @@ class _LotFoundState extends State<LotFound> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }

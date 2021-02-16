@@ -357,7 +357,6 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
               FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(PartnerReservations);
                   },
                   child: Text("Close"))
             ],

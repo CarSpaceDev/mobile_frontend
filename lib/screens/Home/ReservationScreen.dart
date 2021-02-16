@@ -43,22 +43,29 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
 
   void getUserReservations() async {
     await locator<ApiService>().getUserReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
-      List<DriverReservation> result = [];
-      List.from(data.body).forEach((reservation) {
-        result.add(DriverReservation.fromJson(reservation));
-      });
-      result.sort((DriverReservation a, DriverReservation b) {
-        if (a.status == ReservationStatus.BOOKED || a.status == ReservationStatus.RESERVED)
-          return -1;
-        else if (a.status == b.status)
-          return 0;
-        else
-          return 1;
-      });
-      setState(() {
-        _reservationData = result;
-        _fetching = false;
-      });
+      if (data.body.runtimeType != String && data.statusCode == 200) {
+        List<DriverReservation> result = [];
+        List.from(data.body).forEach((reservation) {
+          result.add(DriverReservation.fromJson(reservation));
+        });
+        result.sort((DriverReservation a, DriverReservation b) {
+          if (a.status == ReservationStatus.BOOKED || a.status == ReservationStatus.RESERVED)
+            return -1;
+          else if (a.status == b.status)
+            return 0;
+          else
+            return 1;
+        });
+        setState(() {
+          _reservationData = result;
+          _fetching = false;
+        });
+      } else {
+        setState(() {
+          _reservationData = [];
+          _fetching = false;
+        });
+      }
     });
   }
 
@@ -79,7 +86,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
               icon: Icon(Icons.refresh),
               onPressed: () {
                 setState(() {
-                  _fetching = false;
+                  _fetching = true;
                   getUserReservations();
                 });
               },
