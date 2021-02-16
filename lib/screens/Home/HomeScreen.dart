@@ -5,6 +5,7 @@ import 'package:android_intent/android_intent.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
@@ -13,6 +14,7 @@ import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
+import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
@@ -62,21 +64,29 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Vehicle> vehicles = [];
   CSUser userData;
   bool vehiclesLoaded = false;
+  DriverReservation currentReservation;
   @override
   void initState() {
     _selectedVehicle = "No Vehicle Selected";
     _searchController = TextEditingController(text: "");
     _initializeAssets();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async => Future.delayed(Duration(seconds: 2), () {
-          if (vehicles.length > 0) _showVehicleDialog();
-        }));
     super.initState();
   }
 
   Future<void> _initializeAssets() async {
     await Future.wait([_populateVehicles(), _initAccess(), _initMapAssets()]).then((data) {
-      _initGeolocatorStream();
+      if (userData != null) {
+        if (userData.currentReservation != null) {
+          locator<ApiService>().getReservation(reservationId: userData.currentReservation).then((value) {
+            if (value.statusCode == 200) {
+              currentReservation = DriverReservation.fromJson(value.body);
+              print(currentReservation.toJson());
+            }
+          });
+        }
+        _initGeolocatorStream();
+        if (vehicles.length > 0) _showVehicleDialog();
+      }
     });
   }
 
@@ -579,11 +589,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget homeBottomNavBar() {
+    String prompt;
+    if (lotsInRadius.length == 0)
+      prompt = "No lots nearby";
+    else
+      prompt = "PARK NOW";
+    if (userData != null) {
+      if (userData.currentReservation != null) {
+        prompt = "Booking active - Navigate to Lot";
+      }
+    }
+
     return BottomAppBar(
       child: FlatButton(
         color: lotsInRadius.length == 0 ? themeData.secondaryHeaderColor : Color(0xff6200EE),
         onPressed: () {
-          checkBeforeReserve(lotsInRadius);
+          if (userData != null) {
+            if (userData.currentReservation != null) {
+              DriverNavigationService(reservationId: currentReservation.reservationId).navigateViaMapBox(currentReservation.coordinates);
+            }
+          } else
+            checkBeforeReserve(lotsInRadius);
         },
         child: Shimmer.fromColors(
           baseColor: Colors.white,
@@ -592,9 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.symmetric(vertical: 8),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.1,
-            child: Center(
-                child: Text(lotsInRadius.length == 0 ? "No lots nearby" : "PARK NOW",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+            child: Center(child: Text(prompt, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
           ),
         ),
       ),
@@ -806,8 +830,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedVehicle == "No Vehicle Selected") {
       return showMessage("Error: No vehicle selected");
     }
-    if (userData.reservations.length > 1) return showMessage("Error: You have an ongoing booking");
-
+    if (userData.reservations != null) {
+      if (userData.reservations.length > 1) return showMessage("Error: You have an ongoing booking");
+    }
     for (Lot lots in v) {
       if (lots.capacity == 0) continue;
       if (lots.vehicleTypeAccepted < _selectedVehicleData.type) continue;

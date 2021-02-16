@@ -42,7 +42,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
   }
 
   void getUserReservations() async {
-    await locator<ApiService>().getUserReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
+    await locator<ApiService>().getUserReservation(uid: locator<AuthService>().currentUser().uid).then((data) {
       if (data.body.runtimeType != String && data.statusCode == 200) {
         List<DriverReservation> result = [];
         List.from(data.body).forEach((reservation) {

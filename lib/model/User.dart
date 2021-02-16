@@ -11,6 +11,7 @@ class CSUser {
   int credits;
   String phoneNumber;
   String photoUrl;
+  String currentReservation;
   //internal attributes
   int partnerAccess;
   int userAccess;
@@ -51,6 +52,7 @@ class CSUser {
       : uid = json['uid'] as String,
         displayName = json['displayName'] as String,
         emailAddress = json['emailAddress'] as String,
+        currentReservation = json['currentReservation'] as String,
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
         credits = json['credits'] as int,
@@ -75,6 +77,7 @@ class CSUser {
       "partnerAccess": this.partnerAccess,
       "userAccess": this.userAccess,
       "subscriptionType": this.subscriptionType,
+      "currentReservation": this.currentReservation,
       "reservations": this.reservations,
       "vehicles": this.vehicles,
       "dateCreated": this.dateCreated.toIso8601String(),

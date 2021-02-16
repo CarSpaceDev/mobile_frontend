@@ -5,6 +5,8 @@ import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
+import 'package:carspace/navigation.dart';
+import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:flutter/material.dart';
 
@@ -222,14 +224,21 @@ class _LotFoundState extends State<LotFound> {
                     Text(
                       "Lot booked",
                       textAlign: TextAlign.center,
-                    )
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop(null);
+                        DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [Icon(Icons.map_outlined), Text("Navigate To Lot")],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            actions: [
-              FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close")),
-            ],
           );
         });
   }
