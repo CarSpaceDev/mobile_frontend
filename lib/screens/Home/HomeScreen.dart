@@ -200,6 +200,43 @@ class _HomeScreenState extends State<HomeScreen> {
                       markers: _markers,
                     ),
                   ),
+                  if (userData != null)
+                    if (userData.currentReservation != null && currentReservation != null)
+                      Positioned(
+                        bottom: 16,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: InkWell(
+                              onTap: showReservationDetails,
+                              child: Card(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  width: MediaQuery.of(context).size.width * .8,
+                                  color: Colors.white,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 8),
+                                        child: Text(
+                                          "Current Reservation",
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      Text(
+                                        currentReservation.lotAddress,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   Positioned(
                     left: 8,
                     top: 8,
@@ -338,6 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  //todo Jes please handle this, you can see the current reservation ID from currentReservation or userData.currentReservation
+  showReservationDetails() {}
 
   actionButton() {
     if (userData != null) if (userData.currentReservation == null) if (!showLotCards && lotsInRadius.length > 0)
