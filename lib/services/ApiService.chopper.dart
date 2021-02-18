@@ -221,7 +221,7 @@ class _$ApiService extends ApiService {
 
   @override
   Future<Response<dynamic>> notifyArrived(Map<String, dynamic> body) {
-    final $url = '/user/notifications/notify-ontheway';
+    final $url = '/user/notifications/notify-arrived';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);

@@ -14,6 +14,7 @@ import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
+import 'package:carspace/screens/Home/ReservedLot.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -74,10 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initializeAssets() async {
-    await Future.wait([_populateVehicles(), _initAccess(), _initMapAssets()]).then((data) {
+    await Future.wait([_populateVehicles(), _initAccess(), _initMapAssets()])
+        .then((data) {
       if (userData != null) {
         if (userData.currentReservation != null) {
-          locator<ApiService>().getReservation(reservationId: userData.currentReservation).then((value) {
+          locator<ApiService>()
+              .getReservation(reservationId: userData.currentReservation)
+              .then((value) {
             if (value.statusCode == 200) {
               currentReservation = DriverReservation.fromJson(value.body);
               print(currentReservation.toJson());
@@ -95,8 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
       List<dynamic> result = await Future.wait([
         rootBundle.loadString('assets/mapPOI.txt'),
         rootBundle.loadString('assets/mapStyle.txt'),
-        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
-        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png')
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
+            'assets/launcher_icon/pushpin.png'),
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
+            'assets/launcher_icon/driver.png')
       ]);
       _mapStylePOI = result[0];
       _mapStyle = result[1];
@@ -112,9 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
     Geolocator.isLocationServiceEnabled().then((bool value) {
       if (value) {
         Geolocator.checkPermission().then((LocationPermission v) {
-          if (v != null && v == LocationPermission.denied || v == LocationPermission.deniedForever) {
-            Geolocator.requestPermission().then((LocationPermission locationPermission) {
-              if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
+          if (v != null && v == LocationPermission.denied ||
+              v == LocationPermission.deniedForever) {
+            Geolocator.requestPermission()
+                .then((LocationPermission locationPermission) {
+              if (locationPermission != LocationPermission.denied &&
+                  locationPermission != LocationPermission.deniedForever)
+                startPositionStream();
             });
           } else {
             startPositionStream();
@@ -152,7 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close"))
+            ],
           );
         });
   }
@@ -201,14 +214,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   if (userData != null)
-                    if (userData.currentReservation != null && currentReservation != null)
+                    if (userData.currentReservation != null &&
+                        currentReservation != null)
                       Positioned(
                         bottom: 16,
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           child: Center(
                             child: InkWell(
-                              onTap: showReservationDetails,
+                              onTap: () {
+                                showReservationDetails(currentReservation);
+                              },
                               child: Card(
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
@@ -216,13 +232,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.white,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(bottom: 8),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8),
                                         child: Text(
                                           "Current Reservation",
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                       Text(
@@ -243,7 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: InkWell(
                       onTap: _showVehicleDialog,
                       child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           decoration: new BoxDecoration(
                             color: themeData.primaryColor,
                             borderRadius: BorderRadius.all(
@@ -343,9 +364,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Center(
                         child: PageView(
                           onPageChanged: (index) {
-                            mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                            mapController
+                                ?.animateCamera(CameraUpdate.newCameraPosition(
                               CameraPosition(
-                                target: LatLng(lotsInRadius[index].coordinates[0], lotsInRadius[index].coordinates[1]),
+                                target: LatLng(
+                                    lotsInRadius[index].coordinates[0],
+                                    lotsInRadius[index].coordinates[1]),
                                 zoom: 17.0,
                               ),
                             ));
@@ -377,10 +401,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //todo Jes please handle this, you can see the current reservation ID from currentReservation or userData.currentReservation
-  showReservationDetails() {}
+  showReservationDetails(DriverReservation currentReservation) {
+    return showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (_) => Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                height: 500,
+                width: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: ReservedLot(currentReservation)),
+                ),
+              ),
+            ));
+  }
 
   actionButton() {
-    if (userData != null) if (userData.currentReservation == null) if (!showLotCards && lotsInRadius.length > 0)
+    if (userData != null) if (userData.currentReservation ==
+        null) if (!showLotCards && lotsInRadius.length > 0)
       return FloatingActionButton(
           child: Text(lotsInRadius.length.toString()),
           onPressed: () {
@@ -432,7 +473,8 @@ class _HomeScreenState extends State<HomeScreen> {
             title: InkWell(
                 onTap: () {
                   Navigator.pop(context);
-                  locator<NavigationService>().pushNavigateTo(VehicleManagement);
+                  locator<NavigationService>()
+                      .pushNavigateTo(VehicleManagement);
                 },
                 child: Text("Vehicles")),
           ),
@@ -450,14 +492,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      locator<NavigationService>().pushNavigateTo(PartnerReservations);
+                      locator<NavigationService>()
+                          .pushNavigateTo(PartnerReservations);
                     },
                     child: Text("Partner Reservations")),
               ),
           ListTile(
             title: InkWell(
                 onTap: () {
-                  locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+                  locator<NavigationService>()
+                      .pushReplaceNavigateTo(LoginRoute);
                   context.read<LoginBloc>().add(LogoutEvent());
                 },
                 child: Text("Sign Out")),
@@ -469,7 +513,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<bool> _initAccess() async {
     bool result;
-    await locator<ApiService>().getUserData(uid: locator<AuthService>().currentUser().uid).then((data) {
+    await locator<ApiService>()
+        .getUserData(uid: locator<AuthService>().currentUser().uid)
+        .then((data) {
       if (data.statusCode == 200) {
         userData = CSUser.fromJson(data.body);
         print(userData.toJson());
@@ -486,24 +532,29 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (_) => Dialog(
         insetPadding: EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         child: NotificationList(),
       ),
     );
   }
 
   startPositionStream() {
-    positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 5))
-            .listen(positionChangeHandler);
+    positionStream = Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 1,
+            intervalDuration: Duration(seconds: 5))
+        .listen(positionChangeHandler);
   }
 
   positionChangeHandler(Position v) {
     LatLng location = LatLng(v.latitude, v.longitude);
-    driverMarker = Marker(markerId: MarkerId("user"), icon: _driverIcon, position: location);
+    driverMarker = Marker(
+        markerId: MarkerId("user"), icon: _driverIcon, position: location);
     if (!showCrossHair) {
       if (mapController != null) {
-        mapController.moveCamera(CameraUpdate.newLatLng(new LatLng(location.latitude, location.longitude)));
+        mapController.moveCamera(CameraUpdate.newLatLng(
+            new LatLng(location.latitude, location.longitude)));
         mapReady = true;
       }
     }
@@ -513,13 +564,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getLotsInRadius(LatLng location) async {
     _lotMarkers = [];
     List<Lot> resultLotsInRadius = [];
-    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
+    locator<ApiService>()
+        .getLotsInRadius(
+            latitude: location.latitude,
+            longitude: location.longitude,
+            kmRadius: 0.5)
+        .then((res) {
       if (res.statusCode == 200) {
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           Lot temp = Lot.fromJson(v);
           if (temp.capacity == 0) continue;
           if (!checkIfDayIncluded(temp.availableDays)) continue;
-          if (!checkIfWithinTime(temp.availableFrom, temp.availableTo)) continue;
+          if (!checkIfWithinTime(temp.availableFrom, temp.availableTo))
+            continue;
           resultLotsInRadius.add(temp);
         }
         if (resultLotsInRadius.length > 0) {
@@ -530,10 +587,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     showLotCards = false;
                   });
-                  if (userData != null) if (userData.currentReservation == null) _showLotDialog(resultLotsInRadius[i]);
+                  if (userData != null) if (userData.currentReservation == null)
+                    _showLotDialog(resultLotsInRadius[i]);
                 },
                 icon: _lotIcon,
-                position: LatLng(resultLotsInRadius[i].coordinates[0], resultLotsInRadius[i].coordinates[1])));
+                position: LatLng(resultLotsInRadius[i].coordinates[0],
+                    resultLotsInRadius[i].coordinates[1])));
           }
         }
         setState(() {
@@ -623,7 +682,8 @@ class _HomeScreenState extends State<HomeScreen> {
         barrierDismissible: false,
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -647,23 +707,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return BottomAppBar(
       child: FlatButton(
-        color: lotsInRadius.length == 0 ? themeData.secondaryHeaderColor : Color(0xff6200EE),
+        color: lotsInRadius.length == 0
+            ? themeData.secondaryHeaderColor
+            : Color(0xff6200EE),
         onPressed: () {
           if (userData != null) {
+            print(userData != null);
+            print(userData.currentReservation != null);
             if (userData.currentReservation != null) {
-              DriverNavigationService(reservationId: currentReservation.reservationId).navigateViaMapBox(currentReservation.coordinates);
+              DriverNavigationService(
+                      reservationId: currentReservation.reservationId)
+                  .navigateViaMapBox(currentReservation.coordinates);
+            } else {
+              print('clicked');
+              checkBeforeReserve(lotsInRadius);
             }
-          } else
-            checkBeforeReserve(lotsInRadius);
+          }
         },
         child: Shimmer.fromColors(
           baseColor: Colors.white,
-          highlightColor: lotsInRadius.length == 0 ? Colors.white : Colors.green,
+          highlightColor:
+              lotsInRadius.length == 0 ? Colors.white : Colors.green,
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 8),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.1,
-            child: Center(child: Text(prompt, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+            child: Center(
+                child: Text(prompt,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold))),
           ),
         ),
       ),
@@ -719,7 +793,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!destinationLocked) {
       if (searchPosition != null) {
         Geocoder.google("AIzaSyATBKvXnZydsfNs8YaB7Kyb96-UDAkGujo")
-            .findAddressesFromCoordinates(Coordinates(searchPosition.latitude, searchPosition.longitude))
+            .findAddressesFromCoordinates(
+                Coordinates(searchPosition.latitude, searchPosition.longitude))
             .then((addresses) {
           setState(() {
             _searchController.text = addresses.first.addressLine;
@@ -751,14 +826,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent =
-        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
     intent.launch();
   }
 
   Future<bool> _populateVehicles() async {
     bool result = true;
-    await locator<ApiService>().getVehicles(uid: locator<AuthService>().currentUser().uid).then((data) {
+    await locator<ApiService>()
+        .getVehicles(uid: locator<AuthService>().currentUser().uid)
+        .then((data) {
       if (data.statusCode == 200) {
         List<Vehicle> vehiclesFromApi = [];
         new List.from(data.body).forEach((element) {
@@ -795,27 +874,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 200,
                 width: 125,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25)),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25)),
                   child: AspectRatio(
                     aspectRatio: 2 / 2,
                     child: Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text("Select Default Vehicle", textAlign: TextAlign.center),
+                          child: Text("Select Default Vehicle",
+                              textAlign: TextAlign.center),
                         ),
                         Expanded(
                           child: ListView.builder(
                               itemCount: vehicles.length,
-                              itemBuilder: (BuildContext context, int index) => Card(
+                              itemBuilder: (BuildContext context, int index) =>
+                                  Card(
                                     child: InkWell(
                                       onTap: () {
                                         setState(() {
-                                          _selectedVehicle = vehicles[index].plateNumber;
-                                          _selectedVehicleData = vehicles[index];
+                                          _selectedVehicle =
+                                              vehicles[index].plateNumber;
+                                          _selectedVehicleData =
+                                              vehicles[index];
                                         });
-                                        Navigator.of(context, rootNavigator: true).pop();
-                                        showMessage("${vehicles[index].plateNumber} has been selected");
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop();
+                                        showMessage(
+                                            "${vehicles[index].plateNumber} has been selected");
                                       },
                                       child: Row(children: [
                                         Row(
@@ -835,16 +923,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                             Column(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Plate#: ${vehicles[index].plateNumber}", textAlign: TextAlign.start),
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Text(
+                                                      "Plate#: ${vehicles[index].plateNumber}",
+                                                      textAlign:
+                                                          TextAlign.start),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Make: ${vehicles[index].make} ", textAlign: TextAlign.start),
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Text(
+                                                      "Make: ${vehicles[index].make} ",
+                                                      textAlign:
+                                                          TextAlign.start),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Model: ${vehicles[index].model}", textAlign: TextAlign.start),
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Text(
+                                                      "Model: ${vehicles[index].model}",
+                                                      textAlign:
+                                                          TextAlign.start),
                                                 ),
                                               ],
                                             ),
@@ -876,7 +976,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return showMessage("Error: No vehicle selected");
     }
     if (userData.reservations != null) {
-      if (userData.reservations.length > 1) return showMessage("Error: You have an ongoing booking");
+      if (userData.reservations.length > 1)
+        return showMessage("Error: You have an ongoing booking");
     }
     for (Lot lots in v) {
       if (lots.capacity == 0) continue;
@@ -896,13 +997,15 @@ class _HomeScreenState extends State<HomeScreen> {
         barrierDismissible: true,
         context: context,
         builder: (_) => Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
                 height: 500,
                 width: 300,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Center(child: LotFound(lotData, selectedVehicleData, userData)),
+                  child: Center(
+                      child: LotFound(lotData, selectedVehicleData, userData)),
                 ),
               ),
             ));
