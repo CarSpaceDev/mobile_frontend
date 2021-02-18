@@ -152,7 +152,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                             child: Text("${widget.reservation.lotAddress}",
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 13,
                                 )),
                           ),
                         ]),
