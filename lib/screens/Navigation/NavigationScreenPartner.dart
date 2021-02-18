@@ -124,7 +124,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         appBar: AppBar(
             backgroundColor: themeData.primaryColor,
             brightness: Brightness.dark,
-            title: Text("Driver Tracking"),
+            title: Text("Reservation"),
             centerTitle: true,
             leading: Builder(
               builder: (context) => InkWell(
@@ -136,9 +136,56 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             bottom: null),
         body: Container(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Expanded(
+            child: Container(
+                color: themeData.primaryColor,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text("${widget.reservation.lotAddress}",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                )),
+                          ),
+                        ]),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child:
+                              Text("Driver: ${widget.reservation.displayName}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child:
+                              Text("Vehicle: ${widget.reservation.vehicleId} ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
+                        ),
+                      ],
+                    ),
+                  ],
+                )),
+          ),
           Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.807,
+            height: MediaQuery.of(context).size.height * 0.74,
             child: GoogleMap(
               scrollGesturesEnabled: false,
               zoomGesturesEnabled: false,
