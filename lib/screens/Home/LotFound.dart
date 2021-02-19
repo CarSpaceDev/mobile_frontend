@@ -187,6 +187,7 @@ class _LotFoundState extends State<LotFound> {
       print(value.statusCode);
       Navigator.of(context).pop();
       if (value.body["code"] == 200) {
+        locator<NavigationService>().pushReplaceNavigateTo(HomeRoute);
         successfulBooking(DriverReservation.fromJson(value.body["reservationData"]));
       } else {
         showMessage(value.body["message"]);
@@ -228,6 +229,13 @@ class _LotFoundState extends State<LotFound> {
                     FlatButton(
                       onPressed: () {
                         Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop(null);
+                        locator<ApiService>().notifyOnTheWay({
+                          "userId": widget.user.uid,
+                          "driverName": widget.user.displayName,
+                          "vehicleId": widget.vehicle.plateNumber,
+                          "lotAddress": widget.lot.address.toString(),
+                          "partnerId": widget.lot.partnerId
+                        });
                         DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
                       },
                       child: Row(
