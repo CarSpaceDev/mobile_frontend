@@ -467,6 +467,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             title: InkWell(
                 onTap: () {
+                  locator<NavigationService>().pushNavigateTo(WalletRoute);
+                },
+                child: Text("Wallet")),
+          ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
                   Navigator.pop(context);
                   showNotificationDialog();
                 },

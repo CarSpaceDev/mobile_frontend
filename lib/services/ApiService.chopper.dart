@@ -78,6 +78,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> getWalletStatus({String uid}) {
+    final $url = '/user/wallet-status/$uid';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getUserData({String uid}) {
     final $url = '/user/$uid';
     final $request = Request('GET', $url, client.baseUrl);
