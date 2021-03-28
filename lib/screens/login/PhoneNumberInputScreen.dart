@@ -18,7 +18,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {
         context.read<LoginBloc>().add(RestartLoginEvent());
       }),
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       bottomNavigationBar: _nextButton(context),
       body: SingleChildScrollView(
         child: Center(

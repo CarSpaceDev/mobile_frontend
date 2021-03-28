@@ -165,12 +165,12 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           padding: const EdgeInsets.all(16.0),
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            backgroundColor: themeData.primaryColor,
+            backgroundColor: csTheme.primaryColor,
           ),
         ),
         Text(
           "Loading",
-          style: TextStyle(color: themeData.primaryColor),
+          style: TextStyle(color: csTheme.primaryColor),
         )
       ],
     );

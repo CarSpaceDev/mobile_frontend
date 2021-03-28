@@ -1,10 +1,10 @@
+import 'package:carspace/screens/Home/HomeDashboard.dart';
 import 'package:carspace/screens/Home/HomeScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/screens/Home/VehicleManagementScreen.dart';
 import 'package:carspace/screens/Home/WalletScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/Navigation/NavigationScreenPartner.dart';
 import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +18,7 @@ const String Reservations = '/user-reservations';
 const String HomeRoute = '/home';
 const String PartnerReservations = '/partner-reservations';
 const String WalletRoute = '/wallet';
-const String BetaFunctions = '/beta';
-const String BetaFunctions2 = '/beta2';
+const String HomeDashboardRoute = '/dashboard';
 // ignore: missing_return
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -35,8 +34,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(ReservationScreen(), settings);
     case PartnerReservations:
       return _getPageRoute(PartnerReservationScreen(), settings);
-    case BetaFunctions:
-      return _getPageRoute(NavigationScreenPartner(), settings);
+    case HomeDashboardRoute:
+      return _getPageRoute(HomeDashboard(), settings);
     case WalletRoute:
       return _getPageRoute(WalletScreen(), settings);
   }

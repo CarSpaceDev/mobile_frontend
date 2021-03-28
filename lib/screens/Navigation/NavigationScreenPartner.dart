@@ -86,7 +86,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: themeData.primaryColor,
+        backgroundColor: csTheme.primaryColor,
         bottomNavigationBar: BottomAppBar(
           child: FlatButton(
             color: Color(0xff6200EE),
@@ -107,7 +107,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
           ),
         ),
         appBar: AppBar(
-            backgroundColor: themeData.primaryColor,
+            backgroundColor: csTheme.primaryColor,
             brightness: Brightness.dark,
             title: Text("Reservation"),
             centerTitle: true,
@@ -123,7 +123,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
           Expanded(
             child: Container(
-                color: themeData.secondaryHeaderColor,
+                color: csTheme.secondaryHeaderColor,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -7,8 +7,7 @@ class StringConstants {
   // static const kApiUrl = "https://3e4eeced9512.ngrok.io";
 }
 
-final ThemeData themeData = new ThemeData(
-  // fontFamily: 'Roboto',
+final ThemeData csTheme = new ThemeData(
   brightness: Brightness.light,
   primarySwatch: MaterialColor(AppColors.indigo[900].value, AppColors.indigo),
   primaryColor: Colors.indigo[1000],

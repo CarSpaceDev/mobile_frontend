@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
       drawer: homeNavigationDrawer(context),
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       appBar: homeAppBar(
         context,
         "Map",
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Container(
                                           padding: EdgeInsets.all(8),
                                           decoration: new BoxDecoration(
-                                            color: themeData.primaryColor,
+                                            color: csTheme.primaryColor,
                                             borderRadius: BorderRadius.all(
                                               Radius.circular(15.0),
                                             ),
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                           padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           decoration: new BoxDecoration(
-                            color: themeData.primaryColor,
+                            color: csTheme.primaryColor,
                             borderRadius: BorderRadius.all(
                               Radius.circular(25.0),
                             ),
@@ -324,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       top: 8,
                       child: CustomSwitch(
                         width: 95,
-                        activeColor: themeData.primaryColor,
+                        activeColor: csTheme.primaryColor,
                         activePrompt: "POI On",
                         inactivePrompt: "POI Off",
                         value: showPointOfInterest,
@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    backgroundColor: themeData.primaryColor,
+                    backgroundColor: csTheme.primaryColor,
                   ),
                 ),
               )
@@ -450,11 +450,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: <Widget>[
                     CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: themeData.primaryColor,
+                      backgroundColor: csTheme.primaryColor,
                     ),
                     Text(
                       "Loading",
-                      style: TextStyle(color: themeData.primaryColor),
+                      style: TextStyle(color: csTheme.primaryColor),
                     )
                   ],
                 ),
@@ -698,7 +698,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return BottomAppBar(
       child: FlatButton(
-        color: lotsInRadius.length == 0 ? themeData.secondaryHeaderColor : Color(0xff6200EE),
+        color: lotsInRadius.length == 0 ? csTheme.secondaryHeaderColor : Color(0xff6200EE),
         onPressed: () {
           if (userData != null) {
             print(userData != null);
@@ -734,7 +734,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar homeAppBar(BuildContext context, String appBarTitle, Widget action) {
     return AppBar(
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       brightness: Brightness.dark,
       title: Text(appBarTitle),
       centerTitle: true,

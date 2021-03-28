@@ -9,7 +9,7 @@ class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -29,7 +29,7 @@ class LoadingScreen extends StatelessWidget {
                       CircularProgressIndicator(
                         valueColor:
                             AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: themeData.primaryColor,
+                        backgroundColor: csTheme.primaryColor,
                       ),
                       Text(prompt, style: TextStyle(color: Colors.white),)
                     ],

@@ -44,7 +44,7 @@ class _NotificationWidgetState extends State<NotificationWidget> {
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Container(
           margin: const EdgeInsets.all(4.0),
-          decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : themeData.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+          decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -88,7 +88,7 @@ class _NotificationWidgetState extends State<NotificationWidget> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
         margin: const EdgeInsets.all(4.0),
-        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : themeData.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -159,7 +159,7 @@ class _NotificationWidgetState extends State<NotificationWidget> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
         margin: const EdgeInsets.all(4.0),
-        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : themeData.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

@@ -16,7 +16,7 @@ class _PhoneNumberRegistrationState extends State<PhoneNumberRegistration> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {}),
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       bottomNavigationBar: _nextButton(context),
       body: SingleChildScrollView(
         child: Center(

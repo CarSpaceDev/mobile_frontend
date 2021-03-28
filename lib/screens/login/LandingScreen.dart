@@ -29,7 +29,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       extendBodyBehindAppBar: true,
       extendBody: true,
       bottomNavigationBar: BottomAppBar(
@@ -133,7 +133,7 @@ class _LandingScreenState extends State<LandingScreen> {
                           loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
                         }
                       },
-                      color: themeData.secondaryHeaderColor,
+                      color: csTheme.secondaryHeaderColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       child: Container(
                         width: SizeConfig.widthMultiplier * 50,
@@ -153,7 +153,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: FlatButton.icon(
-                      color: themeData.secondaryHeaderColor,
+                      color: csTheme.secondaryHeaderColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -268,7 +268,7 @@ class LandingContent extends StatelessWidget {
                         onPressed: () {
                           context.read<LoginBloc>().add(NavigateToEulaEvent());
                         },
-                        color: themeData.secondaryHeaderColor,
+                        color: csTheme.secondaryHeaderColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         child: Container(
                           width: SizeConfig.widthMultiplier * 60,

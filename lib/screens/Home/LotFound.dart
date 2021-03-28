@@ -81,7 +81,7 @@ class _LotFoundState extends State<LotFound> {
                             onPressed: () {
                               Navigator.of(context).pop(1);
                             },
-                            color: themeData.secondaryHeaderColor,
+                            color: csTheme.secondaryHeaderColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
@@ -104,7 +104,7 @@ class _LotFoundState extends State<LotFound> {
                             onPressed: () {
                               reserve();
                             },
-                            color: themeData.secondaryHeaderColor,
+                            color: csTheme.secondaryHeaderColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
@@ -162,7 +162,7 @@ class _LotFoundState extends State<LotFound> {
             width: 50,
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              backgroundColor: themeData.primaryColor,
+              backgroundColor: csTheme.primaryColor,
             ),
           ),
         ),

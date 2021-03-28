@@ -19,7 +19,7 @@ void main() async {
   await Hive.openBox('localCache');
   await Firebase.initializeApp();
   setUpServiceLocator();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: Colors.indigo[900], statusBarColor: Colors.indigo[900]));
 
   runApp(CarSpaceApp());
@@ -43,7 +43,7 @@ class CarSpaceApp extends StatelessWidget {
           ],
           child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              theme: themeData,
+              theme: csTheme,
               builder: (context, child) => child,
               navigatorKey: locator<NavigationService>().navigatorKey,
               onGenerateRoute: generateRoute,

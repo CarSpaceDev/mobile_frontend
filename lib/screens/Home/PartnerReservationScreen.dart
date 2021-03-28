@@ -383,7 +383,7 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                 width: 150,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  backgroundColor: themeData.primaryColor,
+                  backgroundColor: csTheme.primaryColor,
                 ),
               ),
             ),
@@ -391,7 +391,7 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
         ),
         Text(
           "Loading",
-          style: TextStyle(color: themeData.primaryColor),
+          style: TextStyle(color: csTheme.primaryColor),
         )
       ],
     );

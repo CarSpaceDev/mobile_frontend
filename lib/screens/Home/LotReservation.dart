@@ -118,7 +118,7 @@ class _LotReservationState extends State<LotReservation> {
                                 else
                                   _reserveButton();
                               },
-                              color: themeData.secondaryHeaderColor,
+                              color: csTheme.secondaryHeaderColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)),
                               child: Container(
@@ -154,11 +154,11 @@ class _LotReservationState extends State<LotReservation> {
                         CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
-                          backgroundColor: themeData.primaryColor,
+                          backgroundColor: csTheme.primaryColor,
                         ),
                         Text(
                           "Loading",
-                          style: TextStyle(color: themeData.primaryColor),
+                          style: TextStyle(color: csTheme.primaryColor),
                         )
                       ],
                     ),

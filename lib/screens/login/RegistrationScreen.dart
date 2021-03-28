@@ -243,7 +243,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: Center(
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: themeData.primaryColor,
+                        backgroundColor: csTheme.primaryColor,
                       ),
                     ),
                   ));

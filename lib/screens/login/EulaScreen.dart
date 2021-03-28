@@ -16,7 +16,7 @@ class _EulaScreenState extends State<EulaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeData.primaryColor,
+      backgroundColor: csTheme.primaryColor,
       appBar: AppBar(
         brightness: Brightness.dark,
         elevation: 0,
@@ -27,7 +27,7 @@ class _EulaScreenState extends State<EulaScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: themeData.backgroundColor,
+        color: csTheme.backgroundColor,
         child: Container(
           height: MediaQuery.of(context).size.height * .1,
           child: Row(

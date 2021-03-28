@@ -207,7 +207,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                                             100,
                                                         height: 40,
                                                         decoration: BoxDecoration(
-                                                            color: themeData
+                                                            color: csTheme
                                                                 .secondaryHeaderColor,
                                                             borderRadius:
                                                             BorderRadius
@@ -234,7 +234,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                     width:
                                         MediaQuery.of(context).size.width - 100,
                                     decoration: BoxDecoration(
-                                        color: themeData.secondaryHeaderColor,
+                                        color: csTheme.secondaryHeaderColor,
                                         borderRadius:
                                             BorderRadius.circular(20.0)),
                                     child: Center(

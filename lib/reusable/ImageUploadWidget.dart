@@ -101,7 +101,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                       ),
                       CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: themeData.primaryColor,
+                        backgroundColor: csTheme.primaryColor,
                       ),
                     ],
                   ),

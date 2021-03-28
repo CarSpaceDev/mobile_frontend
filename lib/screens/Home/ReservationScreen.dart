@@ -421,7 +421,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                 width: 150,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  backgroundColor: themeData.primaryColor,
+                  backgroundColor: csTheme.primaryColor,
                 ),
               ),
             ),
@@ -429,7 +429,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
         ),
         Text(
           "Loading",
-          style: TextStyle(color: themeData.primaryColor),
+          style: TextStyle(color: csTheme.primaryColor),
         )
       ],
     );
