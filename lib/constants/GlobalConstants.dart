@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
-  // static const kApiUrl = "https://api.zdgph.tech";
-  static const kApiUrl = "https://3e4eeced9512.ngrok.io";
+  static const kApiUrl = "https://api.zdgph.tech";
+  // static const kApiUrl = "https://3e4eeced9512.ngrok.io";
 }
 
 final ThemeData themeData = new ThemeData(
