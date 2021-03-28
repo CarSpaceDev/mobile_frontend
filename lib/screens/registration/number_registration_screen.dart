@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/screens/registration/code_confirmation_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +15,7 @@ class _PhoneNumberRegistrationState extends State<PhoneNumberRegistration> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {}),
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       bottomNavigationBar: _nextButton(context),
       body: SingleChildScrollView(
         child: Center(
@@ -42,8 +41,10 @@ class _PhoneNumberRegistrationState extends State<PhoneNumberRegistration> {
                         decoration: InputDecoration(
                             hintText: '+63 - ',
                             hintStyle: TextStyle(color: Colors.white),
-                            enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0)),
-                            focusedBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0))),
+                            enabledBorder:
+                                new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0)),
+                            focusedBorder:
+                                new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0))),
                       ),
                     ),
                     Padding(

@@ -1,5 +1,4 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ class _PhoneCodeConfirmScreenState extends State<PhoneCodeConfirmScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {}),
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       bottomNavigationBar: _nextButton(context),
       body: SingleChildScrollView(
         child: Center(

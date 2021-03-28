@@ -29,13 +29,11 @@ class _ReservedLotState extends State<ReservedLot> {
                   child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        top: 25, bottom: 8, right: 8, left: 8),
+                    padding: const EdgeInsets.only(top: 25, bottom: 8, right: 8, left: 8),
                     child: Text(
                       widget.reservation.lotAddress.toString(),
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ClipRRect(
@@ -48,21 +46,15 @@ class _ReservedLotState extends State<ReservedLot> {
                       )),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                        "Vehicle Selected : \n${widget.reservation.vehicleId}",
-                        textAlign: TextAlign.center),
+                    child: Text("Vehicle Selected : \n${widget.reservation.vehicleId}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                        "Date Booked :\n${widget.reservation.dateCreated}",
-                        textAlign: TextAlign.center),
+                    child: Text("Date Booked :\n${widget.reservation.dateCreated}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                        "Time Booked : \n${widget.reservation.timeCreated}",
-                        textAlign: TextAlign.center),
+                    child: Text("Time Booked : \n${widget.reservation.timeCreated}", textAlign: TextAlign.center),
                   ),
                 ],
               )),
@@ -70,8 +62,7 @@ class _ReservedLotState extends State<ReservedLot> {
           ),
           Positioned(
               child: Padding(
-            padding:
-                const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
+            padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -120,10 +111,7 @@ class _ReservedLotState extends State<ReservedLot> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }

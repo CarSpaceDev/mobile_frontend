@@ -7,69 +7,149 @@ class StringConstants {
   // static const kApiUrl = "https://3e4eeced9512.ngrok.io";
 }
 
-final ThemeData csTheme = new ThemeData(
-  brightness: Brightness.light,
-  primarySwatch: MaterialColor(AppColors.indigo[900].value, AppColors.indigo),
-  primaryColor: Colors.indigo[1000],
-  primaryColorBrightness: Brightness.dark,
-  accentColor: Colors.indigo[900],
-  accentColorBrightness: Brightness.light,
-  secondaryHeaderColor: Color(0xFF534bae),
-  visualDensity: VisualDensity.adaptivePlatformDensity,
-);
+double getRelativeSize(BuildContext context, double v) {
+  return MediaQuery.of(context).size.width * v / 375;
+}
 
-class AppColors {
-  AppColors._(); // this basically makes it so you can instantiate this class
+double kDefaultPaddingHorizontal = 16;
 
-  static const Map<int, Color> indigo = const <int, Color>{
-    50: const Color(0xFFe8eaf6),
-    100: const Color(0xFFc5cae9),
-    200: const Color(0xFF9fa8da),
-    300: const Color(0xFF7986cb),
-    400: const Color(0xFF5c6bc0),
-    500: const Color(0xFF3f51b5),
-    600: const Color(0xFF3949ab),
-    700: const Color(0xFF303f9f),
-    800: const Color(0xFF283593),
-    900: const Color(0xFF1a237e),
-    1000: const Color(0xFF000051),
-  };
+final csStyle = CSTheme();
 
-  static const Map<int, Color> green = const <int, Color>{
-    50: const Color(0xFFf2f8ef),
-    100: const Color(0xFFdfedd8),
-    200: const Color(0xFFc9e2be),
-    300: const Color(0xFFb3d6a4),
-    400: const Color(0xFFa3cd91),
-    500: const Color(0xFF93c47d),
-    600: const Color(0xFF8bbe75),
-    700: const Color(0xFF80b66a),
-    800: const Color(0xFF76af60),
-    900: const Color(0xFF64a24d)
-  };
+class CSTheme {
+  // Color primary = Color(0xFF0A642D);
+  Color primary = Colors.indigo[900];
+  Color csBlack = Color(0xFF000000);
+  Color csWhite = Color(0xFFFFFFFF);
+  Color csGreyLight = Color(0xFFC3C3C3);
+  Color csGrey = Color(0xFF888888);
+  Color csGreyDark = Color(0xFF646464);
+  Color csGreyDivider = Color(0xFFDDDDDD);
+  Color csGreyBackground = Color(0xFFF8F8F8);
+  Color csRed = Color(0xFFD5391D);
+  Color csYellow = Color(0xFFD5B11D);
 
-  static const Map<int, Color> blue = const <int, Color>{
-    50: const Color(0xFFDCF1FF),
-    100: const Color(0xFFB5E1FF),
-    200: const Color(0xFF66C2FF),
-    300: const Color(0xFF88CFFF),
-    400: const Color(0xFF67C2FF),
-    500: const Color(0xFF48B6FF),
-    600: const Color(0xFF2EACFF),
-    700: const Color(0xFF1CA4FF),
-    800: const Color(0xFF0D9EFF),
-    900: const Color(0xFF0099FF)
-  };
-  static const Map<int, Color> grey = const <int, Color>{
-    50: const Color(0xFFFFFFFF),
-    100: const Color(0xFFE7E7E7),
-    200: const Color(0xFFCCCCCC),
-    300: const Color(0xFFBDBDBD),
-    400: const Color(0xFFA7A7A7),
-    500: const Color(0xFF797979),
-    600: const Color(0xFF696969),
-    700: const Color(0xFF4B4B4B),
-    800: const Color(0xFF313131),
-    900: const Color(0xFF000000)
-  };
+  TextStyle appBarTextDark;
+  TextStyle appBarTextLight;
+  TextStyle title;
+  TextStyle headline1;
+  TextStyle headline2;
+  TextStyle headline3;
+  TextStyle headline4;
+  TextStyle headline5;
+  TextStyle headline6;
+  TextStyle body;
+  TextStyle caption;
+  AppBarTheme appBarThemePrimary;
+  AppBarTheme appBarThemeWhite;
+  OutlinedButtonThemeData outlinedButtonThemeActive;
+  OutlinedButtonThemeData outlinedButtonThemeInactive;
+  InputDecorationTheme inputDecorationTheme;
+  CSTheme() {
+    headline1 = TextStyle(fontWeight: FontWeight.w900, fontSize: 42);
+    headline2 = TextStyle(fontWeight: FontWeight.w700, fontSize: 32);
+    headline3 = TextStyle(fontWeight: FontWeight.w600, fontSize: 24);
+    headline4 = TextStyle(fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 0.54);
+    headline5 = TextStyle(fontWeight: FontWeight.w400, fontSize: 16, letterSpacing: 0.32);
+    headline6 = TextStyle(fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
+    body = TextStyle(fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
+    caption = TextStyle(fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
+
+    appBarTextDark = TextStyle(
+        fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
+
+    appBarTextLight = TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
+
+    appBarThemePrimary = AppBarTheme(
+        color: this.primary,
+        textTheme: TextTheme(headline6: appBarTextDark),
+        brightness: Brightness.dark,
+        elevation: 3,
+        actionsIconTheme: IconThemeData(color: csWhite, size: 20),
+        iconTheme: IconThemeData(color: csWhite, size: 20));
+    appBarThemeWhite = AppBarTheme(
+        color: this.csWhite,
+        centerTitle: true,
+        textTheme: TextTheme(headline6: appBarTextLight),
+        brightness: Brightness.light,
+        elevation: 3,
+        shadowColor: csGreyDivider,
+        actionsIconTheme: IconThemeData(color: csGreyLight, size: 30),
+        iconTheme: IconThemeData(color: csGreyLight, size: 30));
+    outlinedButtonThemeActive = OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+            side: BorderSide(color: primary),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            primary: primary,
+            textStyle: headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
+    outlinedButtonThemeInactive = OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+            side: BorderSide(color: csGreyBackground),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            primary: primary,
+            textStyle: headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
+
+  }
+
+  ThemeData theme() {
+    return ThemeData(
+      primaryColor: this.primary,
+      primarySwatch: createMaterialColor(this.primary),
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      fontFamily: "Roboto",
+      textTheme: createTextTheme(),
+      scaffoldBackgroundColor: csGreyBackground,
+      primaryColorDark: csBlack,
+      primaryColorLight: csWhite,
+      outlinedButtonTheme: outlinedButtonThemeActive,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0),
+        ))),
+      ),
+    );
+  }
+
+  TextTheme createTextTheme() {
+    return TextTheme(
+      headline1: headline1,
+      headline2: headline2,
+      headline3: headline3,
+      headline4: headline4,
+      headline5: headline5,
+      headline6: headline6,
+      bodyText1: body,
+      bodyText2: body,
+      caption: caption,
+    );
+  }
+
+  EdgeInsets csPaddingDepth1(BuildContext context) {
+    return EdgeInsets.symmetric(horizontal: getRelativeSize(context, kDefaultPaddingHorizontal));
+  }
+
+  EdgeInsets csPaddingLeft(BuildContext context) {
+    return EdgeInsets.only(left: getRelativeSize(context, kDefaultPaddingHorizontal));
+  }
+
+  MaterialColor createMaterialColor(Color color) {
+    List strengths = <double>[.05];
+    Map swatch = <int, Color>{};
+    final int r = color.red, g = color.green, b = color.blue;
+
+    for (int i = 1; i < 10; i++) {
+      strengths.add(0.1 * i);
+    }
+    strengths.forEach((strength) {
+      final double ds = 0.5 - strength;
+      swatch[(strength * 1000).round()] = Color.fromRGBO(
+        r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+        g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+        b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+        1,
+      );
+    });
+    return MaterialColor(color.value, swatch);
+  }
 }

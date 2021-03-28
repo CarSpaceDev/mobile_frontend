@@ -20,7 +20,10 @@ class _TestScreenState extends State<TestScreen> {
     return Scaffold(
       body: Container(
         child: Column(
-          children: [Padding(padding: EdgeInsets.all(16), child: imageWidget), FlatButton(onPressed: () {}, child: Icon(Icons.image))],
+          children: [
+            Padding(padding: EdgeInsets.all(16), child: imageWidget),
+            FlatButton(onPressed: () {}, child: Icon(Icons.image))
+          ],
         ),
       ),
     );

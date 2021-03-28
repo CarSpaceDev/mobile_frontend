@@ -15,9 +15,14 @@ abstract class ApiMapService extends ChopperService {
 //  @Get()
 //  Future<Response> getPosts();
 //
-  @Get(path: 'autocomplete/json?input={input}&language={lang}&components=country:ph&key={apiKey}&sessiontoken={sessionToken}')
+  @Get(
+      path:
+          'autocomplete/json?input={input}&language={lang}&components=country:ph&key={apiKey}&sessiontoken={sessionToken}')
   Future<Response> getAutoComplete(
-      {@Path('input') String input, @Path('lang') String lang, @Path('apiKey') String apiKey, @Path('sessionToken') String sessionToken});
+      {@Path('input') String input,
+      @Path('lang') String lang,
+      @Path('apiKey') String apiKey,
+      @Path('sessionToken') String sessionToken});
 
   static ApiMapService create() {
     final client = ChopperClient(

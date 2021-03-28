@@ -106,8 +106,12 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                 height: 150,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(20.0), bottomLeft: Radius.circular(20.0)),
-                  gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1a237e), Color(0xFF000051)]),
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(20.0), bottomLeft: Radius.circular(20.0)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF1a237e), Color(0xFF000051)]),
                 ),
               ),
             ),
@@ -209,8 +213,17 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                               ),
                               plateNumberInput(),
                               reusableInput(
-                                  label: "Brand/make", hint: "Enter brand/make", controller: _vehicleMake, fn: _vehicleMakeFN, nextFn: _vehicleModelFN),
-                              reusableInput(label: "Model", hint: "Enter model", controller: _vehicleModel, fn: _vehicleModelFN, nextFn: null),
+                                  label: "Brand/make",
+                                  hint: "Enter brand/make",
+                                  controller: _vehicleMake,
+                                  fn: _vehicleMakeFN,
+                                  nextFn: _vehicleModelFN),
+                              reusableInput(
+                                  label: "Model",
+                                  hint: "Enter model",
+                                  controller: _vehicleModel,
+                                  fn: _vehicleModelFN,
+                                  nextFn: null),
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Row(
@@ -229,7 +242,10 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                                           }),
                                         );
                                       },
-                                      child: Container(padding: EdgeInsets.all(8.0), color: Colors.grey, child: Text(vehicleTypes[pType])),
+                                      child: Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          color: Colors.grey,
+                                          child: Text(vehicleTypes[pType])),
                                     )
                                   ],
                                 ),
@@ -252,7 +268,8 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                                           }),
                                         );
                                       },
-                                      child: Container(padding: EdgeInsets.all(8.0), color: Colors.grey, child: Text(pColor)),
+                                      child: Container(
+                                          padding: EdgeInsets.all(8.0), color: Colors.grey, child: Text(pColor)),
                                     )
                                   ],
                                 ),
@@ -434,7 +451,8 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: new Text("Skip vehicle registration"),
-          content: new Text("Are you sure you want to skip vehicle registration? You cannot make reservations until you do."),
+          content: new Text(
+              "Are you sure you want to skip vehicle registration? You cannot make reservations until you do."),
           actions: <Widget>[
             FlatButton(
               child: new Text("Close"),

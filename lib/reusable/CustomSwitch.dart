@@ -8,7 +8,9 @@ class CustomSwitch extends StatefulWidget {
   final String inactivePrompt;
   final double width;
 
-  const CustomSwitch({Key key, this.value, this.onChanged, this.activeColor, this.activePrompt, this.inactivePrompt, this.width}) : super(key: key);
+  const CustomSwitch(
+      {Key key, this.value, this.onChanged, this.activeColor, this.activePrompt, this.inactivePrompt, this.width})
+      : super(key: key);
 
   @override
   _CustomSwitchState createState() => _CustomSwitchState();
@@ -22,9 +24,10 @@ class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 60));
-    _circleAnimation =
-        AlignmentTween(begin: widget.value ? Alignment.centerRight : Alignment.centerLeft, end: widget.value ? Alignment.centerLeft : Alignment.centerRight)
-            .animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
+    _circleAnimation = AlignmentTween(
+            begin: widget.value ? Alignment.centerRight : Alignment.centerLeft,
+            end: widget.value ? Alignment.centerLeft : Alignment.centerRight)
+        .animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
   }
 
   @override
@@ -45,7 +48,8 @@ class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderSt
             width: widget.width,
             height: 35.0,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0), color: _circleAnimation.value == Alignment.centerLeft ? Colors.grey : widget.activeColor),
+                borderRadius: BorderRadius.circular(20.0),
+                color: _circleAnimation.value == Alignment.centerLeft ? Colors.grey : widget.activeColor),
             child: Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, right: 4.0, left: 4.0),
               child: Row(

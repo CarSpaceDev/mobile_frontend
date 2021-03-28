@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {}),
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       bottomNavigationBar: _nextButton(),
       body: SingleChildScrollView(
         child: Center(
@@ -42,8 +41,10 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
                         decoration: InputDecoration(
                             hintText: '*          *         *         *         *         * ',
                             hintStyle: TextStyle(color: Colors.white),
-                            enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0)),
-                            focusedBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0))),
+                            enabledBorder:
+                                new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0)),
+                            focusedBorder:
+                                new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.white, width: 4.0))),
                       ),
                     ),
                     Padding(
@@ -51,7 +52,9 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
                       child: Center(
                         child: RichText(
                           text: TextSpan(text: 'Resend my code in', children: <TextSpan>[
-                            TextSpan(text: ' .30s', style: TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: ' .30s',
+                                style: TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold)),
                           ]),
                         ),
                       ),

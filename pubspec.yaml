@@ -49,6 +49,7 @@ dependencies:
   photo_view: ^0.10.3
   mqtt_client: ^8.1.0
   flutter_mapbox_navigation: ^0.0.19
+  flutter_svg: ^0.19.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -89,6 +90,7 @@ flutter:
     - assets/mapPOI.txt
     - assets/launcher_icon/
     - assets/images/
+    - assets/icons/
 #
 #  fonts:
 #    - family: Champagne & Limousines

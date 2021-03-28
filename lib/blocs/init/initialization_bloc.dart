@@ -31,7 +31,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             navService.pushReplaceNavigateTo(LoginRoute);
           } else {
             yield ErrorState(
-                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
+                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
+                    result.statusCode.toString());
           }
         } else {
           var result = await apiService.requestInitData(hash: existingCache["hash"]);
@@ -44,7 +45,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             }
           } else {
             yield ErrorState(
-                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' + result.statusCode.toString());
+                error: 'There has been an error in getting needed resources.\n Please try again later.\nError Code:' +
+                    result.statusCode.toString());
           }
         }
       } catch (e) {

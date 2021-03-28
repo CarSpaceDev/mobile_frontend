@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +17,7 @@ class _ReturnScreen extends State<ReturnScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -49,7 +48,11 @@ class _ReturnScreen extends State<ReturnScreen> {
               SizedBox(height: 22.0),
               Text(
                 "Email already registered....",
-                style: TextStyle(fontFamily: "Champagne & Limousines", fontWeight: FontWeight.bold, fontSize: 30.0, color: Colors.white),
+                style: TextStyle(
+                    fontFamily: "Champagne & Limousines",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0,
+                    color: Colors.white),
               ),
               SizedBox(height: 22.0),
               _nextButton(),

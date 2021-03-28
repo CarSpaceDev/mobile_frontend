@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -83,7 +82,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(bottomRight: Radius.circular(20.0), bottomLeft: Radius.circular(20.0)),
-                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1a237e), Color(0xFF000051)]),
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF1a237e), Color(0xFF000051)]),
               ),
             ),
           ),
@@ -119,11 +121,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: Text('Driver\'s Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
-            reusableInput(controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
+            reusableInput(
+                controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
             reusableInput(controller: _lastNameController, hintText: "Last Name*", fn: _lastNameFN, nextFn: _emailFN),
             emailInput(controller: _emailController, hintText: "Email address*", fn: _emailFN, nextFn: _pass1FN),
-            reusableInput(controller: _passwordController, hintText: "Password*", fn: _pass1FN, nextFn: _pass2FN, password: true),
-            reusableInput(controller: _passwordConfirmController, hintText: "Confirm Password*", fn: _pass2FN, password: true),
+            reusableInput(
+                controller: _passwordController, hintText: "Password*", fn: _pass1FN, nextFn: _pass2FN, password: true),
+            reusableInput(
+                controller: _passwordConfirmController, hintText: "Confirm Password*", fn: _pass2FN, password: true),
           ],
         ),
       ),
@@ -143,9 +148,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: Text('Driver\'s Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
-            reusableInput(controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
+            reusableInput(
+                controller: _firstNameController, hintText: "First Name*", fn: _firstNameFN, nextFn: _lastNameFN),
             reusableInput(controller: _lastNameController, hintText: "Last Name*", fn: _lastNameFN),
-            reusableInput(controller: _emailController, hintText: "Email address*", enabled: gUid != null ? false : true),
+            reusableInput(
+                controller: _emailController, hintText: "Email address*", enabled: gUid != null ? false : true),
           ],
         ),
       ),
@@ -196,13 +203,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void setExpiry(BuildContext context) {
-    showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: new DateTime.now().add(Duration(days: 365 * 10)))
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime.now(),
+            lastDate: new DateTime.now().add(Duration(days: 365 * 10)))
         .then((value) {
       _licenseExpiryController.text = value.toString().substring(0, 10);
     });
   }
 
-  Padding reusableInput({TextEditingController controller, String hintText, bool enabled, FocusNode fn, FocusNode nextFn, bool password}) {
+  Padding reusableInput(
+      {TextEditingController controller,
+      String hintText,
+      bool enabled,
+      FocusNode fn,
+      FocusNode nextFn,
+      bool password}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
@@ -228,7 +245,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Padding emailInput({TextEditingController controller, String hintText, bool enabled, FocusNode fn, FocusNode nextFn}) {
+  Padding emailInput(
+      {TextEditingController controller, String hintText, bool enabled, FocusNode fn, FocusNode nextFn}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
@@ -243,7 +261,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: Center(
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: csTheme.primaryColor,
+                        backgroundColor: Theme.of(context).primaryColor,
                       ),
                     ),
                   ));
@@ -457,7 +475,8 @@ class RegistrationPayload {
   String licenseImage;
   DateTime licenseExpiry;
   String gUid;
-  RegistrationPayload({this.firstName, this.lastName, this.email, this.password, this.licenseImage, String licenseExpiry, this.gUid}) {
+  RegistrationPayload(
+      {this.firstName, this.lastName, this.email, this.password, this.licenseImage, String licenseExpiry, this.gUid}) {
     this.licenseExpiry = DateTime.parse(licenseExpiry);
   }
 

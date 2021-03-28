@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Notification.dart';
 import 'package:carspace/screens/Home/VehicleAddAuthDetails.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -36,7 +35,8 @@ class _NotificationWidgetState extends State<NotificationWidget> {
     return InkWell(
       onTap: () {
         if (data.opened == false) {
-          locator<ApiService>().setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
+          locator<ApiService>()
+              .setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
           if (callback != null) callback();
         }
       },
@@ -44,7 +44,9 @@ class _NotificationWidgetState extends State<NotificationWidget> {
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Container(
           margin: const EdgeInsets.all(4.0),
-          decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+          decoration: BoxDecoration(
+              color: data.opened ? Colors.grey[600] : Theme.of(context).secondaryHeaderColor,
+              borderRadius: BorderRadius.circular(5.0)),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -88,7 +90,9 @@ class _NotificationWidgetState extends State<NotificationWidget> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
         margin: const EdgeInsets.all(4.0),
-        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+        decoration: BoxDecoration(
+            color: data.opened ? Colors.grey[600] : Theme.of(context).secondaryHeaderColor,
+            borderRadius: BorderRadius.circular(5.0)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -122,7 +126,8 @@ class _NotificationWidgetState extends State<NotificationWidget> {
               InkWell(
                 onTap: () async {
                   if (data.opened == false) {
-                    locator<ApiService>().setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
+                    locator<ApiService>().setNotificationAsSeen(
+                        uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
                     if (callback != null) callback();
                   }
                   showDialog(
@@ -130,7 +135,8 @@ class _NotificationWidgetState extends State<NotificationWidget> {
                       context: context,
                       builder: (_) {
                         return Dialog(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)), child: VehicleAddAuthDetails(code: data.data["code"]));
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                            child: VehicleAddAuthDetails(code: data.data["code"]));
                       });
                 },
                 child: Container(
@@ -159,7 +165,9 @@ class _NotificationWidgetState extends State<NotificationWidget> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
         margin: const EdgeInsets.all(4.0),
-        decoration: BoxDecoration(color: data.opened ? Colors.grey[600] : csTheme.secondaryHeaderColor, borderRadius: BorderRadius.circular(5.0)),
+        decoration: BoxDecoration(
+            color: data.opened ? Colors.grey[600] : Theme.of(context).secondaryHeaderColor,
+            borderRadius: BorderRadius.circular(5.0)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -193,7 +201,8 @@ class _NotificationWidgetState extends State<NotificationWidget> {
               ),
               InkWell(
                 onTap: () {
-                  locator<ApiService>().setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
+                  locator<ApiService>()
+                      .setNotificationAsSeen(uid: locator<AuthService>().currentUser().uid, notificationUid: data.uid);
                   if (callback != null) callback();
                 },
                 child: Container(

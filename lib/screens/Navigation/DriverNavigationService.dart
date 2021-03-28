@@ -46,9 +46,11 @@ class DriverNavigationService {
   }
 
   _openPositionStream() {
-    _positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 5))
-            .listen(_positionChangeHandler);
+    _positionStream = Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 1,
+            intervalDuration: Duration(seconds: 5))
+        .listen(_positionChangeHandler);
   }
 
   _closePositionStream() {

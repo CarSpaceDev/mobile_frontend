@@ -1,5 +1,4 @@
 import 'package:android_intent/android_intent.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
@@ -67,7 +66,8 @@ class _LotFoundState extends State<LotFound> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text("Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H", textAlign: TextAlign.center),
+                    child: Text("Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
+                        textAlign: TextAlign.center),
                   ),
                 ],
               )),
@@ -81,7 +81,7 @@ class _LotFoundState extends State<LotFound> {
                             onPressed: () {
                               Navigator.of(context).pop(1);
                             },
-                            color: csTheme.secondaryHeaderColor,
+                            color: Theme.of(context).secondaryHeaderColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
@@ -104,7 +104,7 @@ class _LotFoundState extends State<LotFound> {
                             onPressed: () {
                               reserve();
                             },
-                            color: csTheme.secondaryHeaderColor,
+                            color: Theme.of(context).secondaryHeaderColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
@@ -162,7 +162,7 @@ class _LotFoundState extends State<LotFound> {
             width: 50,
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              backgroundColor: csTheme.primaryColor,
+              backgroundColor: Theme.of(context).primaryColor,
             ),
           ),
         ),
@@ -198,8 +198,10 @@ class _LotFoundState extends State<LotFound> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent =
-        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
     intent.launch();
   }
 

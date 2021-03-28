@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +15,7 @@ class _EulaScreenState extends State<EulaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         brightness: Brightness.dark,
         elevation: 0,
@@ -27,7 +26,7 @@ class _EulaScreenState extends State<EulaScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: csTheme.backgroundColor,
+        color: Theme.of(context).backgroundColor,
         child: Container(
           height: MediaQuery.of(context).size.height * .1,
           child: Row(

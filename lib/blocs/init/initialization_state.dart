@@ -1,7 +1,7 @@
 part of 'initialization_bloc.dart';
 
 @immutable
-abstract class InitializationState extends Equatable{
+abstract class InitializationState extends Equatable {
   @override
   List<Object> get props => [];
 }
@@ -15,7 +15,6 @@ class BeginInitState extends InitializationState {
   @override
   List<Object> get props => [];
 }
-
 
 class ReadyState extends InitializationState {
   @override

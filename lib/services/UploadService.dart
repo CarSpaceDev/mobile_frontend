@@ -33,8 +33,7 @@ class _$UploadService extends UploadService {
     $parts = <PartValue>[
       PartValueFile<String>('media', image),
     ];
-    final $request =
-        Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
+    final $request = Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
     return client.send<dynamic, dynamic>($request);
   }
 }

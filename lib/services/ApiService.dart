@@ -112,7 +112,8 @@ abstract class ApiService extends ChopperService {
   //Partner Operations
 
   @Get(path: '/partner/radius/{latitude}/{longitude}/{radiusInKm}')
-  Future<Response> getLotsInRadius({@Path('latitude') double latitude, @Path('longitude') double longitude, @Path('radiusInKm') double kmRadius});
+  Future<Response> getLotsInRadius(
+      {@Path('latitude') double latitude, @Path('longitude') double longitude, @Path('radiusInKm') double kmRadius});
 
   @Get(path: '/partner/partnerReservations/{uid}')
   Future<Response> getPartnerReservations({@Path('uid') String uid});

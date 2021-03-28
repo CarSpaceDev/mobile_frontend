@@ -1,6 +1,5 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/PartnerReservation.dart';
 import 'package:carspace/screens/Navigation/NavigationScreenPartner.dart';
@@ -109,7 +108,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Expanded(
-                            child: Text(_reservationData[index].lotAddress, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            child: Text(_reservationData[index].lotAddress,
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -125,7 +125,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                               child: CachedNetworkImage(
                                 fit: BoxFit.contain,
                                 imageUrl: _reservationData[index].photoUrl,
-                                progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                    LinearProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),
@@ -216,7 +217,10 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                                 child: RichText(
                                   text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                     TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: (_reservationData[index].type == ReservationType.BOOKING) ? "Reservation" : "Recurring")
+                                    TextSpan(
+                                        text: (_reservationData[index].type == ReservationType.BOOKING)
+                                            ? "Reservation"
+                                            : "Recurring")
                                   ]),
                                 ),
                               ),
@@ -226,7 +230,9 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                                   text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                     TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
                                     TextSpan(
-                                        text: (_reservationData[index].status == ReservationStatus.BOOKED) ? "Active" : "Completed",
+                                        text: (_reservationData[index].status == ReservationStatus.BOOKED)
+                                            ? "Active"
+                                            : "Completed",
                                         style: (_reservationData[index].status == ReservationStatus.BOOKED)
                                             ? TextStyle(color: Colors.green[400])
                                             : TextStyle(color: Colors.deepOrange[400])),
@@ -265,8 +271,13 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: GestureDetector(
                         onTap: () {
-                          markAsComplete(_reservationData[index].driverId, _reservationData[index].lotId, _reservationData[index].vehicleId,
-                              _reservationData[index].reservationId, _reservationData[index].lotAddress, _reservationData[index].partnerId);
+                          markAsComplete(
+                              _reservationData[index].driverId,
+                              _reservationData[index].lotId,
+                              _reservationData[index].vehicleId,
+                              _reservationData[index].reservationId,
+                              _reservationData[index].lotAddress,
+                              _reservationData[index].partnerId);
                         },
                         child: Column(
                           children: [
@@ -287,7 +298,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                               locator<NavigationService>().navigatorKey.currentContext,
                               MaterialPageRoute(
                                   builder: (context) => NavigationScreenPartner(
-                                      partnerLoc: _reservationData[index].coordinates, reservationId: _reservationData[index].reservationId)));
+                                      partnerLoc: _reservationData[index].coordinates,
+                                      reservationId: _reservationData[index].reservationId)));
                         },
                         child: Column(
                           children: [
@@ -322,8 +334,16 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
       );
   }
 
-  markAsComplete(String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
-    var body = ({"userId": userId, "lotId": lotId, "vehicleId": vehicleId, "reservationId": reservationId, "lotAddress": lotAddress, "partnerId": partnerId});
+  markAsComplete(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
     await locator<ApiService>().markAsComplete(body).then((data) {
       showMessage(data.body);
     });
@@ -383,7 +403,7 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                 width: 150,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  backgroundColor: csTheme.primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -391,7 +411,7 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
         ),
         Text(
           "Loading",
-          style: TextStyle(color: csTheme.primaryColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         )
       ],
     );
@@ -399,7 +419,9 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
 }
 
 navigateViaGoogleMaps(double lat, double lng) {
-  final AndroidIntent intent =
-      AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+  final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+      package: 'com.google.android.apps.maps');
   intent.launch();
 }

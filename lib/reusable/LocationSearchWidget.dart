@@ -175,7 +175,8 @@ class PlaceApiProvider {
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
-    final response = await locator<ApiMapService>().getAutoComplete(input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
+    final response = await locator<ApiMapService>()
+        .getAutoComplete(input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
     if (response.statusCode == 200) {
       final result = response.body;
       if (result['status'] == 'OK') {

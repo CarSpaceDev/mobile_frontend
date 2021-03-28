@@ -3,7 +3,6 @@ import 'dart:collection';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
@@ -115,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Geolocator.checkPermission().then((LocationPermission v) {
           if (v != null && v == LocationPermission.denied || v == LocationPermission.deniedForever) {
             Geolocator.requestPermission().then((LocationPermission locationPermission) {
-              if (locationPermission != LocationPermission.denied && locationPermission != LocationPermission.deniedForever) startPositionStream();
+              if (locationPermission != LocationPermission.denied &&
+                  locationPermission != LocationPermission.deniedForever) startPositionStream();
             });
           } else {
             startPositionStream();
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
       drawer: homeNavigationDrawer(context),
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: homeAppBar(
         context,
         "Map",
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Container(
                                           padding: EdgeInsets.all(8),
                                           decoration: new BoxDecoration(
-                                            color: csTheme.primaryColor,
+                                            color: Theme.of(context).primaryColor,
                                             borderRadius: BorderRadius.all(
                                               Radius.circular(15.0),
                                             ),
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                           padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           decoration: new BoxDecoration(
-                            color: csTheme.primaryColor,
+                            color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.all(
                               Radius.circular(25.0),
                             ),
@@ -324,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       top: 8,
                       child: CustomSwitch(
                         width: 95,
-                        activeColor: csTheme.primaryColor,
+                        activeColor: Theme.of(context).primaryColor,
                         activePrompt: "POI On",
                         inactivePrompt: "POI Off",
                         value: showPointOfInterest,
@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    backgroundColor: csTheme.primaryColor,
+                    backgroundColor: Theme.of(context).primaryColor,
                   ),
                 ),
               )
@@ -450,11 +450,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: <Widget>[
                     CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: csTheme.primaryColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                     ),
                     Text(
                       "Loading",
-                      style: TextStyle(color: csTheme.primaryColor),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
                     )
                   ],
                 ),
@@ -544,9 +544,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   startPositionStream() {
-    positionStream =
-        Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.bestForNavigation, distanceFilter: 1, intervalDuration: Duration(seconds: 5))
-            .listen(positionChangeHandler);
+    positionStream = Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 1,
+            intervalDuration: Duration(seconds: 5))
+        .listen(positionChangeHandler);
   }
 
   positionChangeHandler(Position v) {
@@ -564,7 +566,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getLotsInRadius(LatLng location) async {
     _lotMarkers = [];
     List<Lot> resultLotsInRadius = [];
-    locator<ApiService>().getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5).then((res) {
+    locator<ApiService>()
+        .getLotsInRadius(latitude: location.latitude, longitude: location.longitude, kmRadius: 0.5)
+        .then((res) {
       if (res.statusCode == 200) {
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           Lot temp = Lot.fromJson(v);
@@ -698,7 +702,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return BottomAppBar(
       child: FlatButton(
-        color: lotsInRadius.length == 0 ? csTheme.secondaryHeaderColor : Color(0xff6200EE),
+        color: lotsInRadius.length == 0 ? Theme.of(context).secondaryHeaderColor : Color(0xff6200EE),
         onPressed: () {
           if (userData != null) {
             print(userData != null);
@@ -711,7 +715,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 "lotAddress": currentReservation.lotAddress,
                 "partnerId": currentReservation.partnerId
               });
-              DriverNavigationService(reservationId: currentReservation.reservationId).navigateViaMapBox(currentReservation.coordinates);
+              DriverNavigationService(reservationId: currentReservation.reservationId)
+                  .navigateViaMapBox(currentReservation.coordinates);
             } else {
               print('clicked');
               checkBeforeReserve(lotsInRadius);
@@ -725,7 +730,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.symmetric(vertical: 8),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.1,
-            child: Center(child: Text(prompt, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+            child: Center(
+                child: Text(prompt, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
           ),
         ),
       ),
@@ -734,7 +740,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar homeAppBar(BuildContext context, String appBarTitle, Widget action) {
     return AppBar(
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       brightness: Brightness.dark,
       title: Text(appBarTitle),
       centerTitle: true,
@@ -813,8 +819,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent =
-        AndroidIntent(action: 'action_view', data: Uri.encodeFull('google.navigation:q=$lat,$lng'), package: 'com.google.android.apps.maps');
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
+        package: 'com.google.android.apps.maps');
     intent.launch();
   }
 
@@ -898,15 +906,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Plate#: ${vehicles[index].plateNumber}", textAlign: TextAlign.start),
+                                                  child: Text("Plate#: ${vehicles[index].plateNumber}",
+                                                      textAlign: TextAlign.start),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Make: ${vehicles[index].make} ", textAlign: TextAlign.start),
+                                                  child: Text("Make: ${vehicles[index].make} ",
+                                                      textAlign: TextAlign.start),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(4.0),
-                                                  child: Text("Model: ${vehicles[index].model}", textAlign: TextAlign.start),
+                                                  child: Text("Model: ${vehicles[index].model}",
+                                                      textAlign: TextAlign.start),
                                                 ),
                                               ],
                                             ),

@@ -24,7 +24,9 @@ class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
         builder: (context, state) {
           if (state is ErrorState)
             return ErrorScreen(
-              prompt: state.error == null ? 'There has been an error in getting needed resources.\n Please try again later.' : state.error,
+              prompt: state.error == null
+                  ? 'There has been an error in getting needed resources.\n Please try again later.'
+                  : state.error,
               showButtons: false,
             );
           return LoadingScreen(

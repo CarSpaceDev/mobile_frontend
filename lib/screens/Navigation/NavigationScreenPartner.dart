@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/PartnerReservation.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/MqttService.dart';
@@ -22,7 +21,8 @@ class NavigationScreenPartner extends StatefulWidget {
   final PartnerReservation reservation;
   NavigationScreenPartner({@required this.partnerLoc, @required this.reservationId, @required this.reservation});
   @override
-  _NavigationScreenPartnerState createState() => _NavigationScreenPartnerState(this.partnerLoc, this.reservationId, this.reservation);
+  _NavigationScreenPartnerState createState() =>
+      _NavigationScreenPartnerState(this.partnerLoc, this.reservationId, this.reservation);
 }
 
 class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
@@ -86,13 +86,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: csTheme.primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         bottomNavigationBar: BottomAppBar(
           child: FlatButton(
             color: Color(0xff6200EE),
             onPressed: () {
-              markAsComplete(widget.reservation.driverId, widget.reservation.lotId, widget.reservation.vehicleId, widget.reservation.reservationId,
-                  widget.reservation.lotAddress, widget.reservation.partnerId);
+              markAsComplete(widget.reservation.driverId, widget.reservation.lotId, widget.reservation.vehicleId,
+                  widget.reservation.reservationId, widget.reservation.lotAddress, widget.reservation.partnerId);
             },
             child: Shimmer.fromColors(
               baseColor: Colors.white,
@@ -101,13 +101,15 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.1,
-                child: Center(child: Text("Mark as complete", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+                child: Center(
+                    child: Text("Mark as complete",
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
               ),
             ),
           ),
         ),
         appBar: AppBar(
-            backgroundColor: csTheme.primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
             brightness: Brightness.dark,
             title: Text("Reservation"),
             centerTitle: true,
@@ -123,7 +125,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
           Expanded(
             child: Container(
-                color: csTheme.secondaryHeaderColor,
+                color: Theme.of(context).secondaryHeaderColor,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -183,8 +185,16 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         ])));
   }
 
-  markAsComplete(String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
-    var body = ({"userId": userId, "lotId": lotId, "vehicleId": vehicleId, "reservationId": reservationId, "lotAddress": lotAddress, "partnerId": partnerId});
+  markAsComplete(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
     await locator<ApiService>().markAsComplete(body).then((data) {
       showMessage(data.body);
     });
@@ -231,7 +241,10 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     if (driverLoc == null)
       return "unknown";
     else
-      return (Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) / 1000).toStringAsFixed(10);
+      return (Geolocator.distanceBetween(
+                  driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) /
+              1000)
+          .toStringAsFixed(10);
   }
 
   handleMessage(List<MqttReceivedMessage<MqttMessage>> v) {

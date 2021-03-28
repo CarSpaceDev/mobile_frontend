@@ -32,7 +32,8 @@ class DriverReservation {
         lotAddress = json["lotAddress"] as String,
         status = ReservationStatus.values[json['reservationStatus'] as int],
         type = ReservationType.values[json['reservationType'] as int],
-        coordinates = LatLng(json["g"]["geopoint"]["_latitude"] as double, json["g"]["geopoint"]["_longitude"] as double);
+        coordinates =
+            LatLng(json["g"]["geopoint"]["_latitude"] as double, json["g"]["geopoint"]["_longitude"] as double);
 
   toJson() {
     return {

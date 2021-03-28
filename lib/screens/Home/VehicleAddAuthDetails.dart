@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -23,7 +22,9 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
   _VehicleAddAuthDetailsState(this.code);
   @override
   void initState() {
-    locator<ApiService>().getVehicleAddAuthDetails(uid: locator<AuthService>().currentUser().uid, code: code).then((Response value) {
+    locator<ApiService>()
+        .getVehicleAddAuthDetails(uid: locator<AuthService>().currentUser().uid, code: code)
+        .then((Response value) {
       if (value.statusCode == 200) {
         setState(() {
           vehicleDetails = VehicleAddAuth.fromJson(value.body);
@@ -62,7 +63,10 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
                       imageUrl: vehicleDetails.vehicleImage,
                       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                           child: Container(
-                              height: 50, width: 50, child: AspectRatio(aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
+                              height: 50,
+                              width: 50,
+                              child: AspectRatio(
+                                  aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
@@ -165,12 +169,12 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
           padding: const EdgeInsets.all(16.0),
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            backgroundColor: csTheme.primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
           ),
         ),
         Text(
           "Loading",
-          style: TextStyle(color: csTheme.primaryColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         )
       ],
     );

@@ -17,7 +17,7 @@ AppBar arrowForwardAppBarWidget(BuildContext context, String appBarTitle, Functi
 
 AppBar mainAppBar(BuildContext context, String appBarTitle, Function onPressed) {
   return AppBar(
-    backgroundColor: csTheme.primaryColor,
+    backgroundColor: CSTheme().primary,
     brightness: Brightness.dark,
     title: Text(appBarTitle),
     centerTitle: true,

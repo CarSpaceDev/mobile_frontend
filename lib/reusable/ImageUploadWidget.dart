@@ -58,7 +58,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                             color: Colors.black54,
                           ),
                         ),
-                        Text(prompt != null ? prompt : "Upload Image", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54)),
+                        Text(prompt != null ? prompt : "Upload Image",
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54)),
                       ],
                     ),
                   ),
@@ -69,7 +70,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         : InkWell(
             child: CachedNetworkImage(
               imageUrl: imageUrl,
-              progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  LinearProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) => Icon(Icons.error),
             ),
             onTap: () {
@@ -101,7 +103,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                       ),
                       CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: csTheme.primaryColor,
+                        backgroundColor: CSTheme().primary,
                       ),
                     ],
                   ),
@@ -335,7 +337,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         });
   }
 
-  Expanded roundedEndButton(BuildContext context, String title, bool facingLeft, bool darkMode, IconData iconData, Function onTap) {
+  Expanded roundedEndButton(
+      BuildContext context, String title, bool facingLeft, bool darkMode, IconData iconData, Function onTap) {
     List<Color> theme;
     RoundedRectangleBorder style;
     if (darkMode)
@@ -396,7 +399,8 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   }
 
   Future<File> compressImage(PickedFile picture, int imageIndex) async {
-    return await FlutterImageCompress.compressAndGetFile(picture.path, getStoragePath(picture.path) + "compressed_" + imageIndex.toString() + '.jpg',
+    return await FlutterImageCompress.compressAndGetFile(
+        picture.path, getStoragePath(picture.path) + "compressed_" + imageIndex.toString() + '.jpg',
         minWidth: 720, minHeight: 720, quality: 88);
   }
 

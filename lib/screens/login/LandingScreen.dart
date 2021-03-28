@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +28,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       extendBodyBehindAppBar: true,
       extendBody: true,
       bottomNavigationBar: BottomAppBar(
@@ -56,7 +55,8 @@ class _LandingScreenState extends State<LandingScreen> {
   openBottomModal(LoginBloc loginBloc) {
     showModalBottomSheet(
         isScrollControlled: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
         backgroundColor: Colors.white,
         isDismissible: true,
         context: context,
@@ -106,7 +106,8 @@ class _LandingScreenState extends State<LandingScreen> {
                         showError(error: 'Enter a valid email address');
                       } else {
                         Navigator.of(context).pop();
-                        loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                        loginBloc
+                            .add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
                       }
                     },
                     style: TextStyle(color: Colors.black, fontSize: 16),
@@ -130,10 +131,11 @@ class _LandingScreenState extends State<LandingScreen> {
                           showError(error: 'Enter a valid email address');
                         } else {
                           Navigator.of(context).pop();
-                          loginBloc.add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
+                          loginBloc
+                              .add(LogInEmailEvent(email: _emailController.text, password: _passwordController.text));
                         }
                       },
-                      color: csTheme.secondaryHeaderColor,
+                      color: Theme.of(context).secondaryHeaderColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       child: Container(
                         width: SizeConfig.widthMultiplier * 50,
@@ -153,7 +155,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: FlatButton.icon(
-                      color: csTheme.secondaryHeaderColor,
+                      color: Theme.of(context).secondaryHeaderColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -254,7 +256,10 @@ class LandingContent extends StatelessWidget {
                           children: <TextSpan>[
                             TextSpan(
                               text: "CarSpace\n",
-                              style: TextStyle(fontSize: SizeConfig.textMultiplier * 5, color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: SizeConfig.textMultiplier * 5,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
                               text: "...because your parking matters",
@@ -268,7 +273,7 @@ class LandingContent extends StatelessWidget {
                         onPressed: () {
                           context.read<LoginBloc>().add(NavigateToEulaEvent());
                         },
-                        color: csTheme.secondaryHeaderColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         child: Container(
                           width: SizeConfig.widthMultiplier * 60,

@@ -54,7 +54,8 @@ class _NotificationLinkWidgetState extends State<NotificationLinkWidget> {
   @override
   Widget build(BuildContext context) {
     return newNotification
-        ? IconButton(color: Colors.redAccent, onPressed: showNotificationDialog, icon: Icon(Icons.notification_important))
+        ? IconButton(
+            color: Colors.redAccent, onPressed: showNotificationDialog, icon: Icon(Icons.notification_important))
         : IconButton(color: Colors.white, onPressed: showNotificationDialog, icon: Icon(Icons.notifications));
   }
 

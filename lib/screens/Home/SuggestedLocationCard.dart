@@ -16,8 +16,7 @@ class SuggestedLocationCard extends StatelessWidget {
       height: MediaQuery.of(context).size.height * .15,
       child: Card(
         elevation: 6.0,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         child: Container(
           padding: EdgeInsets.all(8),
           child: Column(
@@ -40,10 +39,8 @@ class SuggestedLocationCard extends StatelessWidget {
                       },
                       child: CachedNetworkImage(
                         imageUrl: lot.lotImage[0],
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) =>
-                                LinearProgressIndicator(
-                                    value: downloadProgress.progress),
+                        progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            LinearProgressIndicator(value: downloadProgress.progress),
                         errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
@@ -53,10 +50,7 @@ class SuggestedLocationCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Available hours " +
-                      lot.availableFrom.toString() +
-                      " - " +
-                      lot.availableTo.toString(),
+                  "Available hours " + lot.availableFrom.toString() + " - " + lot.availableTo.toString(),
                 ),
               ),
               Row(
@@ -73,12 +67,8 @@ class SuggestedLocationCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  InkWell(
-                      onTap: callback,
-                      child: Text("View more details",
-                          style: TextStyle(fontSize: 16))),
-                  Text("${lot.pricing.toStringAsFixed(2)}/hour",
-                      style: TextStyle(fontSize: 16))
+                  InkWell(onTap: callback, child: Text("View more details", style: TextStyle(fontSize: 16))),
+                  Text("${lot.pricing.toStringAsFixed(2)}/hour", style: TextStyle(fontSize: 16))
                 ],
               ),
             ],
@@ -99,8 +89,7 @@ class SuggestedLocationCard extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: PhotoView(
-                    backgroundDecoration:
-                        BoxDecoration(color: Colors.transparent),
+                    backgroundDecoration: BoxDecoration(color: Colors.transparent),
                     // imageProvider: CachedNetworkImage(
                     //   imageUrl: lot.lotImage[0],
                     //   progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),

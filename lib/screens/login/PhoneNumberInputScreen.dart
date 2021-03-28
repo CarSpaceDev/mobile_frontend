@@ -1,5 +1,4 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,7 @@ class _PhoneNumberInputScreenState extends State<PhoneNumberInputScreen> {
       appBar: arrowForwardAppBarWidget(context, "CarSpace", () {
         context.read<LoginBloc>().add(RestartLoginEvent());
       }),
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       bottomNavigationBar: _nextButton(context),
       body: SingleChildScrollView(
         child: Center(

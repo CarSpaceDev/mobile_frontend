@@ -19,7 +19,8 @@ class _VehicleTransferCodeScreenState extends State<VehicleTransferCodeScreen> {
   _VehicleTransferCodeScreenState(this.payload) {
     _codeExpired = false;
     _timeToClose = 3;
-    _remainingTime = int.parse(((payload.expiry - new DateTime.now().millisecondsSinceEpoch) / 1000).toStringAsFixed(0));
+    _remainingTime =
+        int.parse(((payload.expiry - new DateTime.now().millisecondsSinceEpoch) / 1000).toStringAsFixed(0));
     _timer = new Timer.periodic(
       Duration(seconds: 1),
       (Timer timer) {

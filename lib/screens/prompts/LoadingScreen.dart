@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:flutter/material.dart';
 
@@ -9,14 +8,14 @@ class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: csTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Container(
-                height: 20*SizeConfig.heightMultiplier,
+                height: 20 * SizeConfig.heightMultiplier,
                 child: Image.asset('assets/logo/splash_icon.png'),
               ),
               Align(
@@ -27,11 +26,13 @@ class LoadingScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: csTheme.primaryColor,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        backgroundColor: Theme.of(context).primaryColor,
                       ),
-                      Text(prompt, style: TextStyle(color: Colors.white),)
+                      Text(
+                        prompt,
+                        style: TextStyle(color: Colors.white),
+                      )
                     ],
                   ),
                 ),

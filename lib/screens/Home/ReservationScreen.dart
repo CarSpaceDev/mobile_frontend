@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
@@ -117,7 +116,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Expanded(
-                            child: Text(_reservationData[index].lotAddress, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            child: Text(_reservationData[index].lotAddress,
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -133,7 +133,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                               child: CachedNetworkImage(
                                 fit: BoxFit.contain,
                                 imageUrl: _reservationData[index].lotImage,
-                                progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                    LinearProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),
@@ -197,7 +198,10 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                 child: RichText(
                                   text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                     TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: (_reservationData[index].type == ReservationType.BOOKING) ? "Reservation" : "Recurring")
+                                    TextSpan(
+                                        text: (_reservationData[index].type == ReservationType.BOOKING)
+                                            ? "Reservation"
+                                            : "Recurring")
                                   ]),
                                 ),
                               ),
@@ -207,7 +211,9 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
                                     TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
                                     TextSpan(
-                                        text: (_reservationData[index].status == ReservationStatus.BOOKED) ? "Active" : "Completed",
+                                        text: (_reservationData[index].status == ReservationStatus.BOOKED)
+                                            ? "Active"
+                                            : "Completed",
                                         style: (_reservationData[index].status == ReservationStatus.BOOKED)
                                             ? TextStyle(color: Colors.green[400])
                                             : TextStyle(color: Colors.deepOrange[400])),
@@ -265,8 +271,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              onTheWay(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
-                                  _reservationData[index].partnerId);
+                              onTheWay(this._uid, this._driverName, _reservationData[index].vehicleId,
+                                  _reservationData[index].lotAddress, _reservationData[index].partnerId);
                             },
                             child: Column(
                               children: [
@@ -283,8 +289,8 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              arrived(this._uid, this._driverName, _reservationData[index].vehicleId, _reservationData[index].lotAddress,
-                                  _reservationData[index].partnerId);
+                              arrived(this._uid, this._driverName, _reservationData[index].vehicleId,
+                                  _reservationData[index].lotAddress, _reservationData[index].partnerId);
                             },
                             child: Column(
                               children: [
@@ -322,14 +328,26 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
   }
 
   onTheWay(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({"userId": userId, "driverName": driverName, "vehicleId": vehicleId, "lotAddress": lotAddress, "partnerId": partnerId});
+    var body = ({
+      "userId": userId,
+      "driverName": driverName,
+      "vehicleId": vehicleId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
     await locator<ApiService>().notifyOnTheWay(body).then((data) {
       showMessage("Lot owner notified");
     });
   }
 
   arrived(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({"userId": userId, "driverName": driverName, "vehicleId": vehicleId, "lotAddress": lotAddress, "partnerId": partnerId});
+    var body = ({
+      "userId": userId,
+      "driverName": driverName,
+      "vehicleId": vehicleId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
     await locator<ApiService>().notifyArrived(body).then((data) {
       showMessage("Lot owner notified");
     });
@@ -421,7 +439,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                 width: 150,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  backgroundColor: csTheme.primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -429,7 +447,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
         ),
         Text(
           "Loading",
-          style: TextStyle(color: csTheme.primaryColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         )
       ],
     );

@@ -17,6 +17,13 @@ class NotificationFromApi {
         data = json["data"];
 
   toJson() {
-    return {"uid": this.uid, "type": this.type, "title": this.title, "data": this.data, "opened": this.opened, "dateCreated": this.dateCreated};
+    return {
+      "uid": this.uid,
+      "type": this.type,
+      "title": this.title,
+      "data": this.data,
+      "opened": this.opened,
+      "dateCreated": this.dateCreated
+    };
   }
 }

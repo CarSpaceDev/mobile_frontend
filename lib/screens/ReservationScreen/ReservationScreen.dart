@@ -1,4 +1,3 @@
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
             top: 12,
             left: 10,
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
@@ -45,12 +44,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   right: 10,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.0)),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.0)),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0),
+                      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,10 +57,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text('Bacon St.',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16)),
+                                  Text('Bacon St.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                   Text('Php 25.00 /per hour'),
                                 ],
                               ),
@@ -74,9 +67,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                     this.hideInfo = false;
                                   });
                                 },
-                                child: Text('Hide',
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline)),
+                                child: Text('Hide', style: TextStyle(decoration: TextDecoration.underline)),
                               )
                             ],
                           ),
@@ -84,9 +75,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('Lot details',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text('Lot details', style: TextStyle(fontWeight: FontWeight.bold)),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
@@ -104,92 +93,65 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                             color: Colors.grey,
                                             child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  top: 100.0,
-                                                  left: 10.0,
-                                                  right: 10.0,
-                                                  bottom: 100.0),
+                                                  top: 100.0, left: 10.0, right: 10.0, bottom: 100.0),
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
+                                                  borderRadius: BorderRadius.circular(20.0),
                                                   color: Colors.white,
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                   children: <Widget>[
                                                     GestureDetector(
-                                                      onTap:(){
+                                                      onTap: () {
                                                         Navigator.pop(context);
                                                       },
                                                       child: Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
+                                                          alignment: Alignment.topLeft,
                                                           child: Padding(
-                                                            padding: const EdgeInsets.only(left:8.0),
+                                                            padding: const EdgeInsets.only(left: 8.0),
                                                             child: Icon(Icons.close),
                                                           )),
                                                     ),
                                                     Center(
-                                                        child: Text(
-                                                            'Reservation confirmed.',
+                                                        child: Text('Reservation confirmed.',
                                                             style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    20.0))),
+                                                                fontWeight: FontWeight.bold, fontSize: 20.0))),
                                                     Padding(
-                                                      padding:
-                                                      const EdgeInsets.all(
-                                                          20.0),
+                                                      padding: const EdgeInsets.all(20.0),
                                                       child: Container(
                                                         child: Center(
                                                           child: Text(
                                                             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt '
-                                                                'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation '
-                                                                'ullamco laboris nisi ut aliquip ex ea commodo '
-                                                                'consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse '
-                                                                'cillum dolore eu fugiat nulla pariatur.',
-                                                            textAlign: TextAlign
-                                                                .justify,
+                                                            'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation '
+                                                            'ullamco laboris nisi ut aliquip ex ea commodo '
+                                                            'consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse '
+                                                            'cillum dolore eu fugiat nulla pariatur.',
+                                                            textAlign: TextAlign.justify,
                                                           ),
                                                         ),
                                                       ),
                                                     ),
                                                     Center(
                                                       child: Padding(
-                                                        padding:
-                                                        const EdgeInsets
-                                                            .all(8.0),
-                                                        child: Text(
-                                                            'Open in app',
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .bold,
-                                                                fontSize:
-                                                                16.0)),
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Text('Open in app',
+                                                            style:
+                                                                TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0)),
                                                       ),
                                                     ),
                                                     Padding(
-                                                      padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
+                                                      padding: const EdgeInsets.all(8.0),
                                                       child: Center(
                                                         child: Container(
                                                           child: Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceEvenly,
+                                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                             children: <Widget>[
                                                               Container(
-                                                                child: Text(
-                                                                    'Waze Logo'),
+                                                                child: Text('Waze Logo'),
                                                               ),
                                                               Container(
-                                                                child: Text(
-                                                                    'Google Map Logo'),
+                                                                child: Text('Google Map Logo'),
                                                               )
                                                             ],
                                                           ),
@@ -197,31 +159,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                                       ),
                                                     ),
                                                     Align(
-                                                      alignment: Alignment
-                                                          .bottomCenter,
+                                                      alignment: Alignment.bottomCenter,
                                                       child: Container(
-                                                        width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width -
-                                                            100,
+                                                        width: MediaQuery.of(context).size.width - 100,
                                                         height: 40,
                                                         decoration: BoxDecoration(
-                                                            color: csTheme
-                                                                .secondaryHeaderColor,
-                                                            borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                20.0)),
+                                                            color: Theme.of(context).secondaryHeaderColor,
+                                                            borderRadius: BorderRadius.circular(20.0)),
                                                         child: Center(
-                                                            child: Text(
-                                                                'Main menu',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white))),
+                                                            child: Text('Main menu',
+                                                                style: TextStyle(color: Colors.white))),
                                                       ),
                                                     ),
-
                                                   ],
                                                 ),
                                               ),
@@ -231,16 +180,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                   },
                                   child: Container(
                                     height: 30,
-                                    width:
-                                        MediaQuery.of(context).size.width - 100,
+                                    width: MediaQuery.of(context).size.width - 100,
                                     decoration: BoxDecoration(
-                                        color: csTheme.secondaryHeaderColor,
-                                        borderRadius:
-                                            BorderRadius.circular(20.0)),
-                                    child: Center(
-                                        child: Text('Book now',
-                                            style: TextStyle(
-                                                color: Colors.white))),
+                                        color: Theme.of(context).secondaryHeaderColor,
+                                        borderRadius: BorderRadius.circular(20.0)),
+                                    child: Center(child: Text('Book now', style: TextStyle(color: Colors.white))),
                                   ),
                                 )
                               ],

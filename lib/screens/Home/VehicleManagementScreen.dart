@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -103,7 +102,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Text(vehicles[index].plateNumber + " (${vehicles[index].isVerified ? 'verified' : 'unverified'})",
+                          child: Text(
+                              vehicles[index].plateNumber +
+                                  " (${vehicles[index].isVerified ? 'verified' : 'unverified'})",
                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         ),
                         GestureDetector(
@@ -133,7 +134,8 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                             aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
                               imageUrl: vehicles[index].vehicleImage,
-                              progressIndicatorBuilder: (context, url, downloadProgress) => LinearProgressIndicator(value: downloadProgress.progress),
+                              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                  LinearProgressIndicator(value: downloadProgress.progress),
                               errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
                           ),
@@ -241,7 +243,10 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                               }
                             },
                             child: Column(
-                              children: [Icon(Icons.qr_code, color: Colors.green), Text('Generate Share Code', style: TextStyle(color: Colors.green))],
+                              children: [
+                                Icon(Icons.qr_code, color: Colors.green),
+                                Text('Generate Share Code', style: TextStyle(color: Colors.green))
+                              ],
                             ),
                           ),
                         ),
@@ -285,18 +290,20 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                   children: <Widget>[
                     CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: csTheme.primaryColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                     ),
                     Text(
                       "Generating QR Code",
-                      style: TextStyle(color: csTheme.primaryColor),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
                     )
                   ],
                 ),
               ),
             );
           });
-      locator<ApiService>().generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId).then((Response data) {
+      locator<ApiService>()
+          .generateShareCode(vehicles[index].plateNumber, vehicles[index].ownerId)
+          .then((Response data) {
         if (data.statusCode == 200) {
           print(data.body);
           Navigator.of(context).pop();
@@ -316,7 +323,8 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      VehicleTransferCodeScreen(payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
+                      VehicleTransferCodeScreen(
+                          payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: FlatButton(
@@ -450,7 +458,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
               barrierDismissible: false,
               context: context,
               builder: (_) {
-                return Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)), child: VehicleAddDetails(code: value));
+                return Dialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    child: VehicleAddDetails(code: value));
               });
         } else {
           showError(error: "Code expired, please request a valid code");
@@ -478,11 +488,11 @@ class VehicleManagementLoading extends StatelessWidget {
           children: <Widget>[
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              backgroundColor: csTheme.primaryColor,
+              backgroundColor: Theme.of(context).primaryColor,
             ),
             Text(
               "Loading",
-              style: TextStyle(color: csTheme.primaryColor),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             )
           ],
         ),
@@ -545,7 +555,10 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
                       imageUrl: vehicleDetails.vehicleImage,
                       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                           child: Container(
-                              height: 50, width: 50, child: AspectRatio(aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
+                              height: 50,
+                              width: 50,
+                              child: AspectRatio(
+                                  aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
@@ -651,12 +664,12 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
           padding: const EdgeInsets.all(16.0),
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            backgroundColor: csTheme.primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
           ),
         ),
         Text(
           "Loading",
-          style: TextStyle(color: csTheme.primaryColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         )
       ],
     );

@@ -128,7 +128,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //V2 Update
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
-      await apiService.unregisterDevice(uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
+      await apiService.unregisterDevice(
+          uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
       await authService.logOut();
       cache.put("user", null);
       yield LoggedOut();

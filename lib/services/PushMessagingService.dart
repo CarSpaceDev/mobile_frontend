@@ -63,7 +63,8 @@ class PushMessagingService {
       onLaunch: (Map<String, dynamic> message) async {},
       onResume: (Map<String, dynamic> message) async {},
     );
-    firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: true));
+    firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: true));
     firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {});
     firebaseMessaging.getToken().then((String token) async {
       assert(token != null);
