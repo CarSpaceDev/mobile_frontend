@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642931615097:android:65422cb9a9b38cb1807ba8",
+        "mobilesdk_app_id": "1:642931615097:android:73b0261dbea07f63807ba8",
         "android_client_info": {
-          "package_name": "me.zenithdevgroup.carspace"
+          "package_name": "tech.zdgph.carspace"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "642931615097-564fth0b2rnnna49e8bf9sndcdov4j30.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "me.zenithdevgroup.carspace",
-            "certificate_hash": "dee9ef76e73383410432d057e9e325137cab1ea4"
-          }
-        },
         {
           "client_id": "642931615097-rid8f5h92tuc8870636npp1tcs5mlhm4.apps.googleusercontent.com",
           "client_type": 3
@@ -38,6 +30,13 @@
             {
               "client_id": "642931615097-rid8f5h92tuc8870636npp1tcs5mlhm4.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "642931615097-3h4so80qr55p5dt8f82hjrvvs7q0gc6o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "tech.zdgph.carspace"
+              }
             }
           ]
         }

@@ -1,4 +1,4 @@
-package me.zenithdevgroup.carspace;
+package tech.zdgph.carspace;
 
 import io.flutter.embedding.android.FlutterActivity;
 
