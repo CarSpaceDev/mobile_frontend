@@ -140,14 +140,14 @@ class CSTile extends StatelessWidget {
     Key key,
     this.child,
     this.selected = false,
-    this.margin,
+    this.margin = const EdgeInsets.symmetric(vertical: 8),
     this.padding,
-    this.color,
+    this.color = TileColor.White,
     this.onTap,
     this.linePaddingLeft = 0,
     this.linePaddingRight = 0,
     this.expanded = false,
-    this.showDivider = true,
+    this.showDivider = false,
     this.primaryDivider = false,
   }) : super(key: key);
   @override

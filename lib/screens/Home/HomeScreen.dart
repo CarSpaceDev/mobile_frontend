@@ -495,6 +495,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Text("Reservations")),
           ),
+          ListTile(
+            title: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  locator<NavigationService>().pushNavigateTo(HomeDashboardRoute);
+                },
+                child: Text("Dashboard WIP")),
+          ),
           if (userData != null)
             if (userData.partnerAccess > 200)
               ListTile(
