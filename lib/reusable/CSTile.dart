@@ -1,13 +1,14 @@
-import 'dart:math';
-
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+
+import 'DashedLine.dart';
 
 enum TileColor { None, White, Grey, Primary }
 
 class CSSegmentedTile extends StatelessWidget {
-  final bool selected; // if the tile is selected and should have green line shown
+  final bool
+  selected; // if the tile is selected and should have green line shown
   final EdgeInsets margin;
   final EdgeInsets padding; // padding
   final TileColor color; // background color of tile
@@ -15,19 +16,23 @@ class CSSegmentedTile extends StatelessWidget {
   final Widget trailing; // Trailing widget
   final Widget title; // Title widget
   final Widget body; // widget shown under the title row
-  final double contentPadding; // padding between the center piece and leading/trailing widgets
+  final double
+  contentPadding; // padding between the center piece and leading/trailing widgets
   final double linePaddingLeft; // left padding of the bottom divider
   final double linePaddingRight; // right padding of the bottom divider
   final bool expanded; // if the tile should expand in the vertical direction
   final bool expandBody; // if the body should be expanded when tile is expanded
   final MainAxisAlignment
-      expandedMainAxisAlignment; // the main axis alignment of the content column if the tile is expanded
+  expandedMainAxisAlignment; // the main axis alignment of the content column if the tile is expanded
   final void Function() onTap;
   final bool arrowRight;
   final bool textFieldRight;
   final bool settingsRight;
-  final bool showDivider;
-  final bool primaryDivider;
+  final bool showBorder;
+  final bool dottedDivider;
+  final bool solidDivider;
+  final bool shadow;
+  final double borderRadius;
 
   const CSSegmentedTile({
     Key key,
@@ -41,16 +46,19 @@ class CSSegmentedTile extends StatelessWidget {
     this.margin,
     this.padding = const EdgeInsets.all(16),
     this.contentPadding = 16,
-    this.linePaddingLeft = 0,
-    this.linePaddingRight = 0,
+    this.linePaddingLeft = 16,
+    this.linePaddingRight = 16,
     this.expanded = false,
     this.expandBody = false,
     this.expandedMainAxisAlignment = MainAxisAlignment.center,
     this.arrowRight = false,
     this.textFieldRight = false,
     this.settingsRight = false,
-    this.showDivider = true,
-    this.primaryDivider = false,
+    this.dottedDivider = false,
+    this.showBorder = false,
+    this.solidDivider = false,
+    this.shadow = false,
+    this.borderRadius = 0
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -63,8 +71,11 @@ class CSSegmentedTile extends StatelessWidget {
       linePaddingLeft: linePaddingLeft,
       linePaddingRight: linePaddingRight,
       expanded: expanded,
-      showDivider: showDivider,
-      primaryDivider: primaryDivider,
+      dottedDivider: dottedDivider,
+      solidDivider: solidDivider,
+      showBorder: showBorder,
+      shadow: shadow,
+      borderRadius: borderRadius,
       child: Row(
         children: [
           if (leading != null)
@@ -106,11 +117,8 @@ class CSSegmentedTile extends StatelessWidget {
           if (arrowRight)
             Padding(
               padding: EdgeInsets.only(left: contentPadding),
-              child: SvgPicture.asset(
-                'assets/icons/icon_chevron_thin_right.svg',
-                color: csStyle.csBlack,
-                width: getRelativeSize(context, 12),
-              ),
+              child: Icon(CupertinoIcons.chevron_right)
+
             ),
           if (textFieldRight)
             Padding(
@@ -133,8 +141,11 @@ class CSTile extends StatelessWidget {
   final double linePaddingLeft;
   final double linePaddingRight;
   final bool expanded;
-  final bool showDivider;
-  final bool primaryDivider;
+  final bool showBorder;
+  final bool dottedDivider;
+  final bool solidDivider;
+  final bool shadow;
+  final double borderRadius;
 
   const CSTile({
     Key key,
@@ -144,11 +155,14 @@ class CSTile extends StatelessWidget {
     this.padding,
     this.color = TileColor.White,
     this.onTap,
-    this.linePaddingLeft = 0,
-    this.linePaddingRight = 0,
+    this.linePaddingLeft = 16,
+    this.linePaddingRight = 16,
     this.expanded = false,
-    this.showDivider = false,
-    this.primaryDivider = false,
+    this.dottedDivider = false,
+    this.solidDivider = false,
+    this.showBorder = false,
+    this.shadow = false,
+    this.borderRadius = 0
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -157,25 +171,47 @@ class CSTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          color: colors(color),
+          decoration: BoxDecoration(
+              border: showBorder
+                  ? Border.all(
+                color: colors(TileColor.Primary),
+              )
+                  : null,
+              boxShadow: shadow
+                  ? [
+                BoxShadow(
+                  color: Colors.black12,
+                  spreadRadius: 0,
+                  blurRadius: 6,
+                ),
+              ]
+                  : null,
+              color: colors(color),
+    borderRadius: BorderRadius.all(Radius.circular(borderRadius)
+          ),),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (expanded) Expanded(child: _child()),
               if (!expanded) _child(),
-              if (showDivider)
+              if (dottedDivider)
                 Padding(
-                  padding: EdgeInsets.only(left: linePaddingLeft, right: linePaddingRight),
-                  child: primaryDivider
-                      ? Divider(
-                          height: 2,
-                          thickness: 2,
-                          color: csStyle.primary,
-                        )
-                      : Divider(
-                          height: 0.5,
-                          thickness: 0.5,
-                          color: csStyle.csGreyDivider,
-                        ),
+                  padding: EdgeInsets.only(
+                      left: linePaddingLeft, right: linePaddingRight),
+                  child: DashedLine(
+                    color: colors(TileColor.Primary),
+                    dashWidth: 2.5,
+                    height: 1.5,
+                  ),
+                ),
+              if (solidDivider)
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: linePaddingLeft, right: linePaddingRight),
+                  child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: colors(TileColor.Primary)),
                 ),
             ],
           ),
@@ -207,13 +243,13 @@ class CSTile extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           color: selected ? csStyle.primary : Colors.transparent,
-          width: min(2, _padding.left),
+          width: 2,
           // left: BorderSide(
           // ),
         ),
       ),
       padding: EdgeInsets.fromLTRB(
-        max(_padding.left - 2.0, 0.0),
+        _padding.left,
         _padding.top,
         _padding.right,
         _padding.bottom,
