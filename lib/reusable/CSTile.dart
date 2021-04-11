@@ -7,8 +7,7 @@ import 'DashedLine.dart';
 enum TileColor { None, White, Grey, Primary }
 
 class CSSegmentedTile extends StatelessWidget {
-  final bool
-  selected; // if the tile is selected and should have green line shown
+  final bool selected; // if the tile is selected and should have green line shown
   final EdgeInsets margin;
   final EdgeInsets padding; // padding
   final TileColor color; // background color of tile
@@ -16,14 +15,12 @@ class CSSegmentedTile extends StatelessWidget {
   final Widget trailing; // Trailing widget
   final Widget title; // Title widget
   final Widget body; // widget shown under the title row
-  final double
-  contentPadding; // padding between the center piece and leading/trailing widgets
+  final double contentPadding; // padding between the center piece and leading/trailing widgets
   final double linePaddingLeft; // left padding of the bottom divider
   final double linePaddingRight; // right padding of the bottom divider
   final bool expanded; // if the tile should expand in the vertical direction
   final bool expandBody; // if the body should be expanded when tile is expanded
-  final MainAxisAlignment
-  expandedMainAxisAlignment; // the main axis alignment of the content column if the tile is expanded
+  final MainAxisAlignment expandedMainAxisAlignment; // the main axis alignment of the content column if the tile is expanded
   final void Function() onTap;
   final bool arrowRight;
   final bool textFieldRight;
@@ -34,32 +31,32 @@ class CSSegmentedTile extends StatelessWidget {
   final bool shadow;
   final double borderRadius;
 
-  const CSSegmentedTile({
-    Key key,
-    this.title,
-    this.body,
-    this.leading,
-    this.trailing,
-    this.color,
-    this.onTap,
-    this.selected = false,
-    this.margin,
-    this.padding = const EdgeInsets.all(16),
-    this.contentPadding = 16,
-    this.linePaddingLeft = 16,
-    this.linePaddingRight = 16,
-    this.expanded = false,
-    this.expandBody = false,
-    this.expandedMainAxisAlignment = MainAxisAlignment.center,
-    this.arrowRight = false,
-    this.textFieldRight = false,
-    this.settingsRight = false,
-    this.dottedDivider = false,
-    this.showBorder = false,
-    this.solidDivider = false,
-    this.shadow = false,
-    this.borderRadius = 0
-  }) : super(key: key);
+  const CSSegmentedTile(
+      {Key key,
+      this.title,
+      this.body,
+      this.leading,
+      this.trailing,
+      this.color,
+      this.onTap,
+      this.selected = false,
+      this.margin,
+      this.padding = const EdgeInsets.all(16),
+      this.contentPadding = 16,
+      this.linePaddingLeft = 16,
+      this.linePaddingRight = 16,
+      this.expanded = false,
+      this.expandBody = false,
+      this.expandedMainAxisAlignment = MainAxisAlignment.center,
+      this.arrowRight = false,
+      this.textFieldRight = false,
+      this.settingsRight = false,
+      this.dottedDivider = false,
+      this.showBorder = false,
+      this.solidDivider = false,
+      this.shadow = false,
+      this.borderRadius = 0})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return CSTile(
@@ -114,12 +111,7 @@ class CSSegmentedTile extends StatelessWidget {
               padding: EdgeInsets.only(left: contentPadding),
               child: Icon(Icons.more_vert),
             ),
-          if (arrowRight)
-            Padding(
-              padding: EdgeInsets.only(left: contentPadding),
-              child: Icon(CupertinoIcons.chevron_right)
-
-            ),
+          if (arrowRight) Padding(padding: EdgeInsets.only(left: contentPadding), child: Icon(CupertinoIcons.chevron_right)),
           if (textFieldRight)
             Padding(
               padding: EdgeInsets.only(left: contentPadding),
@@ -147,23 +139,23 @@ class CSTile extends StatelessWidget {
   final bool shadow;
   final double borderRadius;
 
-  const CSTile({
-    Key key,
-    this.child,
-    this.selected = false,
-    this.margin = const EdgeInsets.symmetric(vertical: 8),
-    this.padding,
-    this.color = TileColor.White,
-    this.onTap,
-    this.linePaddingLeft = 16,
-    this.linePaddingRight = 16,
-    this.expanded = false,
-    this.dottedDivider = false,
-    this.solidDivider = false,
-    this.showBorder = false,
-    this.shadow = false,
-    this.borderRadius = 0
-  }) : super(key: key);
+  const CSTile(
+      {Key key,
+      this.child,
+      this.selected = false,
+      this.margin = const EdgeInsets.symmetric(vertical: 16),
+      this.padding = const EdgeInsets.all(16),
+      this.color = TileColor.White,
+      this.onTap,
+      this.linePaddingLeft = 16,
+      this.linePaddingRight = 16,
+      this.expanded = false,
+      this.dottedDivider = false,
+      this.solidDivider = false,
+      this.showBorder = false,
+      this.shadow = false,
+      this.borderRadius = 0})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -172,23 +164,23 @@ class CSTile extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-              border: showBorder
-                  ? Border.all(
-                color: colors(TileColor.Primary),
-              )
-                  : null,
-              boxShadow: shadow
-                  ? [
-                BoxShadow(
-                  color: Colors.black12,
-                  spreadRadius: 0,
-                  blurRadius: 6,
-                ),
-              ]
-                  : null,
-              color: colors(color),
-    borderRadius: BorderRadius.all(Radius.circular(borderRadius)
-          ),),
+            border: showBorder
+                ? Border.all(
+                    color: colors(TileColor.Primary),
+                  )
+                : null,
+            boxShadow: shadow
+                ? [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 0,
+                      blurRadius: 6,
+                    ),
+                  ]
+                : null,
+            color: colors(color),
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -196,8 +188,7 @@ class CSTile extends StatelessWidget {
               if (!expanded) _child(),
               if (dottedDivider)
                 Padding(
-                  padding: EdgeInsets.only(
-                      left: linePaddingLeft, right: linePaddingRight),
+                  padding: EdgeInsets.only(left: linePaddingLeft, right: linePaddingRight),
                   child: DashedLine(
                     color: colors(TileColor.Primary),
                     dashWidth: 2.5,
@@ -206,12 +197,8 @@ class CSTile extends StatelessWidget {
                 ),
               if (solidDivider)
                 Padding(
-                  padding: EdgeInsets.only(
-                      left: linePaddingLeft, right: linePaddingRight),
-                  child: Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: colors(TileColor.Primary)),
+                  padding: EdgeInsets.only(left: linePaddingLeft, right: linePaddingRight),
+                  child: Divider(height: 1, thickness: 1, color: colors(TileColor.Primary)),
                 ),
             ],
           ),
