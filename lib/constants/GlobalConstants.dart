@@ -54,11 +54,9 @@ class CSTheme {
     body = TextStyle(fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
     caption = TextStyle(fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
 
-    appBarTextDark = TextStyle(
-        fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
+    appBarTextDark = TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
 
-    appBarTextLight = TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
+    appBarTextLight = TextStyle(fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
 
     appBarThemePrimary = AppBarTheme(
         color: this.primary,
@@ -88,7 +86,6 @@ class CSTheme {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             primary: primary,
             textStyle: headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
-
   }
 
   ThemeData theme() {
