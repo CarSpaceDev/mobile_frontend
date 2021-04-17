@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class CustomSwitch extends StatefulWidget {
   final bool value;
@@ -44,44 +45,45 @@ class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderSt
             }
             widget.value == false ? widget.onChanged(true) : widget.onChanged(false);
           },
-          child: Container(
-            width: widget.width,
-            height: 35.0,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color: _circleAnimation.value == Alignment.centerLeft ? Colors.grey : widget.activeColor),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, right: 4.0, left: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  _circleAnimation.value == Alignment.centerRight
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                          child: Text(
-                            widget.activePrompt != null ? widget.activePrompt : 'On',
-                            style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w900, fontSize: 16.0),
-                          ),
-                        )
-                      : Container(),
-                  Align(
-                    alignment: _circleAnimation.value,
-                    child: Container(
-                      width: 25.0,
-                      height: 25.0,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: 35, minWidth: widget.width),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: _circleAnimation.value == Alignment.centerLeft ? Colors.grey : widget.activeColor),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, right: 4.0, left: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    _circleAnimation.value == Alignment.centerRight
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: Text(
+                              widget.activePrompt != null ? widget.activePrompt : 'On',
+                              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w900, fontSize: 16.0),
+                            ),
+                          )
+                        : Container(),
+                    Align(
+                      alignment: _circleAnimation.value,
+                      child: Container(
+                        width: 25.0,
+                        height: 25.0,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                      ),
                     ),
-                  ),
-                  _circleAnimation.value == Alignment.centerLeft
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 4.0, right: 5.0),
-                          child: Text(
-                            widget.inactivePrompt != null ? widget.inactivePrompt : 'Off',
-                            style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w900, fontSize: 16.0),
-                          ),
-                        )
-                      : Container(),
-                ],
+                    _circleAnimation.value == Alignment.centerLeft
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 4.0, right: 5.0),
+                            child: Text(
+                              widget.inactivePrompt != null ? widget.inactivePrompt : 'Off',
+                              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w900, fontSize: 16.0),
+                            ),
+                          )
+                        : Container(),
+                  ],
+                ),
               ),
             ),
           ),
