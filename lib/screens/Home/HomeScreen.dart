@@ -11,6 +11,7 @@ import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/screens/Home/HomeWidgets.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
@@ -169,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
-      drawer: homeNavigationDrawer(context),
+      drawer: HomeNavigationDrawer(),
       backgroundColor: Theme.of(context).primaryColor,
       appBar: homeAppBar(
         context,
@@ -435,96 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-  Drawer homeNavigationDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          if (userData == null)
-            Container(
-              child: Center(
-                  child: Container(
-                height: 100,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    Text(
-                      "Loading",
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    )
-                  ],
-                ),
-              )),
-            )
-          else
-            DrawerHeader(
-              child: Text(locator<AuthService>().currentUser().displayName),
-            ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  locator<NavigationService>().pushNavigateTo(WalletRoute);
-                },
-                child: Text("Wallet")),
-          ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  showNotificationDialog();
-                },
-                child: Text("Notifications")),
-          ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  locator<NavigationService>().pushNavigateTo(VehicleManagement);
-                },
-                child: Text("Vehicles")),
-          ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  locator<NavigationService>().pushNavigateTo(Reservations);
-                },
-                child: Text("Reservations")),
-          ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  locator<NavigationService>().pushNavigateTo(HomeDashboardRoute);
-                },
-                child: Text("Dashboard WIP")),
-          ),
-          if (userData != null)
-            if (userData.partnerAccess > 200)
-              ListTile(
-                title: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      locator<NavigationService>().pushNavigateTo(PartnerReservations);
-                    },
-                    child: Text("Partner Reservations")),
-              ),
-          ListTile(
-            title: InkWell(
-                onTap: () {
-                  locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
-                  context.read<LoginBloc>().add(LogoutEvent());
-                },
-                child: Text("Sign Out")),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Future<bool> _initAccess() async {
     bool result;

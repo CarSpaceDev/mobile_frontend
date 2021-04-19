@@ -20,6 +20,7 @@ dependencies:
   google_maps_flutter: ^1.0.6
   google_sign_in: ^4.4.4
   google_maps_place_picker: ^1.0.0
+  cloud_firestore: ^0.14.4
   uuid: ^2.0.4
   #http client
   mime: ^0.9.6+3
@@ -30,6 +31,7 @@ dependencies:
   image_crop: ^0.3.2
   provider: ^4.1.2
   flutter_bloc: 6.0.0
+#  bloc: ^7.0.0
   equatable: ^1.2.5
   geolocator: ^6.1.13
   geocoder: ^0.2.1

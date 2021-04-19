@@ -1,3 +1,4 @@
+import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,9 @@ class CarSpaceApp extends StatelessWidget {
               create: (BuildContext context) => InitializationBloc(),
             ),
             BlocProvider(
+              create: (BuildContext context) => UserRepoBloc(),
+            ),
+            BlocProvider(
               create: (BuildContext context) => LoginBloc(),
             ),
           ],
@@ -49,10 +53,6 @@ class CarSpaceApp extends StatelessWidget {
               navigatorKey: locator<NavigationService>().navigatorKey,
               onGenerateRoute: generateRoute,
               initialRoute: InitializationRoute),
-          //     MaterialApp(
-          //   debugShowCheckedModeBanner: false,
-          //   home: HomeScreen(),
-          // ),
         );
       });
     });

@@ -1,3 +1,4 @@
+import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/screens/login/EulaScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/login/PhoneNumberInputScreen.dart';
@@ -21,7 +22,6 @@ class LoginBlocHandler extends StatefulWidget {
 }
 
 class _LoginBlocHandlerState extends State<LoginBlocHandler> {
-  final AuthService authService = locator<AuthService>();
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginBloc, LoginState>(

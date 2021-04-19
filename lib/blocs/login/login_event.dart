@@ -69,6 +69,7 @@ class AddVehicleEvent extends LoginEvent {
 }
 
 class LoginStartEvent extends LoginEvent {
+  LoginStartEvent();
   @override
   List<Object> get props => [];
 }

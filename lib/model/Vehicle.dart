@@ -1,18 +1,23 @@
-class Vehicle {
-  String plateNumber;
-  // ignore: non_constant_identifier_names
-  String CR;
-  List<dynamic> currentUsers;
-  String ownerId;
-  String vehicleImage;
-  String make;
-  String model;
-  int type;
-  String color;
-  bool isVerified;
-  // ignore: non_constant_identifier_names
-  String OR;
+import 'package:equatable/equatable.dart';
 
+class Vehicle extends Equatable {
+  final String plateNumber;
+  // ignore: non_constant_identifier_names
+  final String CR;
+  final List<dynamic> currentUsers;
+  final String ownerId;
+  final String vehicleImage;
+  final String make;
+  final String model;
+  final int type;
+  final String color;
+  final bool isVerified;
+  // ignore: non_constant_identifier_names
+  final String OR;
+
+  @override
+  List<Object> get props =>
+      [plateNumber, CR, currentUsers, ownerId, vehicleImage, make, model, type, color, isVerified, OR];
   Vehicle.fromJson(Map<String, dynamic> json)
       : plateNumber = json['plateNumber'] as String,
         vehicleImage = json['vehicleImage'] as String,
