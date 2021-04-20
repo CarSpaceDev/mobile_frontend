@@ -39,6 +39,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 CSTile(
                   borderRadius: 8,
                   child: CSText("Current Reservation ETC"),
+                  margin: EdgeInsets.symmetric(vertical: 8),
                 ),
                 VehicleSelectorWidget(),
                 WalletInfoWidget(),

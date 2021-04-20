@@ -1,7 +1,9 @@
 import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/blocs/repo/vehicleRepo/vehicle_repo_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,13 @@ class VehicleSelectorWidget extends StatefulWidget {
 }
 
 class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with TickerProviderStateMixin {
-  VehicleRepoBloc vehicleBloc;
-  UserRepoBloc userBloc;
+  VehicleRepoBloc vehicleRepoBloc;
+  UserRepoBloc userRepoBloc;
   int actualIndex = 0;
   PageController controller;
   bool noVehicles;
+  String header = "Vehicle Selected";
+  bool tapped = true;
 
   @override
   void initState() {
@@ -35,79 +39,84 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
 
   @override
   Widget build(BuildContext context) {
-    if (vehicleBloc == null) {
-      vehicleBloc = VehicleRepoBloc();
-      vehicleBloc.add(InitializeVehicleRepo(uid: locator<AuthService>().currentUser().uid));
+    if (vehicleRepoBloc == null) {
+      vehicleRepoBloc = VehicleRepoBloc();
+      vehicleRepoBloc.add(InitializeVehicleRepo(uid: locator<AuthService>().currentUser().uid));
+      // vehicleBloc.add(InitializeVehicleRepo(uid:null));
     }
-    if (userBloc == null) {
-      userBloc = UserRepoBloc();
-      userBloc.add(InitializeUserRepo(uid: locator<AuthService>().currentUser().uid));
+    if (userRepoBloc == null) {
+      userRepoBloc = UserRepoBloc();
+      userRepoBloc.add(InitializeUserRepo(uid: locator<AuthService>().currentUser().uid));
     }
 
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (BuildContext context) => vehicleBloc,
+          create: (BuildContext context) => vehicleRepoBloc,
         ),
         BlocProvider(
-          create: (BuildContext context) => userBloc,
+          create: (BuildContext context) => userRepoBloc,
         ),
       ],
       child: AnimatedSize(
         vsync: this,
         duration: Duration(milliseconds: 200),
         reverseDuration: Duration(milliseconds: 200),
-        child: Column(
-          children: [
-            CSText(
-              "VEHICLE SELECTED",
-              textAlign: TextAlign.center,
-              textType: TextType.H5Bold,
-              textColor: TextColor.White,
-              padding: EdgeInsets.symmetric(vertical: 16),
-            ),
-            BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (BuildContext context, state) {
-              if (state is VehicleRepoReady) {
-                return Column(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.width * 0.4,
-                      child: PageView.builder(
-                          itemCount: state.vehicles.length,
-                          physics: BouncingScrollPhysics(),
-                          controller: controller,
-                          onPageChanged: (i) {
-                            setState(() {
-                              actualIndex = i;
-                            });
-                            print(actualIndex);
-                          },
-                          itemBuilder: (context, index) {
-                            return VehicleImage(
-                                onTap: () {
-                                  if (actualIndex < index) {
-                                    controller.nextPage(duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-                                  }
-                                  if (actualIndex > index) {
-                                    controller.previousPage(
-                                        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-                                  }
-                                },
-                                vehicle: state.vehicles[index],
-                                height: index == actualIndex
-                                    ? MediaQuery.of(context).size.width * 0.4
-                                    : MediaQuery.of(context).size.width * 0.25,
-                                width: index == actualIndex
-                                    ? MediaQuery.of(context).size.width * 0.8
-                                    : MediaQuery.of(context).size.width * 0.25);
-                          }),
-                    ),
-                  ],
-                );
-              } else
-                return Container();
-            }),
-          ],
+        child: CSTile(
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 16),
+          borderRadius: 10,
+          color: TileColor.Grey,
+          child: Column(
+            children: [
+              CSText(
+                header,
+                textAlign: TextAlign.center,
+                textType: TextType.H3Bold,
+                textColor: TextColor.Black,
+                padding: EdgeInsets.only(bottom: 8),
+              ),
+              BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (BuildContext context, state) {
+                if (state is VehicleRepoReady) {
+                  return AspectRatio(
+                    aspectRatio: 1.6,
+                    child: PageView.builder(
+                        itemCount: state.vehicles.length + 1,
+                        physics: BouncingScrollPhysics(),
+                        controller: controller,
+                        onPageChanged: (i) {
+                          setState(() {
+                            actualIndex = i;
+                            if (i < state.vehicles.length) header = "${state.vehicles[i].make} ${state.vehicles[i].model}";
+                            else header = "ADD A VEHICLE";
+                          });
+                        },
+                        itemBuilder: (context, index) {
+                          if (index < state.vehicles.length)
+                            return VehicleCard(
+                              onTap: () {
+                                print("${state.vehicles[index].make} ${state.vehicles[index].model} SELECTED");
+                              },
+                              vehicle: state.vehicles[index],
+                              height: index == actualIndex ? double.maxFinite : MediaQuery.of(context).size.width * 0.3,
+                            );
+                          else
+                            return IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                CupertinoIcons.add_circled_solid,
+                                size: 50,
+                                color: csStyle.primary,
+                              ),
+                            );
+                        }),
+                  );
+                } else
+                  return Container();
+              }),
+              CSText("Tap to select", padding: EdgeInsets.only(top:16),)
+            ],
+          ),
         ),
       ),
     );
@@ -124,52 +133,48 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
   }
 }
 
-class VehicleImage extends StatelessWidget {
+class VehicleCard extends StatelessWidget {
   final double height;
-  final double width;
   final Function onTap;
   final Vehicle vehicle;
-  VehicleImage({@required this.vehicle, this.onTap, @required this.height, @required this.width});
+  VehicleCard({
+    @required this.vehicle,
+    this.onTap,
+    @required this.height,
+  });
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: Container(
         height: height,
-        width: width,
-        margin: EdgeInsets.only(bottom: 8),
-        child: InkWell(
-          onTap: onTap,
-          child: Card(
-            elevation: 4,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CSText(
-                    "${vehicle.make} ${vehicle.model}",
-                    textAlign: TextAlign.center,
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  Flexible(
-                    child: Center(
-                      child: Image.network(
-                        vehicle.vehicleImage,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  CSText(
-                    "${vehicle.plateNumber}",
-                    textAlign: TextAlign.center,
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                ],
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          elevation: 4,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CSText(
+                "${vehicle.plateNumber}",
+                textAlign: TextAlign.center,
+                padding: EdgeInsets.all(12),
+                textType: TextType.Button,
+                textColor: TextColor.Black,
               ),
-            ),
+              Flexible(
+                child: Center(
+                  child: Image.network(
+                    vehicle.vehicleImage,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                  onPressed: null,
+                  icon: Icon(CupertinoIcons.check_mark_circled_solid,
+                      color: vehicle.isVerified ? csStyle.primary : csStyle.csGrey),
+                  label: CSText(vehicle.isVerified ? "AVAILABLE" : "UNVERIFIED"))
+            ],
           ),
         ),
       ),
