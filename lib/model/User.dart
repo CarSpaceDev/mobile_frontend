@@ -1,27 +1,51 @@
 import 'dart:core';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class CSUser {
-  String uid;
-  String displayName;
-  String emailAddress;
-  String firstName;
-  String lastName;
-  int credits;
-  String phoneNumber;
-  String photoUrl;
-  String currentReservation;
+class CSUser extends Equatable {
+  final String uid;
+  final String displayName;
+  final String emailAddress;
+  final String firstName;
+  final String lastName;
+  final int credits;
+  final String phoneNumber;
+  final String photoUrl;
+  final String currentReservation;
+  final String currentVehicle;
   //internal attributes
-  int partnerAccess;
-  int userAccess;
-  String subscriptionType;
+  final int partnerAccess;
+  final int userAccess;
+  final String subscriptionType;
   //List Items
-  List<dynamic> reservations;
-  List<dynamic> vehicles;
+  final List<dynamic> reservations;
+  final List<dynamic> vehicles;
   //metaData
-  DateTime dateCreated;
-  DateTime dateUpdated;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+
+  @override
+  List<Object> get props => [
+        uid,
+        displayName,
+        emailAddress,
+        firstName,
+        lastName,
+        credits,
+        phoneNumber,
+        photoUrl,
+        currentReservation,
+        currentVehicle,
+        partnerAccess,
+        userAccess,
+        subscriptionType,
+        reservations,
+        vehicles,
+        dateCreated,
+        dateUpdated
+      ];
 
   CSUser(
       {this.uid,
@@ -38,15 +62,9 @@ class CSUser {
       this.reservations,
       this.vehicles,
       this.dateCreated,
-      this.dateUpdated});
-
-  CSUser.fromUser(User v) {
-    this.uid = v.uid;
-    this.phoneNumber = v.phoneNumber;
-    this.displayName = v.displayName;
-    this.photoUrl = v.photoURL;
-    this.emailAddress = v.email;
-  }
+      this.dateUpdated,
+      this.currentVehicle,
+      this.currentReservation});
 
   CSUser.fromJson(Map<String, dynamic> json)
       : uid = json['uid'] as String,
@@ -62,7 +80,29 @@ class CSUser {
         userAccess = json['userAccess'] as int,
         subscriptionType = json['subscriptionType'] as String,
         reservations = json['reservations'] as List<dynamic>,
-        vehicles = json['vehicles'] as List<dynamic>;
+        vehicles = json['vehicles'] as List<dynamic>,
+        currentVehicle = json['currentVehicle'] as String,
+        dateUpdated =  Timestamp(json['dateCreated']["_seconds"], json['dateCreated']["_nanoseconds"]).toDate(),
+        dateCreated = Timestamp(json['dateUpdated']["_seconds"], json['dateUpdated']["_nanoseconds"]).toDate();
+
+  CSUser.fromDoc(DocumentSnapshot json)
+      : uid = json.data()['uid'] as String,
+        displayName = json.data()['displayName'] as String,
+        emailAddress = json.data()['emailAddress'] as String,
+        currentReservation = json.data()['currentReservation'] as String,
+        firstName = json.data()['firstName'] as String,
+        lastName = json.data()['lastName'] as String,
+        credits = json.data()['credits'] as int,
+        phoneNumber = json.data()['phoneNumber'] != null ? json.data()['phoneNumber'].toString() : null,
+        photoUrl = json.data()['photoUrl'] as String,
+        partnerAccess = json.data()['partnerAccess'] as int,
+        userAccess = json.data()['userAccess'] as int,
+        subscriptionType = json.data()['subscriptionType'] as String,
+        reservations = json.data()['reservations'] as List<dynamic>,
+        vehicles = json.data()['vehicles'] as List<dynamic>,
+        currentVehicle = json.data()['currentVehicle'] as String,
+        dateUpdated =  json.data()['dateCreated'].toDate(),
+        dateCreated = json.data()['dateUpdated'].toDate();
 
   Map<String, dynamic> toJson() {
     return {

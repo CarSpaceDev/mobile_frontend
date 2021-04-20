@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -91,7 +92,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
           child: SizedBox(
             child: Card(
-              color: vehicles[index].isVerified ? Colors.white : Colors.grey[200],
+              color: vehicles[index].status == VehicleStatus.Unverified ? csStyle.csGrey : csStyle.csWhite,
               elevation: 4.0,
               child: Column(
                 children: [
@@ -104,7 +105,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Text(
                               vehicles[index].plateNumber +
-                                  " (${vehicles[index].isVerified ? 'verified' : 'unverified'})",
+                                  "(${vehicles[index].status})",
                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         ),
                         GestureDetector(
@@ -235,7 +236,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              if (vehicles[index].isVerified) {
+                              if (vehicles[index].status == VehicleStatus.Available) {
                                 generateQR(index);
                               } else {
                                 Navigator.of(context).pop();

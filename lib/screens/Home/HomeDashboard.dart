@@ -4,12 +4,9 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Home/WalletInfoWidget.dart';
-import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../serviceLocator.dart';
 import 'HomeWidgets.dart';
 
 class HomeDashboard extends StatefulWidget {
@@ -18,11 +15,9 @@ class HomeDashboard extends StatefulWidget {
 }
 
 class _HomeDashboardState extends State<HomeDashboard> {
-  CSUser userData;
 
   @override
   void initState() {
-    _initAccess();
     super.initState();
   }
 
@@ -34,7 +29,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
         centerTitle: true,
         title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
       ),
-      drawer: homeNavigationDrawer(context, userData),
+      drawer: HomeNavigationDrawer(),
       body: SafeArea(
         child: BackgroundImage(
           padding: EdgeInsets.all(16),
@@ -44,6 +39,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 CSTile(
                   borderRadius: 8,
                   child: CSText("Current Reservation ETC"),
+                  margin: EdgeInsets.symmetric(vertical: 8),
                 ),
                 VehicleSelectorWidget(),
                 WalletInfoWidget(),
@@ -56,18 +52,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
     );
   }
 
-  Future<bool> _initAccess() async {
-    bool result;
-    await locator<ApiService>().getUserData(uid: locator<AuthService>().currentUser().uid).then((data) {
-      if (data.statusCode == 200) {
-        userData = CSUser.fromJson(data.body);
-        print(userData.toJson());
-        result = true;
-      } else
-        result = false;
-    });
-    return result;
-  }
 }
 
 class ParkNowWidget extends StatefulWidget {
