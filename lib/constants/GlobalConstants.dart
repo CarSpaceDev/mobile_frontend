@@ -4,7 +4,7 @@ class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
   // static const kApiUrl = "https://api.zdgph.tech";
-  static const kApiUrl = "https://70cca09818a5.ngrok.io";
+  static const kApiUrl = "https://c4887ab5c17d.ngrok.io";
 }
 
 double getRelativeSize(BuildContext context, double v) {

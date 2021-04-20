@@ -4,9 +4,9 @@ abstract class VehicleEvent extends Equatable {
   const VehicleEvent();
 }
 
-class EulaResponseEvent extends VehicleEvent {
-  final bool value;
-  EulaResponseEvent({this.value});
+class SetSelectedVehicle extends VehicleEvent {
+  final Vehicle vehicle;
+  SetSelectedVehicle({this.vehicle});
   @override
-  List<Object> get props => [value];
+  List<Object> get props => [vehicle];
 }

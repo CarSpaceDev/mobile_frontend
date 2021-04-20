@@ -1,4 +1,5 @@
 import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
+import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

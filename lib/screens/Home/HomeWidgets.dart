@@ -79,7 +79,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    Popup.showNotificationDialog(context);
+                    PopupNotifications.showNotificationDialog(context);
                   },
                   child: Text("Notifications")),
             ),

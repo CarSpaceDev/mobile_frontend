@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'NotificationList.dart';
 
-class Popup {
+class PopupNotifications {
   static showNotificationDialog(BuildContext context) {
     return showDialog(
       barrierDismissible: false,

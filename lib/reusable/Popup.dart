@@ -169,7 +169,7 @@ class PopUp extends StatelessWidget {
               body: child ??
                   CSText(
                     body,
-                    textType: TextType.H3,
+                    textType: TextType.H4,
                     textColor: bodyColor,
                     textAlign: TextAlign.center,
                   ),

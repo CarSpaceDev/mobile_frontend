@@ -30,7 +30,7 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
     }
     if (event is UpdateUserRepo) {
       print("New update");
-      print(event.user.toJson());
+      // print(event.user.toJson());
       yield UserRepoReady(user: event.user);
     }
     if (event is DisposeUserRepo) {
