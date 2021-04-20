@@ -15,7 +15,8 @@ class LotFound extends StatefulWidget {
   final Lot lot;
   final Vehicle vehicle;
   final CSUser user;
-  const LotFound(this.lot, this.vehicle, this.user);
+  final double currentBalance;
+  const LotFound(this.lot, this.vehicle, this.user, this.currentBalance);
   @override
   _LotFoundState createState() => _LotFoundState();
 }
@@ -45,11 +46,13 @@ class _LotFoundState extends State<LotFound> {
                   child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 25, bottom: 8, right: 8, left: 8),
+                    padding: const EdgeInsets.only(
+                        top: 25, bottom: 8, right: 8, left: 8),
                     child: Text(
                       widget.lot.address.toString(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ClipRRect(
@@ -62,11 +65,13 @@ class _LotFoundState extends State<LotFound> {
                       )),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text("Price :\n${widget.lot.pricing}Php / Hour", textAlign: TextAlign.center),
+                    child: Text("Price :\n${widget.lot.pricing}Php / Hour",
+                        textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text("Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
+                    child: Text(
+                        "Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
                         textAlign: TextAlign.center),
                   ),
                 ],
@@ -82,7 +87,8 @@ class _LotFoundState extends State<LotFound> {
                               Navigator.of(context).pop(1);
                             },
                             color: Theme.of(context).secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
                               child: Center(
@@ -91,7 +97,10 @@ class _LotFoundState extends State<LotFound> {
                                   child: Text(
                                     'Cancel',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            SizeConfig.textMultiplier * 2.5),
                                   ),
                                 ),
                               ),
@@ -105,7 +114,8 @@ class _LotFoundState extends State<LotFound> {
                               reserve();
                             },
                             color: Theme.of(context).secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
                               child: Center(
@@ -114,7 +124,10 @@ class _LotFoundState extends State<LotFound> {
                                   child: Text(
                                     'Book',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            SizeConfig.textMultiplier * 2.5),
                                   ),
                                 ),
                               ),
@@ -127,7 +140,8 @@ class _LotFoundState extends State<LotFound> {
           ),
           Positioned(
               child: Padding(
-            padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
+            padding:
+                const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -171,13 +185,16 @@ class _LotFoundState extends State<LotFound> {
   }
 
   reserve() async {
+    print(widget.lot.pricing);
     var body = ({
       "userId": widget.user.uid,
       "lotId": widget.lot.lotId,
       "partnerId": widget.lot.partnerId,
       "vehicleId": widget.vehicle.plateNumber,
       "reservationType": 1,
-      "lotAddress": widget.lot.address.toString()
+      "lotAddress": widget.lot.address.toString(),
+      "balance": widget.currentBalance,
+      "lotPrice": widget.lot.pricing
     });
     setState(() {
       working = true;
@@ -188,7 +205,8 @@ class _LotFoundState extends State<LotFound> {
       Navigator.of(context).pop();
       if (value.body["code"] == 200) {
         locator<NavigationService>().pushReplaceNavigateTo(HomeRoute);
-        successfulBooking(DriverReservation.fromJson(value.body["reservationData"]));
+        successfulBooking(
+            DriverReservation.fromJson(value.body["reservationData"]));
       } else {
         showMessage(value.body["message"]);
       }
@@ -230,7 +248,10 @@ class _LotFoundState extends State<LotFound> {
                     ),
                     FlatButton(
                       onPressed: () {
-                        Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop(null);
+                        Navigator.of(locator<NavigationService>()
+                                .navigatorKey
+                                .currentContext)
+                            .pop(null);
                         locator<ApiService>().notifyOnTheWay({
                           "userId": widget.user.uid,
                           "driverName": widget.user.displayName,
@@ -238,11 +259,15 @@ class _LotFoundState extends State<LotFound> {
                           "lotAddress": widget.lot.address.toString(),
                           "partnerId": widget.lot.partnerId
                         });
-                        DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
+                        DriverNavigationService(reservationId: v.reservationId)
+                            .navigateViaMapBox(v.coordinates);
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [Icon(Icons.map_outlined), Text("Navigate To Lot")],
+                        children: [
+                          Icon(Icons.map_outlined),
+                          Text("Navigate To Lot")
+                        ],
                       ),
                     ),
                   ],
@@ -279,7 +304,10 @@ class _LotFoundState extends State<LotFound> {
                 ),
               ),
             ),
-            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
+            actions: [
+              FlatButton(
+                  onPressed: Navigator.of(context).pop, child: Text("Close"))
+            ],
           );
         });
   }

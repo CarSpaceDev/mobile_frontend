@@ -17,7 +17,8 @@ class _$ApiMapService extends ApiMapService {
   final definitionType = ApiMapService;
 
   @override
-  Future<Response<dynamic>> getAutoComplete({String input, String lang, String apiKey, String sessionToken}) {
+  Future<Response<dynamic>> getAutoComplete(
+      {String input, String lang, String apiKey, String sessionToken}) {
     final $url =
         'autocomplete/json?input=$input&language=$lang&components=country:ph&key=$apiKey&sessiontoken=$sessionToken';
     final $request = Request('GET', $url, client.baseUrl);

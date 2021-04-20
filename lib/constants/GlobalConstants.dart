@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
-  static const kApiUrl = "https://api.zdgph.tech";
-  // static const kApiUrl = "https://3e4eeced9512.ngrok.io";
+  // static const kApiUrl = "https://api.zdgph.tech"
+  static const kApiUrl = "https://53d2f464684a.ngrok.io";
 }
 
 double getRelativeSize(BuildContext context, double v) {
@@ -48,15 +48,30 @@ class CSTheme {
     headline1 = TextStyle(fontWeight: FontWeight.w900, fontSize: 42);
     headline2 = TextStyle(fontWeight: FontWeight.w700, fontSize: 32);
     headline3 = TextStyle(fontWeight: FontWeight.w600, fontSize: 24);
-    headline4 = TextStyle(fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 0.54);
-    headline5 = TextStyle(fontWeight: FontWeight.w400, fontSize: 16, letterSpacing: 0.32);
-    headline6 = TextStyle(fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
-    body = TextStyle(fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
-    caption = TextStyle(fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
+    headline4 = TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 0.54);
+    headline5 = TextStyle(
+        fontWeight: FontWeight.w400, fontSize: 16, letterSpacing: 0.32);
+    headline6 = TextStyle(
+        fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
+    body = TextStyle(
+        fontWeight: FontWeight.w400, fontSize: 14, letterSpacing: 0.42);
+    caption = TextStyle(
+        fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
 
-    appBarTextDark = TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
+    appBarTextDark = TextStyle(
+        fontWeight: FontWeight.w900,
+        fontSize: 24,
+        letterSpacing: 1,
+        color: this.csWhite,
+        fontFamily: "Roboto");
 
-    appBarTextLight = TextStyle(fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
+    appBarTextLight = TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        letterSpacing: 0.54,
+        color: this.csBlack,
+        fontFamily: "Roboto");
 
     appBarThemePrimary = AppBarTheme(
         color: this.primary,
@@ -79,13 +94,15 @@ class CSTheme {
             side: BorderSide(color: primary),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             primary: primary,
-            textStyle: headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
+            textStyle:
+                headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
     outlinedButtonThemeInactive = OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
             side: BorderSide(color: csGreyBackground),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             primary: primary,
-            textStyle: headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
+            textStyle:
+                headline6.copyWith(letterSpacing: 1.12, color: csBlack)));
   }
 
   ThemeData theme() {
@@ -123,11 +140,13 @@ class CSTheme {
   }
 
   EdgeInsets csPaddingDepth1(BuildContext context) {
-    return EdgeInsets.symmetric(horizontal: getRelativeSize(context, kDefaultPaddingHorizontal));
+    return EdgeInsets.symmetric(
+        horizontal: getRelativeSize(context, kDefaultPaddingHorizontal));
   }
 
   EdgeInsets csPaddingLeft(BuildContext context) {
-    return EdgeInsets.only(left: getRelativeSize(context, kDefaultPaddingHorizontal));
+    return EdgeInsets.only(
+        left: getRelativeSize(context, kDefaultPaddingHorizontal));
   }
 
   MaterialColor createMaterialColor(Color color) {

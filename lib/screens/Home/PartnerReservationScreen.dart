@@ -13,10 +13,12 @@ import '../../navigation.dart';
 
 class PartnerReservationScreen extends StatefulWidget {
   @override
-  _PartnerReservationScreenScreenState createState() => _PartnerReservationScreenScreenState();
+  _PartnerReservationScreenScreenState createState() =>
+      _PartnerReservationScreenScreenState();
 }
 
-class _PartnerReservationScreenScreenState extends State<PartnerReservationScreen> {
+class _PartnerReservationScreenScreenState
+    extends State<PartnerReservationScreen> {
   List<PartnerReservation> _reservationData;
   bool _fetching = true;
   @override
@@ -27,14 +29,17 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
   }
 
   void getUserReservations() async {
-    locator<ApiService>().getPartnerReservations(uid: locator<AuthService>().currentUser().uid).then((data) {
+    locator<ApiService>()
+        .getPartnerReservations(uid: locator<AuthService>().currentUser().uid)
+        .then((data) {
       List<PartnerReservation> result = [];
       List.from(data.body).forEach((reservation) {
         result.add(PartnerReservation.fromJson(reservation));
       });
       if (result.length > 0) {
         result.sort((PartnerReservation a, PartnerReservation b) {
-          if (a.status == ReservationStatus.BOOKED || a.status == ReservationStatus.RESERVED)
+          if (a.status == ReservationStatus.BOOKED ||
+              a.status == ReservationStatus.RESERVED)
             return -1;
           else if (a.status == b.status)
             return 0;
@@ -73,7 +78,9 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
             )
           ],
         ),
-        body: ((_fetching) || (_reservationData == null)) ? loading() : reservationEntry());
+        body: ((_fetching) || (_reservationData == null))
+            ? loading()
+            : reservationEntry());
   }
 
   ListView reservationEntry() {
@@ -84,17 +91,21 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
           padding: const EdgeInsets.all(16),
           width: MediaQuery.of(context).size.width * .9,
           child: Card(
-            color: (_reservationData[index].status == ReservationStatus.BOOKED) ? Colors.white : Colors.grey[200],
+            color: (_reservationData[index].status == ReservationStatus.BOOKED)
+                ? Colors.white
+                : Colors.grey[200],
             elevation: 4.0,
             child: InkWell(
               onTap: () {
-                if (_reservationData[index].status != ReservationStatus.COMPLETED)
+                if (_reservationData[index].status !=
+                    ReservationStatus.COMPLETED)
                   Navigator.pushReplacement(
                       locator<NavigationService>().navigatorKey.currentContext,
                       MaterialPageRoute(
                           builder: (context) => NavigationScreenPartner(
                               partnerLoc: _reservationData[index].coordinates,
-                              reservationId: _reservationData[index].reservationId,
+                              reservationId:
+                                  _reservationData[index].reservationId,
                               reservation: _reservationData[index])));
               },
               child: Container(
@@ -103,13 +114,15 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 20.0),
+                      padding: const EdgeInsets.only(
+                          top: 8.0, bottom: 8.0, left: 8.0, right: 20.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Expanded(
                             child: Text(_reservationData[index].lotAddress,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -125,9 +138,12 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                               child: CachedNetworkImage(
                                 fit: BoxFit.contain,
                                 imageUrl: _reservationData[index].photoUrl,
-                                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    LinearProgressIndicator(value: downloadProgress.progress),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        LinearProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
                             ),
                           ),
@@ -139,30 +155,54 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: _reservationData[index].vehicleId)
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Vehicle: ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: _reservationData[index]
+                                                .vehicleId)
+                                      ]),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'User name: ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: _reservationData[index].displayName)
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'User name: ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: _reservationData[index]
+                                                .displayName)
+                                      ]),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Contact No.: ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: _reservationData[index].phoneNumber)
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Contact No.: ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: _reservationData[index]
+                                                .phoneNumber)
+                                      ]),
                                 ),
                               ),
                               // Padding(
@@ -175,68 +215,123 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                               //   ),
                               // ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: _reservationData[index].dateCreated)
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Date Placed: ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: _reservationData[index]
+                                                .dateCreated)
+                                      ]),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Time Placed: ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(text: _reservationData[index].timeCreated)
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Time Placed: ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: _reservationData[index]
+                                                .timeCreated)
+                                      ]),
                                 ),
                               ),
-                              if (_reservationData[index].dateUpdated != _reservationData[index].dateCreated)
+                              if (_reservationData[index].dateUpdated !=
+                                  _reservationData[index].dateCreated)
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
                                   child: RichText(
-                                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index].dateUpdated)
-                                    ]),
+                                    text: TextSpan(
+                                        style: TextStyle(color: Colors.black),
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                              text: 'Date Exited: ',
+                                              style: TextStyle(
+                                                  color: Colors.grey)),
+                                          TextSpan(
+                                              text: _reservationData[index]
+                                                  .dateUpdated)
+                                        ]),
                                   ),
                                 ),
-                              if (_reservationData[index].timeUpdated != _reservationData[index].timeCreated)
+                              if (_reservationData[index].timeUpdated !=
+                                  _reservationData[index].timeCreated)
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
                                   child: RichText(
-                                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                      TextSpan(text: 'Time Exited: ', style: TextStyle(color: Colors.grey)),
-                                      TextSpan(text: _reservationData[index].timeUpdated)
-                                    ]),
+                                    text: TextSpan(
+                                        style: TextStyle(color: Colors.black),
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                              text: 'Time Exited: ',
+                                              style: TextStyle(
+                                                  color: Colors.grey)),
+                                          TextSpan(
+                                              text: _reservationData[index]
+                                                  .timeUpdated)
+                                        ]),
                                   ),
                                 ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Reservation Type : ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(
-                                        text: (_reservationData[index].type == ReservationType.BOOKING)
-                                            ? "Reservation"
-                                            : "Recurring")
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Reservation Type : ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text:
+                                                (_reservationData[index].type ==
+                                                        ReservationType.BOOKING)
+                                                    ? "Reservation"
+                                                    : "Recurring")
+                                      ]),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: RichText(
-                                  text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                                    TextSpan(text: 'Reservation Status : ', style: TextStyle(color: Colors.grey)),
-                                    TextSpan(
-                                        text: (_reservationData[index].status == ReservationStatus.BOOKED)
-                                            ? "Active"
-                                            : "Completed",
-                                        style: (_reservationData[index].status == ReservationStatus.BOOKED)
-                                            ? TextStyle(color: Colors.green[400])
-                                            : TextStyle(color: Colors.deepOrange[400])),
-                                  ]),
+                                  text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Reservation Status : ',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        TextSpan(
+                                            text: (_reservationData[index]
+                                                        .status ==
+                                                    ReservationStatus.BOOKED)
+                                                ? "Active"
+                                                : "Completed",
+                                            style: (_reservationData[index]
+                                                        .status ==
+                                                    ReservationStatus.BOOKED)
+                                                ? TextStyle(
+                                                    color: Colors.green[400])
+                                                : TextStyle(
+                                                    color: Colors
+                                                        .deepOrange[400])),
+                                      ]),
                                 ),
                               ),
                             ],
@@ -259,7 +354,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
       return showDialog(
         context: context,
         builder: (_) => Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -295,11 +391,15 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
-                              locator<NavigationService>().navigatorKey.currentContext,
+                              locator<NavigationService>()
+                                  .navigatorKey
+                                  .currentContext,
                               MaterialPageRoute(
                                   builder: (context) => NavigationScreenPartner(
-                                      partnerLoc: _reservationData[index].coordinates,
-                                      reservationId: _reservationData[index].reservationId)));
+                                      partnerLoc:
+                                          _reservationData[index].coordinates,
+                                      reservationId: _reservationData[index]
+                                          .reservationId)));
                         },
                         child: Column(
                           children: [
@@ -323,7 +423,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
       return showDialog(
         context: context,
         builder: (_) => Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -334,8 +435,8 @@ class _PartnerReservationScreenScreenState extends State<PartnerReservationScree
       );
   }
 
-  markAsComplete(
-      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+  markAsComplete(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,

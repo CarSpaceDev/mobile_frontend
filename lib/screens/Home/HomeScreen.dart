@@ -66,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool vehiclesLoaded = false;
   DriverReservation currentReservation;
   double currentBalance;
+  int sortType = 0;
   @override
   void initState() {
     _selectedVehicle = "No Vehicle Selected";
@@ -620,7 +621,8 @@ class _HomeScreenState extends State<HomeScreen> {
         .getLotsInRadius(
             latitude: location.latitude,
             longitude: location.longitude,
-            kmRadius: 0.5)
+            kmRadius: 0.5,
+            type: sortType)
         .then((res) {
       if (res.statusCode == 200) {
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
@@ -739,7 +741,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: new SizedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Center(child: LotReservation(lotId)),
+                  child: Center(child: LotReservation(lotId, currentBalance)),
                 ),
               ),
             ));
@@ -1048,9 +1050,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedVehicle == "No Vehicle Selected") {
       return showMessage("Error: No vehicle selected");
     }
-    if (userData.reservations != null) {
-      if (userData.reservations.length > 1)
-        return showMessage("Error: You have an ongoing booking");
+    if (userData.currentReservation != null) {
+      return showMessage("Error: You have an ongoing booking");
     }
     for (Lot lots in v) {
       if (lots.capacity == 0) continue;
@@ -1058,14 +1059,15 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!checkIfDayIncluded(lots.availableDays)) continue;
       if (!checkIfWithinTime(lots.availableFrom, lots.availableTo)) continue;
       success = true;
-      _showQuickBook(lots, _selectedVehicleData, userData);
+      _showQuickBook(lots, _selectedVehicleData, userData, currentBalance);
     }
     if (!success) {
       return showMessage("Error: No lots currently match the criteria");
     }
   }
 
-  _showQuickBook(Lot lotData, Vehicle selectedVehicleData, CSUser userData) {
+  _showQuickBook(Lot lotData, Vehicle selectedVehicleData, CSUser userData,
+      double balance) {
     return showDialog(
         barrierDismissible: true,
         context: context,
@@ -1078,7 +1080,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-                      child: LotFound(lotData, selectedVehicleData, userData)),
+                      child: LotFound(lotData, selectedVehicleData, userData,
+                          currentBalance)),
                 ),
               ),
             ));
