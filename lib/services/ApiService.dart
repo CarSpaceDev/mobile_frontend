@@ -73,8 +73,8 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/user/register/true')
   Future<Response> registerUser(@Body() Map<String, dynamic> body);
 
-  @Post(path: '/user/reserve/')
-  Future<Response> reserveLot(@Body() Map<String, dynamic> body);
+  @Post(path: '/user/book/')
+  Future<Response> bookLot(@Body() Map<String, dynamic> body);
 
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
