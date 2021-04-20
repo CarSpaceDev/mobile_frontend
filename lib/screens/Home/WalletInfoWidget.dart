@@ -43,7 +43,9 @@ class _WalletInfoWidgetState extends State<WalletInfoWidget> {
   }
 
   refresh() {
-    locator<ApiService>().getWalletStatus(uid: locator<AuthService>().currentUser().uid).then((value) {
+    locator<ApiService>()
+        .getWalletStatus(uid: locator<AuthService>().currentUser().uid)
+        .then((value) {
       if (value.statusCode == 200)
         setState(() {
           balance = double.parse("${value.body["balance"]}").toStringAsFixed(2);

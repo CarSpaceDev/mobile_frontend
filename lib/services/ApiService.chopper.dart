@@ -38,7 +38,8 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> getVehicleAddAuthDetails({String uid, String code}) {
+  Future<Response<dynamic>> getVehicleAddAuthDetails(
+      {String uid, String code}) {
     final $url = '/vehicle/owner/authorization/details/$uid/$code';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
@@ -53,21 +54,24 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> generateShareCode(dynamic vehicleId, dynamic ownerId) {
+  Future<Response<dynamic>> generateShareCode(
+      dynamic vehicleId, dynamic ownerId) {
     final $url = '/vehicle/generate-share-code/$vehicleId/$ownerId';
     final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
   @override
-  Future<Response<dynamic>> addVehicleFromCode(dynamic newUserUid, dynamic code) {
+  Future<Response<dynamic>> addVehicleFromCode(
+      dynamic newUserUid, dynamic code) {
     final $url = '/vehicle/add-from-code/$newUserUid/$code';
     final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
 
   @override
-  Future<Response<dynamic>> authorizeVehicleAddition(dynamic ownerUid, dynamic code) {
+  Future<Response<dynamic>> authorizeVehicleAddition(
+      dynamic ownerUid, dynamic code) {
     final $url = '/vehicle/authorize-vehicle-addition/$ownerUid/$code';
     final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
@@ -140,11 +144,13 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> requestUserInfo(String jwt, Map<String, dynamic> body) {
+  Future<Response<dynamic>> requestUserInfo(
+      String jwt, Map<String, dynamic> body) {
     final $url = '/user/requestUserInfo';
     final $headers = {'firebase_auth_jwt': jwt};
     final $body = body;
-    final $request = Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
+    final $request =
+        Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
     return client.send<dynamic, dynamic>($request);
   }
 
@@ -163,7 +169,8 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> setNotificationAsSeen({String uid, String notificationUid}) {
+  Future<Response<dynamic>> setNotificationAsSeen(
+      {String uid, String notificationUid}) {
     final $url = '/user/notifications/$uid/$notificationUid';
     final $request = Request('PATCH', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
@@ -228,8 +235,9 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> getLotsInRadius({double latitude, double longitude, double kmRadius}) {
-    final $url = '/partner/radius/$latitude/$longitude/$kmRadius';
+  Future<Response<dynamic>> getLotsInRadius(
+      {double latitude, double longitude, double kmRadius, int type}) {
+    final $url = '/partner/radius/$latitude/$longitude/$kmRadius/$type';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
