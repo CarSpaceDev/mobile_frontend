@@ -29,7 +29,9 @@ class _NotificationListState extends State<NotificationList> {
       notifications = [];
       retrieval = false;
     });
-    locator<ApiService>().getNotifications(uid: locator<AuthService>().currentUser().uid).then((v) {
+    locator<ApiService>()
+        .getNotifications(uid: locator<AuthService>().currentUser().uid)
+        .then((v) {
       if (v.statusCode == 200) {
         notifications = List<Map<String, dynamic>>.from(v.body);
         notifications.forEach((v) {

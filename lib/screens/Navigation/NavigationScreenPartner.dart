@@ -19,10 +19,13 @@ class NavigationScreenPartner extends StatefulWidget {
   final LatLng partnerLoc;
   final String reservationId;
   final PartnerReservation reservation;
-  NavigationScreenPartner({@required this.partnerLoc, @required this.reservationId, @required this.reservation});
+  NavigationScreenPartner(
+      {@required this.partnerLoc,
+      @required this.reservationId,
+      @required this.reservation});
   @override
-  _NavigationScreenPartnerState createState() =>
-      _NavigationScreenPartnerState(this.partnerLoc, this.reservationId, this.reservation);
+  _NavigationScreenPartnerState createState() => _NavigationScreenPartnerState(
+      this.partnerLoc, this.reservationId, this.reservation);
 }
 
 class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
@@ -40,11 +43,11 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   BitmapDescriptor _driverIcon;
   GoogleMapController mapController;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> mqttUpdates;
-  _NavigationScreenPartnerState(this.partnerLoc, this.reservationId, this.reservationData);
+  _NavigationScreenPartnerState(
+      this.partnerLoc, this.reservationId, this.reservationData);
 
   @override
   void initState() {
-    print(partnerLoc.toJson());
     _setMarkerIcon();
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
@@ -73,7 +76,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       swLng = driverLoc.longitude;
       neLng = partnerLoc.longitude;
     }
-    return LatLngBounds(southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
+    return LatLngBounds(
+        southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
   }
 
   @override
@@ -91,8 +95,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
           child: FlatButton(
             color: Color(0xff6200EE),
             onPressed: () {
-              markAsComplete(widget.reservation.driverId, widget.reservation.lotId, widget.reservation.vehicleId,
-                  widget.reservation.reservationId, widget.reservation.lotAddress, widget.reservation.partnerId);
+              markAsComplete(
+                  widget.reservation.driverId,
+                  widget.reservation.lotId,
+                  widget.reservation.vehicleId,
+                  widget.reservation.reservationId,
+                  widget.reservation.lotAddress,
+                  widget.reservation.partnerId);
             },
             child: Shimmer.fromColors(
               baseColor: Colors.white,
@@ -103,7 +112,10 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 height: MediaQuery.of(context).size.height * 0.1,
                 child: Center(
                     child: Text("Mark as complete",
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold))),
               ),
             ),
           ),
@@ -130,35 +142,40 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text("${widget.reservation.lotAddress}",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                            )),
-                      ),
-                    ]),
+                    Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text("${widget.reservation.lotAddress}",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                )),
+                          ),
+                        ]),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("Driver: ${widget.reservation.displayName}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              )),
+                          child:
+                              Text("Driver: ${widget.reservation.displayName}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
                         ),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: Text("Vehicle: ${widget.reservation.vehicleId} ",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              )),
+                          child:
+                              Text("Vehicle: ${widget.reservation.vehicleId} ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
                         ),
                       ],
                     ),
@@ -185,8 +202,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         ])));
   }
 
-  markAsComplete(
-      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+  markAsComplete(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -229,7 +246,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    locator<NavigationService>().pushReplaceNavigateTo(PartnerReservations);
+                    locator<NavigationService>()
+                        .pushReplaceNavigateTo(PartnerReservations);
                   },
                   child: Text("Close"))
             ],
@@ -242,35 +260,53 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       return "unknown";
     else
       return (Geolocator.distanceBetween(
-                  driverLoc.latitude, driverLoc.longitude, partnerLoc.latitude, partnerLoc.longitude) /
+                  driverLoc.latitude,
+                  driverLoc.longitude,
+                  partnerLoc.latitude,
+                  partnerLoc.longitude) /
               1000)
           .toStringAsFixed(10);
   }
 
   handleMessage(List<MqttReceivedMessage<MqttMessage>> v) {
     MqttPublishMessage recMess = v[0].payload;
-    String pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+    String pt =
+        MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
     var payload = jsonDecode(pt);
-    print(payload);
     setState(() {
-      distanceRemaining = payload["distanceRemaining"] != null ? payload["distanceRemaining"] : null;
-      durationRemaining = payload["durationRemaining"] != null ? payload["durationRemaining"] : null;
+      distanceRemaining = payload["distanceRemaining"] != null
+          ? payload["distanceRemaining"]
+          : null;
+      durationRemaining = payload["durationRemaining"] != null
+          ? payload["durationRemaining"]
+          : null;
       driverLoc = LatLng(payload["latitude"], payload["longitude"]);
-      driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
+      driverMarker = Marker(
+          markerId: MarkerId("Driver"),
+          onTap: () {},
+          icon: _driverIcon,
+          position: driverLoc);
       _markers = Set.from([lotMarker, driverMarker]);
-      mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
+      mapController
+          .moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
     });
   }
 
   void _setMarkerIcon() async {
     List<BitmapDescriptor> markerFiles = [];
     markerFiles = await Future.wait([
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png'),
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
+          'assets/launcher_icon/pushpin.png'),
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
+          'assets/launcher_icon/driver.png'),
     ]);
     _lotIcon = markerFiles[0];
     _driverIcon = markerFiles[1];
-    lotMarker = Marker(markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: partnerLoc);
+    lotMarker = Marker(
+        markerId: MarkerId("Lot"),
+        onTap: () {},
+        icon: _lotIcon,
+        position: partnerLoc);
     _markers.add(lotMarker);
   }
 

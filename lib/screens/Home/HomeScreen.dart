@@ -981,37 +981,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
   }
 
-  checkIfDayIncluded(List<int> v) {
-    DateTime now = new DateTime.now();
-    // print(now.weekday);
-    // print(now.weekday - 1);
-    // print(v);
-    var returnValue = false;
-    for (var day in v) {
-      if (day == 0) {
-        if (now.weekday == 7) {
-          returnValue = true;
-          break;
-        }
-      }
-      if (day == now.weekday) {
-        returnValue = true;
-        break;
-      }
-    }
-    return returnValue;
-  }
-
-  checkIfWithinTime(int v, int x) {
-    DateTime now = new DateTime.now();
-    var time = (now.hour * 100) + now.minute;
-    // print(time);
-    if (time > v && time < x)
-      return true;
-    else
-      return false;
-  }
-
   showMessage(String v) {
     showDialog(
         context: context,
