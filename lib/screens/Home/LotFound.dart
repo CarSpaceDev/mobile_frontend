@@ -199,7 +199,7 @@ class _LotFoundState extends State<LotFound> {
     setState(() {
       working = true;
     });
-    await locator<ApiService>().reserveLot(body).then((value) {
+    await locator<ApiService>().bookLot(body).then((value) {
       print(value.body);
       print(value.statusCode);
       Navigator.of(context).pop();
