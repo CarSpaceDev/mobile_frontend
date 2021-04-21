@@ -4,7 +4,7 @@ class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
   // static const kApiUrl = "https://api.zdgph.tech";
-  static const kApiUrl = "https://c4887ab5c17d.ngrok.io";
+  static const kApiUrl = "https://b74c9e0de8c6.ngrok.io";
 }
 
 double getRelativeSize(BuildContext context, double v) {
@@ -60,10 +60,18 @@ class CSTheme {
         fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
 
     appBarTextDark = TextStyle(
-        fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
+        fontWeight: FontWeight.w900,
+        fontSize: 24,
+        letterSpacing: 1,
+        color: this.csWhite,
+        fontFamily: "Roboto");
 
     appBarTextLight = TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        letterSpacing: 0.54,
+        color: this.csBlack,
+        fontFamily: "Roboto");
 
     appBarThemePrimary = AppBarTheme(
         color: this.primary,

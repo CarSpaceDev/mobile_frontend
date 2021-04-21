@@ -470,8 +470,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-
-
   Future<bool> _initAccess() async {
     bool result;
     await locator<ApiService>()
@@ -525,20 +523,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getLotsInRadius(LatLng location) async {
     _lotMarkers = [];
     List<Lot> resultLotsInRadius = [];
-    locator<ApiService>()
-        .getLotsInRadius(
-            latitude: location.latitude,
-            longitude: location.longitude,
-            kmRadius: 0.5,
-            type: sortType)
-        .then((res) {
+    var body = {
+      "lat": location.latitude,
+      "lng": location.longitude,
+      "radiusInKm": 0.5,
+      "type": sortType,
+      "selectedVehicleType": _selectedVehicleData.type
+    };
+    print("called");
+    print(location.latitude);
+    print(location);
+    print(location.longitude);
+    print(body);
+    locator<ApiService>().getLotsInRadius(body).then((res) {
+      print(res);
       if (res.statusCode == 200) {
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           Lot temp = Lot.fromJson(v);
-          if (temp.capacity == 0) continue;
-          if (!checkIfDayIncluded(temp.availableDays)) continue;
-          if (!checkIfWithinTime(temp.availableFrom, temp.availableTo))
-            continue;
           resultLotsInRadius.add(temp);
         }
         if (resultLotsInRadius.length > 0) {
@@ -945,12 +946,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   checkBeforeReserve(List<Lot> v) {
-    bool success = false;
     if (userData.userAccess < 210) {
       return showMessage("Error: Account not verified");
-    }
-    if (v.length == 0) {
-      return showMessage("Error: No available lots within your 500m radius");
     }
     if (vehicles.length == 0) {
       return showMessage("Error: No Vehicle on file");
@@ -958,19 +955,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedVehicle == "No Vehicle Selected") {
       return showMessage("Error: No vehicle selected");
     }
-    if (userData.currentReservation != null) {
-      return showMessage("Error: You have an ongoing booking");
-    }
     for (Lot lots in v) {
-      if (lots.capacity == 0) continue;
-      if (lots.vehicleTypeAccepted < _selectedVehicleData.type) continue;
-      if (!checkIfDayIncluded(lots.availableDays)) continue;
-      if (!checkIfWithinTime(lots.availableFrom, lots.availableTo)) continue;
-      success = true;
       _showQuickBook(lots, _selectedVehicleData, userData, currentBalance);
-    }
-    if (!success) {
-      return showMessage("Error: No lots currently match the criteria");
     }
   }
 
