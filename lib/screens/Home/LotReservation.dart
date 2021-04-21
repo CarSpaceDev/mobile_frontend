@@ -309,7 +309,7 @@ class _LotReservationState extends State<LotReservation> {
         "balance": widget.currentBalance,
         "lotPrice" : _fullLotData.pricing
       });
-      await locator<ApiService>().reserveLot(body).then((value) {
+      await locator<ApiService>().bookLot(body).then((value) {
         Navigator.of(context).pop();
         showMessage(value.body);
       }).catchError((err) {
@@ -326,7 +326,7 @@ class _LotReservationState extends State<LotReservation> {
         "balance": widget.currentBalance,
         "lotPrice" : _fullLotData.pricing
       });
-      await locator<ApiService>().reserveLot(body).then((value) {
+      await locator<ApiService>().bookLot(body).then((value) {
         Navigator.of(context).pop();
         if (value.body == "Reservation Success") {
           showMessageAndUseIntent("Lot Reserved");
