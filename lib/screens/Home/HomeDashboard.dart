@@ -1,5 +1,4 @@
 import 'package:carspace/constants/GlobalConstants.dart';
-import 'package:carspace/model/User.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
@@ -15,7 +14,6 @@ class HomeDashboard extends StatefulWidget {
 }
 
 class _HomeDashboardState extends State<HomeDashboard> {
-
   @override
   void initState() {
     super.initState();
@@ -28,6 +26,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
         brightness: Brightness.dark,
         centerTitle: true,
         title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
+        actions: [WalletInfoWidget()],
       ),
       drawer: HomeNavigationDrawer(),
       body: SafeArea(
@@ -42,7 +41,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   margin: EdgeInsets.symmetric(vertical: 8),
                 ),
                 VehicleSelectorWidget(),
-                WalletInfoWidget(),
                 ParkNowWidget()
               ],
             ),
@@ -51,7 +49,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
       ),
     );
   }
-
 }
 
 class ParkNowWidget extends StatefulWidget {
@@ -118,6 +115,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                             Icon(
                               CupertinoIcons.car_detailed,
                               color: csStyle.csWhite,
+                              size: 50,
                             ),
                             CSText("DRIVE\n(ON DEMAND)", textColor: TextColor.White, textAlign: TextAlign.center)
                           ],
@@ -133,7 +131,9 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                            border: Border(left: BorderSide(width: 1, color: csStyle.csWhite), right: BorderSide(width: 1, color: csStyle.csWhite))),
+                            border: Border(
+                                left: BorderSide(width: 1, color: csStyle.csWhite),
+                                right: BorderSide(width: 1, color: csStyle.csWhite))),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -141,6 +141,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                             Icon(
                               CupertinoIcons.time,
                               color: csStyle.csWhite,
+                              size: 50,
                             ),
                             CSText(
                               "RESERVE A PARKING SLOT",
@@ -164,11 +165,12 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                           children: [
                             Container(height: 0, width: 0),
                             Icon(
-                              CupertinoIcons.car_detailed,
+                              CupertinoIcons.map_pin_ellipse,
                               color: csStyle.csWhite,
+                              size: 50,
                             ),
                             CSText(
-                              "DRIVE TO DESTINATION",
+                              "PARK AT DESTINATION",
                               textColor: TextColor.White,
                               textAlign: TextAlign.center,
                             )

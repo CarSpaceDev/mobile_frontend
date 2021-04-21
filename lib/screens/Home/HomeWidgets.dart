@@ -2,6 +2,7 @@ import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
 import 'Popup.dart';
+import 'WalletInfoWidget.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
   @override
@@ -21,25 +23,40 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child:
-      BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, state) {
+      child: BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, state) {
         return ListView(
           padding: EdgeInsets.zero,
           children: [
             if (state is UserRepoReady)
-              DrawerHeader(
+              CSTile(
+                linePaddingLeft: 0,
+                linePaddingRight: 0,
+                solidDivider: true,
+                padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).padding.top, 0, 16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      CupertinoIcons.profile_circled,
-                      size: 60,
+                    CSTile(
+                      margin: EdgeInsets.only(bottom:16),
+                      padding: EdgeInsets.only(bottom:16),
+                      linePaddingLeft: 0,
+                      linePaddingRight: 0,
+                      solidDivider: true,
+                      child: Column(
+                        children: [
+                          Icon(
+                            CupertinoIcons.profile_circled,
+                            size: 45,
+                          ),
+                          CSText(
+                            state.user.displayName,
+                            textType: TextType.H4,
+                            padding: EdgeInsets.only(top: 16),
+                          ),
+                        ],
+                      ),
                     ),
-                    CSText(
-                      state.user.displayName,
-                      textType: TextType.H4,
-                      padding: EdgeInsets.only(top: 16),
-                    )
+                    WalletInfoWidget(textColor: TextColor.Black,),
                   ],
                 ),
               ),
@@ -53,28 +70,17 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                       children: <Widget>[
                         CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          backgroundColor: Theme
-                              .of(context)
-                              .primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         Text(
                           "Loading",
-                          style: TextStyle(color: Theme
-                              .of(context)
-                              .primaryColor),
+                          style: TextStyle(color: Theme.of(context).primaryColor),
                         )
                       ],
                     ),
                   ),
                 ),
               ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    locator<NavigationService>().pushNavigateTo(WalletRoute);
-                  },
-                  child: Text("Wallet")),
-            ),
             ListTile(
               title: InkWell(
                   onTap: () {
@@ -126,13 +132,10 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
             ),
           ],
         );
-
       }),
     );
   }
 }
-
-
 
 class BackgroundImage extends StatelessWidget {
   final Widget child;

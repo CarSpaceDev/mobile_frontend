@@ -4,10 +4,13 @@ import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../serviceLocator.dart';
 
 class WalletInfoWidget extends StatefulWidget {
+  final TextColor textColor;
+  WalletInfoWidget({this.textColor = TextColor.White});
   @override
   _WalletInfoWidgetState createState() => _WalletInfoWidgetState();
 }
@@ -17,22 +20,18 @@ class _WalletInfoWidgetState extends State<WalletInfoWidget> {
   String balance = "";
   @override
   Widget build(BuildContext context) {
-    return CSSegmentedTile(
-      shadow: true,
+    return InkWell(
       onTap: () {
         locator<NavigationService>().pushNavigateTo(WalletRoute);
       },
-      borderRadius: 8,
-      color: TileColor.White,
-      title: CSText(
-        "WALLET BALANCE",
-        textType: TextType.H5Bold,
+      child: Center(
+        child: CSText(
+          loaded ? "CSC $balance" : ". . .",
+          padding: EdgeInsets.only(top: 2, right: 10),
+          textColor: widget.textColor,
+          textType: TextType.Button,
+        ),
       ),
-      body: CSText(
-        loaded ? "CSC $balance" : "GETTING BALANCE",
-        padding: EdgeInsets.only(top: 4),
-      ),
-      trailing: Icon(CupertinoIcons.info),
     );
   }
 
@@ -43,9 +42,7 @@ class _WalletInfoWidgetState extends State<WalletInfoWidget> {
   }
 
   refresh() {
-    locator<ApiService>()
-        .getWalletStatus(uid: locator<AuthService>().currentUser().uid)
-        .then((value) {
+    locator<ApiService>().getWalletStatus(uid: locator<AuthService>().currentUser().uid).then((value) {
       if (value.statusCode == 200)
         setState(() {
           balance = double.parse("${value.body["balance"]}").toStringAsFixed(2);
