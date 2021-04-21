@@ -4,13 +4,15 @@ abstract class MapEvent extends Equatable {
   const MapEvent();
 }
 
-class InitializeMap extends MapEvent {
+class InitializeMapSettings extends MapEvent {
   @override
   List<Object> get props => [];
 }
 class UpdateMap extends MapEvent {
+  final MapSettings settings;
+  UpdateMap({@required this.settings});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [settings];
 }
 class UpdateMapPosition extends MapEvent {
   final CSPosition position;

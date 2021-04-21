@@ -8,9 +8,9 @@ class MapInitial extends MapState {
   @override
   List<Object> get props => [];
 }
-class MapReady extends MapState {
-  final Widget map;
-  MapReady({@required this.map});
+class MapSettingsReady extends MapState {
+  final MapSettings settings;
+  MapSettingsReady({@required this.settings});
   @override
-  List<Object> get props => [map];
+  List<Object> get props => [settings];
 }

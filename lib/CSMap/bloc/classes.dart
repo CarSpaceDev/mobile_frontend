@@ -1,12 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 
-/// Contains detailed location information.
 @immutable
 class CSPosition extends Equatable {
-  /// Constructs an instance with the given values for testing. [Position]
-  /// instances constructed this way won't actually reflect any real information
-  /// from the platform, just whatever was passed in at construction time.
   CSPosition({
     this.longitude,
     this.latitude,
@@ -20,9 +17,10 @@ class CSPosition extends Equatable {
     this.isMocked,
   });
 
-
   @override
-  List<Object> get props => [longitude, latitude, timestamp, accuracy,altitude,heading,floor,speed,speed,isMocked];
+  List<Object> get props =>
+      [longitude, latitude, timestamp, accuracy, altitude, heading, floor, speed, speed, isMocked];
+
   /// The latitude of this position in degrees normalized to the interval -90.0
   /// to +90.0 (both inclusive).
   final double latitude;
@@ -122,18 +120,17 @@ class CSPosition extends Equatable {
     final Map<dynamic, dynamic> positionMap = message;
 
     if (!positionMap.containsKey('latitude')) {
-      throw ArgumentError.value(positionMap, 'positionMap',
-          'The supplied map doesn\'t contain the mandatory key `latitude`.');
+      throw ArgumentError.value(
+          positionMap, 'positionMap', 'The supplied map doesn\'t contain the mandatory key `latitude`.');
     }
 
     if (!positionMap.containsKey('longitude')) {
-      throw ArgumentError.value(positionMap, 'positionMap',
-          'The supplied map doesn\'t contain the mandatory key `longitude`.');
+      throw ArgumentError.value(
+          positionMap, 'positionMap', 'The supplied map doesn\'t contain the mandatory key `longitude`.');
     }
 
     final timestamp = positionMap['timestamp'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(positionMap['timestamp'].toInt(),
-        isUtc: true)
+        ? DateTime.fromMillisecondsSinceEpoch(positionMap['timestamp'].toInt(), isUtc: true)
         : null;
 
     return CSPosition(
@@ -153,15 +150,60 @@ class CSPosition extends Equatable {
   /// Converts the [Position] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
-    'longitude': longitude,
-    'latitude': latitude,
-    'timestamp': timestamp?.millisecondsSinceEpoch,
-    'accuracy': accuracy,
-    'altitude': altitude,
-    'floor': floor,
-    'heading': heading,
-    'speed': speed,
-    'speed_accuracy': speedAccuracy,
-    'is_mocked': isMocked,
-  };
+        'longitude': longitude,
+        'latitude': latitude,
+        'timestamp': timestamp?.millisecondsSinceEpoch,
+        'accuracy': accuracy,
+        'altitude': altitude,
+        'floor': floor,
+        'heading': heading,
+        'speed': speed,
+        'speed_accuracy': speedAccuracy,
+        'is_mocked': isMocked,
+      };
+}
+
+class MapSettings extends Equatable {
+  final Set<Marker> markers;
+  final String mapStyle;
+  final String mapStylePOI;
+  final BitmapDescriptor lotIcon;
+  final BitmapDescriptor driverIcon;
+  final bool showPOI;
+  MapSettings(
+      {@required this.markers,
+      @required this.mapStylePOI,
+      @required this.mapStyle,
+      @required this.lotIcon,
+      @required this.driverIcon,
+      @required this.showPOI});
+  @override
+  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, driverIcon, showPOI];
+
+  copyWith({Set<Marker> markers, bool showPOI}) {
+    if (markers != null && showPOI != null)
+      return new MapSettings(
+          markers: markers,
+          showPOI: showPOI,
+          mapStylePOI: this.mapStylePOI,
+          mapStyle: this.mapStyle,
+          lotIcon: this.lotIcon,
+          driverIcon: this.driverIcon);
+    if (markers != null)
+      return new MapSettings(
+          markers: markers,
+          showPOI: this.showPOI,
+          mapStylePOI: this.mapStylePOI,
+          mapStyle: this.mapStyle,
+          lotIcon: this.lotIcon,
+          driverIcon: this.driverIcon);
+    if (showPOI != null)
+      return new MapSettings(
+          markers: this.markers,
+          showPOI: showPOI,
+          mapStylePOI: this.mapStylePOI,
+          mapStyle: this.mapStyle,
+          lotIcon: this.lotIcon,
+          driverIcon: this.driverIcon);
+  }
 }

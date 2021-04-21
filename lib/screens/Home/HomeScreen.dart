@@ -2,21 +2,18 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:android_intent/android_intent.dart';
-import 'package:carspace/CSMap/CSMap.dart';
-import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
-import 'package:carspace/screens/Home/HomeWidgets.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
+import 'package:carspace/screens/Widgets/NavigationDrawer.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +22,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../serviceLocator.dart';
@@ -199,243 +195,243 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: actionButton(),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
-        child: CSMap()
-        // Stack(
-        //   children: [
-        //     Container(
-        //       child: Stack(
-        //         children: [
-        //           Listener(
-        //             onPointerDown: mapOnPointerDown,
-        //             onPointerUp: mapOnPointerUp,
-        //             child: GoogleMap(
-        //               onCameraMove: _onCameraMove,
-        //               myLocationButtonEnabled: false,
-        //               mapToolbarEnabled: false,
-        //               zoomControlsEnabled: false,
-        //               onMapCreated: _onMapCreated,
-        //               initialCameraPosition: CameraPosition(
-        //                 target: LatLng(1, 1),
-        //                 zoom: 15.0,
-        //               ),
-        //               markers: _markers,
-        //             ),
-        //           ),
-        //           if (userData != null)
-        //             if (userData.currentReservation != null &&
-        //                 currentReservation != null)
-        //               Positioned(
-        //                 bottom: 16,
-        //                 child: Container(
-        //                   width: MediaQuery.of(context).size.width,
-        //                   child: Center(
-        //                     child: InkWell(
-        //                       onTap: () {
-        //                         showReservationDetails(currentReservation);
-        //                       },
-        //                       child: Card(
-        //                         child: Container(
-        //                           padding: const EdgeInsets.all(8.0),
-        //                           width: MediaQuery.of(context).size.width * .8,
-        //                           color: Colors.white,
-        //                           child: Column(
-        //                             mainAxisSize: MainAxisSize.min,
-        //                             crossAxisAlignment:
-        //                                 CrossAxisAlignment.center,
-        //                             children: [
-        //                               Padding(
-        //                                 padding:
-        //                                     const EdgeInsets.only(bottom: 8),
-        //                                 child: Text(
-        //                                   "Current Reservation",
-        //                                   style: TextStyle(
-        //                                       fontSize: 16,
-        //                                       fontWeight: FontWeight.bold),
-        //                                 ),
-        //                               ),
-        //                               Text(
-        //                                 currentReservation.lotAddress,
-        //                                 textAlign: TextAlign.center,
-        //                               ),
-        //                               FlatButton(
-        //                                 onPressed: () {
-        //                                   locator<ApiService>().notifyArrived({
-        //                                     "userId": userData.uid,
-        //                                     "driverName": userData.displayName,
-        //                                     "vehicleId": _selectedVehicleData
-        //                                         .plateNumber,
-        //                                     "lotAddress":
-        //                                         currentReservation.lotAddress,
-        //                                     "partnerId":
-        //                                         currentReservation.partnerId
-        //                                   }).then((value) {
-        //                                     showMessage(
-        //                                         "Owner has been notified of your arrival");
-        //                                   });
-        //                                 },
-        //                                 child: Container(
-        //                                   padding: EdgeInsets.all(8),
-        //                                   decoration: new BoxDecoration(
-        //                                     color:
-        //                                         Theme.of(context).primaryColor,
-        //                                     borderRadius: BorderRadius.all(
-        //                                       Radius.circular(15.0),
-        //                                     ),
-        //                                   ),
-        //                                   child: Text(
-        //                                     "I Have Arrived",
-        //                                     style:
-        //                                         TextStyle(color: Colors.white),
-        //                                   ),
-        //                                 ),
-        //                               )
-        //                             ],
-        //                           ),
-        //                         ),
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ),
-        //               ),
-        //           Positioned(
-        //             left: 8,
-        //             top: 8,
-        //             child: InkWell(
-        //               onTap: _showVehicleDialog,
-        //               child: Container(
-        //                   padding:
-        //                       EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        //                   decoration: new BoxDecoration(
-        //                     color: Theme.of(context).primaryColor,
-        //                     borderRadius: BorderRadius.all(
-        //                       Radius.circular(25.0),
-        //                     ),
-        //                   ),
-        //                   child: Row(
-        //                     mainAxisSize: MainAxisSize.min,
-        //                     children: [
-        //                       Icon(
-        //                         Icons.car_rental,
-        //                         color: Colors.white,
-        //                         size: 24,
-        //                       ),
-        //                       Text(
-        //                         _selectedVehicle,
-        //                         style: TextStyle(color: Colors.white),
-        //                       )
-        //                     ],
-        //                   )),
-        //             ),
-        //           ),
-        //           // Positioned(
-        //           //   right: 8,
-        //           //   top: 8,
-        //           //   child: InkWell(
-        //           //     onTap: autoCompleteWidgetAction,
-        //           //     child: Container(
-        //           //       width: 50,
-        //           //       height: 50,
-        //           //       decoration: new BoxDecoration(
-        //           //         color: themeData.primaryColor,
-        //           //         borderRadius: BorderRadius.all(
-        //           //           Radius.circular(25.0),
-        //           //         ),
-        //           //       ),
-        //           //       child: destinationLocked
-        //           //           ? Icon(Icons.clear, color: Colors.white, size: 25)
-        //           //           : Icon(
-        //           //               Icons.save,
-        //           //               color: Colors.white,
-        //           //               size: 25,
-        //           //             ),
-        //           //     ),
-        //           //   ),
-        //           // ),
-        //           Positioned(
-        //               right: 8,
-        //               top: 8,
-        //               child: CustomSwitch(
-        //                 width: 95,
-        //                 activeColor: Theme.of(context).primaryColor,
-        //                 activePrompt: "POI On",
-        //                 inactivePrompt: "POI Off",
-        //                 value: showPointOfInterest,
-        //                 onChanged: (value) {
-        //                   _showPOI(value);
-        //                 },
-        //               )
-        //               // InkWell(
-        //               //   onTap: _showPOI,
-        //               //   child: Container(
-        //               //       width: 50,
-        //               //       height: 50,
-        //               //       decoration: new BoxDecoration(
-        //               //         color: themeData.primaryColor,
-        //               //         borderRadius: BorderRadius.all(
-        //               //           Radius.circular(25.0),
-        //               //         ),
-        //               //       ),
-        //               //       child: Icon(Icons.place, color: Colors.white, size: 25)),
-        //               // ),
-        //               ),
-        //           showCrossHair
-        //               ? Positioned(
-        //                   top: MediaQuery.of(context).size.height * .5 - 128.5,
-        //                   left: MediaQuery.of(context).size.width * .5 - 16,
-        //                   child: Icon(
-        //                     Icons.gps_fixed,
-        //                     color: Colors.black87,
-        //                     size: 32,
-        //                   ),
-        //                 )
-        //               : Container(
-        //                   width: 0,
-        //                   height: 0,
-        //                 ),
-        //         ],
-        //       ),
-        //     ),
-        //     lotsInRadius.length != 0 && showLotCards
-        //         ? Positioned(
-        //             bottom: SizeConfig.widthMultiplier * 8,
-        //             child: Container(
-        //               width: MediaQuery.of(context).size.width,
-        //               height: MediaQuery.of(context).size.width / (16 / 9),
-        //               child: Center(
-        //                 child: PageView(
-        //                   onPageChanged: (index) {
-        //                     mapController
-        //                         ?.animateCamera(CameraUpdate.newCameraPosition(
-        //                       CameraPosition(
-        //                         target: LatLng(
-        //                             lotsInRadius[index].coordinates[0],
-        //                             lotsInRadius[index].coordinates[1]),
-        //                         zoom: 17.0,
-        //                       ),
-        //                     ));
-        //                   },
-        //                   controller: _pageController,
-        //                   children: generateLotCards(),
-        //                 ),
-        //               ),
-        //             ),
-        //           )
-        //         : Container(
-        //             width: 0,
-        //             height: 0,
-        //           ),
-        //     if (mapReady == false)
-        //       Container(
-        //         color: Color.fromRGBO(0, 0, 0, 0.5),
-        //         child: Center(
-        //           child: CircularProgressIndicator(
-        //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        //             backgroundColor: Theme.of(context).primaryColor,
-        //           ),
-        //         ),
-        //       )
-        //   ],
-        // ),
+        child:
+        Stack(
+          children: [
+            Container(
+              child: Stack(
+                children: [
+                  Listener(
+                    onPointerDown: mapOnPointerDown,
+                    onPointerUp: mapOnPointerUp,
+                    child: GoogleMap(
+                      onCameraMove: _onCameraMove,
+                      myLocationButtonEnabled: false,
+                      mapToolbarEnabled: false,
+                      zoomControlsEnabled: false,
+                      onMapCreated: _onMapCreated,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(1, 1),
+                        zoom: 15.0,
+                      ),
+                      markers: _markers,
+                    ),
+                  ),
+                  if (userData != null)
+                    if (userData.currentReservation != null &&
+                        currentReservation != null)
+                      Positioned(
+                        bottom: 16,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: InkWell(
+                              onTap: () {
+                                showReservationDetails(currentReservation);
+                              },
+                              child: Card(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  width: MediaQuery.of(context).size.width * .8,
+                                  color: Colors.white,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8),
+                                        child: Text(
+                                          "Current Reservation",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      Text(
+                                        currentReservation.lotAddress,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      FlatButton(
+                                        onPressed: () {
+                                          locator<ApiService>().notifyArrived({
+                                            "userId": userData.uid,
+                                            "driverName": userData.displayName,
+                                            "vehicleId": _selectedVehicleData
+                                                .plateNumber,
+                                            "lotAddress":
+                                                currentReservation.lotAddress,
+                                            "partnerId":
+                                                currentReservation.partnerId
+                                          }).then((value) {
+                                            showMessage(
+                                                "Owner has been notified of your arrival");
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(8),
+                                          decoration: new BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15.0),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            "I Have Arrived",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  Positioned(
+                    left: 8,
+                    top: 8,
+                    child: InkWell(
+                      onTap: _showVehicleDialog,
+                      child: Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          decoration: new BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.car_rental,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              Text(
+                                _selectedVehicle,
+                                style: TextStyle(color: Colors.white),
+                              )
+                            ],
+                          )),
+                    ),
+                  ),
+                  // Positioned(
+                  //   right: 8,
+                  //   top: 8,
+                  //   child: InkWell(
+                  //     onTap: autoCompleteWidgetAction,
+                  //     child: Container(
+                  //       width: 50,
+                  //       height: 50,
+                  //       decoration: new BoxDecoration(
+                  //         color: themeData.primaryColor,
+                  //         borderRadius: BorderRadius.all(
+                  //           Radius.circular(25.0),
+                  //         ),
+                  //       ),
+                  //       child: destinationLocked
+                  //           ? Icon(Icons.clear, color: Colors.white, size: 25)
+                  //           : Icon(
+                  //               Icons.save,
+                  //               color: Colors.white,
+                  //               size: 25,
+                  //             ),
+                  //     ),
+                  //   ),
+                  // ),
+                  Positioned(
+                      right: 8,
+                      top: 8,
+                      child: CustomSwitch(
+                        width: 95,
+                        activeColor: Theme.of(context).primaryColor,
+                        activePrompt: "POI On",
+                        inactivePrompt: "POI Off",
+                        value: showPointOfInterest,
+                        onChanged: (value) {
+                          _showPOI(value);
+                        },
+                      )
+                      // InkWell(
+                      //   onTap: _showPOI,
+                      //   child: Container(
+                      //       width: 50,
+                      //       height: 50,
+                      //       decoration: new BoxDecoration(
+                      //         color: themeData.primaryColor,
+                      //         borderRadius: BorderRadius.all(
+                      //           Radius.circular(25.0),
+                      //         ),
+                      //       ),
+                      //       child: Icon(Icons.place, color: Colors.white, size: 25)),
+                      // ),
+                      ),
+                  showCrossHair
+                      ? Positioned(
+                          top: MediaQuery.of(context).size.height * .5 - 128.5,
+                          left: MediaQuery.of(context).size.width * .5 - 16,
+                          child: Icon(
+                            Icons.gps_fixed,
+                            color: Colors.black87,
+                            size: 32,
+                          ),
+                        )
+                      : Container(
+                          width: 0,
+                          height: 0,
+                        ),
+                ],
+              ),
+            ),
+            lotsInRadius.length != 0 && showLotCards
+                ? Positioned(
+                    bottom: SizeConfig.widthMultiplier * 8,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / (16 / 9),
+                      child: Center(
+                        child: PageView(
+                          onPageChanged: (index) {
+                            mapController
+                                ?.animateCamera(CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(
+                                    lotsInRadius[index].coordinates[0],
+                                    lotsInRadius[index].coordinates[1]),
+                                zoom: 17.0,
+                              ),
+                            ));
+                          },
+                          controller: _pageController,
+                          children: generateLotCards(),
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 0,
+                    height: 0,
+                  ),
+            if (mapReady == false)
+              Container(
+                color: Color.fromRGBO(0, 0, 0, 0.5),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }

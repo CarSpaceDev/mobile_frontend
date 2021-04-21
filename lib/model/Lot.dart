@@ -1,22 +1,46 @@
-class Lot {
-  String lotId;
-  String partnerId;
-  List<String> lotImage;
-  LotAddress address;
-  double pricing;
-  int parkingType;
-  int vehicleTypeAccepted;
-  bool isActive;
-  int rating;
-  int numberOfRatings;
-  int availableFrom;
-  int availableTo;
-  List<int> availableDays;
-  int availableSlots;
-  int capacity;
-  bool isDisabled;
-  List<double> coordinates;
-  double distance;
+import 'package:equatable/equatable.dart';
+
+class Lot extends Equatable {
+  final String lotId;
+  final String partnerId;
+  final List<String> lotImage;
+  final LotAddress address;
+  final double pricing;
+  final int parkingType;
+  final int vehicleTypeAccepted;
+  final bool isActive;
+  final int rating;
+  final int numberOfRatings;
+  final int availableFrom;
+  final int availableTo;
+  final List<int> availableDays;
+  final int availableSlots;
+  final int capacity;
+  final bool isDisabled;
+  final List<double> coordinates;
+  final double distance;
+
+  @override
+  List<Object> get props => [
+        lotId,
+        parkingType,
+        lotImage,
+        address,
+        pricing,
+        parkingType,
+        vehicleTypeAccepted,
+        isActive,
+        rating,
+        numberOfRatings,
+        availableFrom,
+        availableTo,
+        availableDays,
+        availableSlots,
+        capacity,
+        isDisabled,
+        coordinates,
+        distance
+      ];
 
   Lot.fromJson(Map<String, dynamic> json)
       : lotId = json["lotId"] as String,
@@ -62,14 +86,26 @@ class Lot {
   }
 }
 
-class LotAddress {
-  String houseAndStreet;
-  String brgy;
-  String municipality;
-  String city;
-  String province;
-  String country;
-  String zipCode;
+class LotAddress extends Equatable{
+  final String houseAndStreet;
+  final String brgy;
+  final String municipality;
+  final String city;
+  final String province;
+  final String country;
+  final String zipCode;
+
+  @override
+  List<Object> get props => [
+    houseAndStreet,
+    brgy,
+    municipality,
+    city,
+    province,
+    country,
+    zipCode
+  ];
+
 
   LotAddress.fromJson(Map<String, dynamic> json)
       : houseAndStreet = json["houseAndStreet"] as String,

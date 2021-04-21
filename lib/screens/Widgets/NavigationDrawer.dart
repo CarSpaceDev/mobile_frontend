@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
-import 'Popup.dart';
-import 'WalletInfoWidget.dart';
+import '../Home/Popup.dart';
+import '../Home/WalletInfoWidget.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
   @override
