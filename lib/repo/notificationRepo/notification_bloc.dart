@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/navigation.dart';
+import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/screens/Home/NotificationWidget.dart';
 import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,8 +42,26 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
     if (event is NewNotificationReceived) {
       print("New notification added to the collection");
+      print(nRepo[0].type);
       PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
-          child: Text("A notification update was received"), barrierDismissible: true);
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NotificationWidget(notification: nRepo[0]),
+              CSTile(
+                onTap: () {
+                  print("some actions");
+                },
+                color: TileColor.Primary,
+                child: CSText(
+                  "SOME ACTIONS HERE",
+                  textType: TextType.Button,
+                ),
+              )
+            ],
+          ),
+          barrierDismissible: true);
+
       add(NotificationsUpdated(notifications: nRepo));
     }
     if (event is NotificationOpened) {
