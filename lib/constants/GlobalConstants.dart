@@ -54,10 +54,18 @@ class CSTheme {
     caption = TextStyle(fontWeight: FontWeight.w400, fontSize: 11, letterSpacing: 0.33);
 
     appBarTextDark = TextStyle(
-        fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 1, color: this.csWhite, fontFamily: "Roboto");
+        fontWeight: FontWeight.w900,
+        fontSize: 24,
+        letterSpacing: 1,
+        color: this.csWhite,
+        fontFamily: "Roboto");
 
     appBarTextLight = TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 18, letterSpacing: 0.54, color: this.csBlack, fontFamily: "Roboto");
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        letterSpacing: 0.54,
+        color: this.csBlack,
+        fontFamily: "Roboto");
 
     appBarThemePrimary = AppBarTheme(
         color: this.primary,

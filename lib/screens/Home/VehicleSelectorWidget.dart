@@ -21,7 +21,8 @@ class VehicleSelectorWidget extends StatefulWidget {
   _VehicleSelectorWidgetState createState() => _VehicleSelectorWidgetState();
 }
 
-class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with TickerProviderStateMixin {
+class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget>
+    with TickerProviderStateMixin {
   VehicleRepoBloc vehicleRepoBloc;
   UserRepoBloc userRepoBloc;
   VehicleBloc vehicleBloc;
@@ -32,7 +33,8 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
   bool tapped = false;
   @override
   void initState() {
-    controller = PageController(initialPage: actualIndex, viewportFraction: 1 / 2);
+    controller =
+        PageController(initialPage: actualIndex, viewportFraction: 1 / 2);
     super.initState();
   }
 
@@ -46,11 +48,13 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
   Widget build(BuildContext context) {
     if (vehicleRepoBloc == null) {
       vehicleRepoBloc = VehicleRepoBloc();
-      vehicleRepoBloc.add(InitializeVehicleRepo(uid: locator<AuthService>().currentUser().uid));
+      vehicleRepoBloc.add(
+          InitializeVehicleRepo(uid: locator<AuthService>().currentUser().uid));
     }
     if (userRepoBloc == null) {
       userRepoBloc = UserRepoBloc();
-      userRepoBloc.add(InitializeUserRepo(uid: locator<AuthService>().currentUser().uid));
+      userRepoBloc.add(
+          InitializeUserRepo(uid: locator<AuthService>().currentUser().uid));
     }
     if (vehicleBloc == null) {
       vehicleBloc = VehicleBloc();
@@ -85,12 +89,15 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                   padding: EdgeInsets.only(bottom: 16),
                 ),
               if (!tapped)
-                BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (BuildContext context, vehicleState) {
+                BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
+                    builder: (BuildContext context, vehicleState) {
                   if (vehicleState is VehicleRepoReady) {
-                    return BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, state) {
+                    return BlocBuilder<UserRepoBloc, UserRepoState>(
+                        builder: (BuildContext context, state) {
                       if (state is UserRepoReady) {
                         Vehicle selectedVehicle;
-                        bool vehiclesAvailable = vehicleState.vehicles.isNotEmpty;
+                        bool vehiclesAvailable =
+                            vehicleState.vehicles.isNotEmpty;
                         try {
                           selectedVehicle = vehicleState.vehicles.firstWhere((element) {
                             // print(element.plateNumber);
@@ -116,7 +123,8 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                     return Container();
                 }),
               if (tapped)
-                BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (BuildContext context, state) {
+                BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
+                    builder: (BuildContext context, state) {
                   if (state is VehicleRepoReady) {
                     return Column(
                       children: [
@@ -130,7 +138,8 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                 setState(() {
                                   actualIndex = i;
                                   if (i < state.vehicles.length)
-                                    header = "${state.vehicles[i].make} ${state.vehicles[i].model}";
+                                    header =
+                                        "${state.vehicles[i].make} ${state.vehicles[i].model}";
                                   else
                                     header = "ADD A VEHICLE";
                                 });
@@ -139,8 +148,10 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                 if (index < state.vehicles.length)
                                   return VehicleCard(
                                     onTap: () {
-                                      if (state.vehicles[index].status == VehicleStatus.Available) {
-                                        vehicleBloc.add(SetSelectedVehicle(vehicle: state.vehicles[index]));
+                                      if (state.vehicles[index].status ==
+                                          VehicleStatus.Available) {
+                                        vehicleBloc.add(SetSelectedVehicle(
+                                            vehicle: state.vehicles[index]));
                                         setState(() {
                                           tapped = !tapped;
                                           header = "Selected Vehicle";
@@ -150,12 +161,14 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                         PopUp.showError(
                                             context: context,
                                             title: "Vehicle is Unverified",
-                                            body: "Please allow 5-10 minutes for the vehicle to be verified");
+                                            body:
+                                                "Please allow 5-10 minutes for the vehicle to be verified");
                                     },
                                     vehicle: state.vehicles[index],
                                     height: index == actualIndex
                                         ? double.maxFinite
-                                        : MediaQuery.of(context).size.width * 0.3,
+                                        : MediaQuery.of(context).size.width *
+                                            0.3,
                                   );
                                 else
                                   return Center(child: ActionVehicleIcon());
@@ -215,7 +228,8 @@ class CurrentVehicleCard extends StatelessWidget {
         : InkWell(
             onTap: vehiclesAvailable ? onTap : null,
             child: Padding(
-                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)));
+                padding: EdgeInsets.only(bottom: 8),
+                child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)));
   }
 }
 
@@ -237,7 +251,8 @@ class VehicleCard extends StatelessWidget {
         child: Container(
           height: height,
           child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 4,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +280,8 @@ class VehicleCard extends StatelessWidget {
                             : CupertinoIcons.xmark_circle_fill,
                         color: vehicle.status == VehicleStatus.Available
                             ? csStyle.primary
-                            : vehicle.status == VehicleStatus.Blocked || vehicle.status == VehicleStatus.Rejected
+                            : vehicle.status == VehicleStatus.Blocked ||
+                                    vehicle.status == VehicleStatus.Rejected
                                 ? csStyle.csRed
                                 : csStyle.csGrey),
                     label: CSText("${Vehicle.vehicleStatus(vehicle.status)}"))
@@ -295,7 +311,9 @@ class ActionVehicleIcon extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
-            selectVehicle ? CupertinoIcons.car_detailed : CupertinoIcons.add_circled_solid,
+            selectVehicle
+                ? CupertinoIcons.car_detailed
+                : CupertinoIcons.add_circled_solid,
             size: 50,
             color: csStyle.primary,
           ),
