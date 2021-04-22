@@ -107,7 +107,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         } else {
           setPushTokenCache();
           cache.put(authService.currentUser().uid, {"skipVehicle": false});
-          navService.pushReplaceNavigateTo(HomeRoute);
+          navService.pushReplaceNavigateTo(DashboardRoute);
         }
       } else
         yield LoginError(message: res.error.toString());
@@ -124,7 +124,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = authService.currentUser();
       cache.put(user.uid, {"skipVehicle": true});
       setPushTokenCache();
-      navService.pushReplaceNavigateTo(HomeRoute);
+      navService.pushReplaceNavigateTo(DashboardRoute);
     }
     //V2 Update
     else if (event is LogoutEvent) {
@@ -217,7 +217,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else {
         if (userSettings["skipVehicle"] == true) {
           setPushTokenCache();
-          navService.pushReplaceNavigateTo(HomeRoute);
+          navService.pushReplaceNavigateTo(DashboardRoute);
         } else {
           result = ShowVehicleRegistration();
         }
@@ -225,7 +225,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else {
       setPushTokenCache();
       navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
-      navService.pushReplaceNavigateTo(HomeRoute);
+      navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
   }

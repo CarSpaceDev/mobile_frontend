@@ -12,53 +12,67 @@ part 'geolocation_state.dart';
 class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   StreamSubscription<Position> positionStream;
   CSPosition lastKnownPosition;
+  bool ready = false;
+  bool startRequest = false;
   GeolocationBloc() : super(GeolocationInitial());
   @override
   Stream<GeolocationState> mapEventToState(
     GeolocationEvent event,
   ) async* {
-    print("Geolocator State");
+    print("Geolocator event");
     print(event);
-    if (event is InitializeGeolocation) {
-      print("Initializing Geolocation");
-      Geolocator.isLocationServiceEnabled().then((bool value) {
-        if (value) {
-          Geolocator.checkPermission().then((LocationPermission v) {
-            if (v != null && v == LocationPermission.denied || v == LocationPermission.deniedForever) {
-              add(RequestPermission());
-            } else {
-              add(StartGeolocatorStream());
-            }
-          });
-        } else {
-          add(GeolocationErrorDetected(status: GeolocationStatus.NoPermission));
+    if (event is InitializeGeolocator) {
+      print("INITIALIZING GEOLOCATION");
+      bool isEnabled = await Geolocator.isLocationServiceEnabled();
+      LocationPermission currentPermission = await Geolocator.checkPermission();
+      if (!isEnabled)
+        add(GeolocationErrorDetected(status: GeolocationStatus.LocationServiceDisabled));
+      else if (currentPermission == LocationPermission.denied ||
+          currentPermission == LocationPermission.denied ||
+          currentPermission == null) {
+        add(RequestPermission());
+      } else {
+        Position currPos = await Geolocator.getCurrentPosition();
+        lastKnownPosition = CSPosition.fromMap(currPos.toJson());
+        if (startRequest)
+          add(StartGeolocation());
+        else {
+         print("Geolocator is ready");
+          yield GeolocatorReady();
         }
-      });
+      }
+    }
+    if (event is StartGeolocation) {
+      startRequest = true;
+      if (ready)
+        positionStream = Geolocator.getPositionStream(
+                desiredAccuracy: LocationAccuracy.bestForNavigation,
+                distanceFilter: 1,
+                intervalDuration: Duration(seconds: 5))
+            .listen((Position v) {
+          lastKnownPosition = CSPosition.fromMap(v.toJson());
+          add(UpdatePosition(position: lastKnownPosition));
+        });
+      else
+        add(InitializeGeolocator());
     }
     if (event is RequestPermission) {
       Geolocator.requestPermission().then((LocationPermission locationPermission) {
         if (locationPermission == LocationPermission.denied || locationPermission != LocationPermission.deniedForever)
           add(GeolocationErrorDetected(status: GeolocationStatus.NoPermission));
         else
-          add(StartGeolocatorStream());
-      });
-    }
-    if (event is StartGeolocatorStream) {
-      print("Stream started");
-      positionStream = Geolocator.getPositionStream(
-              desiredAccuracy: LocationAccuracy.bestForNavigation,
-              distanceFilter: 1,
-              intervalDuration: Duration(seconds: 5))
-          .listen((Position v) {
-        lastKnownPosition = CSPosition.fromMap(v.toJson());
-        add(UpdatePosition(position: lastKnownPosition));
+          add(InitializeGeolocator());
       });
     }
     if (event is UpdatePosition) {
       print("Position updated: ${event.position.toJson()}");
       yield PositionUpdated(position: event.position);
     }
+    if (event is GeolocationErrorDetected) {
+
+    }
     if (event is CloseGeolocationStream) {
+      startRequest = false;
       positionStream.cancel();
     }
   }

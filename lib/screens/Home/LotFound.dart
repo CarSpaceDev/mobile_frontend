@@ -204,7 +204,7 @@ class _LotFoundState extends State<LotFound> {
       print(value.statusCode);
       Navigator.of(context).pop();
       if (value.body["code"] == 200) {
-        locator<NavigationService>().pushReplaceNavigateTo(HomeRoute);
+        locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
         successfulBooking(
             DriverReservation.fromJson(value.body["reservationData"]));
       } else {

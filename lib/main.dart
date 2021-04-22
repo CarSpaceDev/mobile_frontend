@@ -1,3 +1,4 @@
+import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
@@ -45,6 +46,9 @@ class CarSpaceApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (BuildContext context) => LoginBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => GeolocationBloc(),
             ),
           ],
           child: MaterialApp(

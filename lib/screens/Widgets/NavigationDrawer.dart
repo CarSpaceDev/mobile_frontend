@@ -109,7 +109,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(HomeDashboardRoute);
+                    locator<NavigationService>().pushNavigateTo(DashboardRoute);
                   },
                   child: Text("Dashboard WIP")),
             ),

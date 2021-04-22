@@ -6,7 +6,11 @@ abstract class GeolocationEvent extends Equatable {
   const GeolocationEvent();
 }
 
-class InitializeGeolocation extends GeolocationEvent {
+class InitializeGeolocator extends GeolocationEvent {
+  @override
+  List<Object> get props => [];
+}
+class StartGeolocation extends GeolocationEvent {
   @override
   List<Object> get props => [];
 }
@@ -16,10 +20,6 @@ class GeolocationErrorDetected extends GeolocationEvent {
   GeolocationErrorDetected({@required this.status});
   @override
   List<Object> get props => [status];
-}
-class StartGeolocatorStream extends GeolocationEvent {
-  @override
-  List<Object> get props => [];
 }
 
 class RequestPermission extends GeolocationEvent {

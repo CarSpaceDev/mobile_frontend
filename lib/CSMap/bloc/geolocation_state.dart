@@ -8,6 +8,10 @@ class GeolocationInitial extends GeolocationState {
   @override
   List<Object> get props => [];
 }
+class GeolocatorReady extends GeolocationState {
+  @override
+  List<Object> get props => [];
+}
 class PositionUpdated extends GeolocationState {
   final CSPosition position;
   PositionUpdated({@required this.position});

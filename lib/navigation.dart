@@ -16,10 +16,9 @@ const String SettingsRoute = '/settings';
 const String NotificationsRoute = '/notifications';
 const String VehicleManagement = '/vehicle-manage';
 const String Reservations = '/user-reservations';
-const String HomeRoute = '/home';
+const String DashboardRoute = '/home';
 const String PartnerReservations = '/partner-reservations';
 const String WalletRoute = '/wallet';
-const String HomeDashboardRoute = '/dashboard';
 // ignore: missing_return
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -27,17 +26,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(InitializationBlocHandler(), settings);
     case LoginRoute:
       return _getPageRoute(LoginBlocHandler(), settings);
-    case HomeRoute:
-      // return _getPageRoute(HomeScreen(), settings);
-      return _getPageRoute(DriveModeScreen(), settings);
+    case DashboardRoute:
+      return _getPageRoute(HomeDashboard(), settings);
     case VehicleManagement:
       return _getPageRoute(VehicleManagementScreen(), settings);
     case Reservations:
       return _getPageRoute(ReservationScreen(), settings);
     case PartnerReservations:
       return _getPageRoute(PartnerReservationScreen(), settings);
-    case HomeDashboardRoute:
-      return _getPageRoute(HomeDashboard(), settings);
     case WalletRoute:
       return _getPageRoute(WalletScreen(), settings);
   }

@@ -68,7 +68,7 @@ class _CSMapState extends State<CSMap> {
             // print(state);
             if (state is MapInitial) {
               print("Firing Initialize GeoLoc Event");
-              geoBloc.add(InitializeGeolocation());
+              geoBloc.add(StartGeolocation());
               print("Firing Init Map Event");
               mapBloc.add(InitializeMapSettings());
             }

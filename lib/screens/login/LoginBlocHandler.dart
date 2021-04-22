@@ -1,4 +1,3 @@
-import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/screens/login/EulaScreen.dart';
 import 'package:carspace/screens/login/LandingScreen.dart';
 import 'package:carspace/screens/login/PhoneNumberInputScreen.dart';
@@ -8,12 +7,10 @@ import 'package:carspace/screens/login/TestScreen.dart';
 import 'package:carspace/screens/login/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/prompts/ErrorScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/login/login_bloc.dart';
-import '../../serviceLocator.dart';
 import 'PhoneCodeConfirmScreen.dart';
 
 class LoginBlocHandler extends StatefulWidget {
