@@ -1,6 +1,6 @@
 part of 'geolocation_bloc.dart';
 
-enum GeolocationStatus { LocationServiceDisabled, NoPermission, Active }
+enum GeolocationError { LocationServiceDisabled, NoPermission }
 
 abstract class GeolocationEvent extends Equatable {
   const GeolocationEvent();
@@ -16,7 +16,7 @@ class StartGeolocation extends GeolocationEvent {
 }
 
 class GeolocationErrorDetected extends GeolocationEvent {
-  final GeolocationStatus status;
+  final GeolocationError status;
   GeolocationErrorDetected({@required this.status});
   @override
   List<Object> get props => [status];

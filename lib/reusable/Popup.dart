@@ -21,21 +21,21 @@ class PopUp extends StatelessWidget {
         warning: true,
       );
 
-  static Future showInfo({
-    @required BuildContext context,
-    @required String title,
-    String body,
-    Widget child,
-  }) =>
+  static Future showInfo(
+          {@required BuildContext context,
+          @required String title,
+          String body,
+          Widget child,
+          Function onAcknowledge}) =>
       show(
-        context: context,
-        title: title,
-        body: body,
-        child: child,
-        backgroundColor: csStyle.csWhite,
-        titleColor: TextColor.Primary,
-        bodyColor: TextColor.Primary,
-      );
+          context: context,
+          title: title,
+          body: body,
+          child: child,
+          backgroundColor: csStyle.csWhite,
+          titleColor: TextColor.Primary,
+          bodyColor: TextColor.Primary,
+          onAcknowledge: onAcknowledge);
 
   static Future showOption({
     @required BuildContext context,
@@ -63,6 +63,7 @@ class PopUp extends StatelessWidget {
     @required TextColor titleColor,
     @required TextColor bodyColor,
     Function onAccept,
+    Function onAcknowledge,
     bool warning = false,
   }) {
     var height = MediaQuery.of(context).size.height;
@@ -87,6 +88,7 @@ class PopUp extends StatelessWidget {
             backgroundColor: backgroundColor,
             titleColor: titleColor,
             bodyColor: bodyColor,
+            onAcknowledge: onAcknowledge,
             onAccept: onAccept,
             warning: warning,
           ),
@@ -105,6 +107,7 @@ class PopUp extends StatelessWidget {
     @required this.titleColor,
     @required this.bodyColor,
     this.onAccept,
+    this.onAcknowledge,
     this.warning = false,
   }) : super(key: key);
 
@@ -115,6 +118,7 @@ class PopUp extends StatelessWidget {
   final TextColor titleColor;
   final TextColor bodyColor;
   final Function onAccept;
+  final Function onAcknowledge;
   final bool warning;
 
   @override
@@ -219,6 +223,7 @@ class PopUp extends StatelessWidget {
                         textColor: TextColor.Primary,
                       ),
                       onPressed: () {
+                        if (onAcknowledge != null) onAcknowledge();
                         Navigator.of(context).pop();
                       },
                     ),

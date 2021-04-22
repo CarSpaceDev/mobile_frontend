@@ -2,9 +2,15 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/navigation.dart';
+import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+import '../../serviceLocator.dart';
 
 part 'geolocation_event.dart';
 part 'geolocation_state.dart';
@@ -25,10 +31,11 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
       print("INITIALIZING GEOLOCATION");
       bool isEnabled = await Geolocator.isLocationServiceEnabled();
       LocationPermission currentPermission = await Geolocator.checkPermission();
+      print(currentPermission);
       if (!isEnabled)
-        add(GeolocationErrorDetected(status: GeolocationStatus.LocationServiceDisabled));
+        add(GeolocationErrorDetected(status: GeolocationError.LocationServiceDisabled));
       else if (currentPermission == LocationPermission.denied ||
-          currentPermission == LocationPermission.denied ||
+          currentPermission == LocationPermission.deniedForever ||
           currentPermission == null) {
         add(RequestPermission());
       } else {
@@ -37,7 +44,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         if (startRequest)
           add(StartGeolocation());
         else {
-         print("Geolocator is ready");
+          print("Geolocator is ready");
           yield GeolocatorReady();
         }
       }
@@ -57,19 +64,43 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         add(InitializeGeolocator());
     }
     if (event is RequestPermission) {
-      Geolocator.requestPermission().then((LocationPermission locationPermission) {
-        if (locationPermission == LocationPermission.denied || locationPermission != LocationPermission.deniedForever)
-          add(GeolocationErrorDetected(status: GeolocationStatus.NoPermission));
-        else
-          add(InitializeGeolocator());
-      });
+      LocationPermission currentPermission = await Geolocator.requestPermission();
+      print("Permission after it is shown $currentPermission");
+      if (currentPermission == LocationPermission.denied ||
+          currentPermission == LocationPermission.deniedForever ||
+          currentPermission == null) {
+        add(GeolocationErrorDetected(status: GeolocationError.NoPermission));
+      } else
+        add(InitializeGeolocator());
     }
     if (event is UpdatePosition) {
       print("Position updated: ${event.position.toJson()}");
       yield PositionUpdated(position: event.position);
     }
     if (event is GeolocationErrorDetected) {
-
+      if (event.status == GeolocationError.LocationServiceDisabled)
+        PopUp.showInfo(
+            context: locator<NavigationService>().navigatorKey.currentContext,
+            title: "Location Services Disabled",
+            body: "CarSpace needs geolocation services to work",
+            onAcknowledge: () async {
+              bool enabled = await Geolocator.openLocationSettings();
+              print("Opening location settings");
+              print(enabled);
+              locator<NavigationService>()
+                  .navigatorKey
+                  .currentContext
+                  .read<GeolocationBloc>()
+                  .add(InitializeGeolocator());
+            });
+      if (event.status == GeolocationError.NoPermission)
+        PopUp.showInfo(
+            context: locator<NavigationService>().navigatorKey.currentContext,
+            title: "Please give CarSpace geolocation service permission.",
+            body: "CarSpace needs geolocation services to work",
+            onAcknowledge: () async {
+              locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(RequestPermission());
+            });
     }
     if (event is CloseGeolocationStream) {
       startRequest = false;
