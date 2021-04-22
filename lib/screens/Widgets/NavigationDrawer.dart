@@ -1,9 +1,9 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
-import 'package:carspace/model/User.dart';
+import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/screens/Home/NotificationList.dart';
+import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
-import '../Home/Popup.dart';
 import '../Home/WalletInfoWidget.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
@@ -85,7 +84,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    PopupNotifications.showNotificationDialog(context);
+                    PopupNotifications.showNotificationDialog(context,child:NotificationList());
                   },
                   child: Text("Notifications")),
             ),

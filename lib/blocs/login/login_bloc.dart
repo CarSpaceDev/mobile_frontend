@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/model/User.dart';
+import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
+import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/screens/login/RegistrationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -225,6 +226,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else {
       setPushTokenCache();
       navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
+      navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: user.uid));
       navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;

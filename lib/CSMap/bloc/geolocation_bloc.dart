@@ -8,6 +8,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+
 import '../../serviceLocator.dart';
 
 part 'geolocation_event.dart';

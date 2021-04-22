@@ -1,18 +1,18 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
-import 'package:carspace/blocs/repo/userRepo/user_repo_bloc.dart';
-import 'package:carspace/blocs/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
+import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
+import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
-import 'package:carspace/screens/Home/Popup.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
 
@@ -93,8 +93,8 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                         bool vehiclesAvailable = vehicleState.vehicles.isNotEmpty;
                         try {
                           selectedVehicle = vehicleState.vehicles.firstWhere((element) {
-                            print(element.plateNumber);
-                            print(state.user.currentVehicle);
+                            // print(element.plateNumber);
+                            // print(state.user.currentVehicle);
                             return element.plateNumber == state.user.currentVehicle;
                           });
                         } catch (e) {

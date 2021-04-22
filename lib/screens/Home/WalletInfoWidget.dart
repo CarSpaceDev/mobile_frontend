@@ -1,6 +1,5 @@
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
-import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
