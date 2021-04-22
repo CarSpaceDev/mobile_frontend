@@ -28,7 +28,6 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
             .where("currentUsers", arrayContains: uid)
             .snapshots()
             .listen((result) {
-          print("updateReceived");
           List<Vehicle> vehicles = [];
           for (var doc in result.docs) {
             vehicles.add(Vehicle.fromJson(doc.data()));
@@ -50,8 +49,7 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
       //   });
     }
     if (event is UpdateVehicleRepo) {
-      print("New update");
-      print(event.vehicles);
+      print("New update to vehicles repo");
       yield VehicleRepoReady(vehicles: event.vehicles);
     }
     if (event is DisposeVehicleRepo) {

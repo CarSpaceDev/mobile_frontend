@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/navigation.dart';
-import 'package:carspace/reusable/CSText.dart';
-import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,6 +43,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           add(StartGeolocation());
         else {
           print("Geolocator is ready");
+          ready = true;
           yield GeolocatorReady();
         }
       }

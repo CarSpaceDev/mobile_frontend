@@ -19,6 +19,7 @@ const String Reservations = '/user-reservations';
 const String DashboardRoute = '/home';
 const String PartnerReservations = '/partner-reservations';
 const String WalletRoute = '/wallet';
+const String DriveModeRoute = '/drive';
 // ignore: missing_return
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -36,6 +37,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(PartnerReservationScreen(), settings);
     case WalletRoute:
       return _getPageRoute(WalletScreen(), settings);
+    case DriveModeRoute:
+      return _getPageRoute(DriveModeScreen(), settings);
   }
 }
 

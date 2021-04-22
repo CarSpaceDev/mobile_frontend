@@ -32,8 +32,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       add(UpdateMap(settings: settings));
     }
     if (event is UpdateMap) {
-      print("UPDATE MAP CALLED");
-      print(event.settings.markers);
       yield MapSettingsReady(settings: event.settings);
     }
   }

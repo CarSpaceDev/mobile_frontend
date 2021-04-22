@@ -22,12 +22,12 @@ class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
       var result = await locator<ApiService>().getLotsInRadius(
           latitude: event.position.latitude,
           longitude: event.position.longitude,
-          kmRadius: 0.5,
+          kmRadius: 10,
           type: GeoSearchType.Distance.index);
       if (result.statusCode == 200) {
         List<Lot> lots = [];
         for (var lot in result.body) {
-          print(lot);
+          // print(lot);
           lots.add(Lot.fromJson(lot));
         }
         yield LotsUpdated(lots: lots);

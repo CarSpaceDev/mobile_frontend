@@ -3,6 +3,7 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/screens/DriverScreens/DriveModeScreen.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Home/WalletInfoWidget.dart';
 import 'package:flutter/cupertino.dart';
@@ -62,6 +63,7 @@ class ParkNowWidget extends StatefulWidget {
 
 class _ParkNowWidgetState extends State<ParkNowWidget> {
   PageController _pageController = new PageController();
+  NavigationService nav = locator<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return CSTile(
@@ -109,6 +111,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     child: InkWell(
                       onTap: () async {
                         _pageController.jumpToPage(0);
+                        nav.pushNavigateTo(DriveModeRoute);
                       },
                       child: Container(
                         width: double.infinity,
