@@ -23,7 +23,11 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
-    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<GeolocationBloc>()
+        .add(InitializeGeolocator());
     super.initState();
   }
 
@@ -33,7 +37,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
-        title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
+        title: CSText("Dashboard",
+            textType: TextType.H4, textColor: TextColor.White),
         actions: [WalletInfoWidget()],
       ),
       drawer: HomeNavigationDrawer(),
@@ -76,7 +81,9 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
       color: TileColor.None,
       child: Container(
         height: 160,
-        decoration: BoxDecoration(color: csStyle.primary, borderRadius: BorderRadius.all(Radius.circular(8))),
+        decoration: BoxDecoration(
+            color: csStyle.primary,
+            borderRadius: BorderRadius.all(Radius.circular(8))),
         child: PageView(
           controller: _pageController,
           physics: new NeverScrollableScrollPhysics(),
@@ -84,7 +91,9 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
             //page 1
             InkWell(
               onTap: () {
-                _pageController.animateToPage(1, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                _pageController.animateToPage(1,
+                    duration: Duration(milliseconds: 100),
+                    curve: Curves.easeIn);
               },
               child: Container(
                 child: Center(
@@ -127,7 +136,9 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                               color: csStyle.csWhite,
                               size: 50,
                             ),
-                            CSText("DRIVE\n(ON DEMAND)", textColor: TextColor.White, textAlign: TextAlign.center)
+                            CSText("DRIVE\n(ON DEMAND)",
+                                textColor: TextColor.White,
+                                textAlign: TextAlign.center)
                           ],
                         ),
                       ),
@@ -142,8 +153,10 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                             border: Border(
-                                left: BorderSide(width: 1, color: csStyle.csWhite),
-                                right: BorderSide(width: 1, color: csStyle.csWhite))),
+                                left: BorderSide(
+                                    width: 1, color: csStyle.csWhite),
+                                right: BorderSide(
+                                    width: 1, color: csStyle.csWhite))),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

@@ -12,10 +12,10 @@ import 'package:flutter/cupertino.dart';
 part 'lot_geo_repo_event.dart';
 part 'lot_geo_repo_state.dart';
 
-enum GeoSearchType { Pricing, Distance }
+enum GeoSearchType { Booking, Reservation }
 
 class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
-  GeoSearchType searchType = GeoSearchType.Distance;
+  GeoSearchType searchType = GeoSearchType.Booking;
   VehicleType vehicleSearchType = VehicleType.Motorcycle;
   double searchRadius = 10;
   CSPosition lastPosition;
@@ -36,16 +36,17 @@ class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
       if (result.statusCode == 200) {
         List<Lot> lots = [];
         for (var lot in result.body) {
-          // print(lot);
+          print(lot);
           lots.add(Lot.fromJson(lot));
         }
         yield LotsUpdated(lots: lots);
-      }
-      else print("API Error[LotGeoRepo]: ${result.statusCode}");
+      } else
+        print("API Error[LotGeoRepo]: ${result.statusCode}");
     }
     if (event is UpdateSearchTerms) {
       if (event.searchRadius != null) searchRadius = event.searchRadius;
-      if (event.vehicleSearchType != null) vehicleSearchType = event.vehicleSearchType;
+      if (event.vehicleSearchType != null)
+        vehicleSearchType = event.vehicleSearchType;
       if (event.searchType != null) searchType = event.searchType;
       if (lastPosition != null) {
         add(UpdateLotRepoCenter(position: lastPosition));
