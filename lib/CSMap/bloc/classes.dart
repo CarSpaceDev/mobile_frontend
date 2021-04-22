@@ -170,40 +170,32 @@ class MapSettings extends Equatable {
   final BitmapDescriptor lotIcon;
   final BitmapDescriptor driverIcon;
   final bool showPOI;
+  final scrollEnabled;
   MapSettings(
       {@required this.markers,
       @required this.mapStylePOI,
       @required this.mapStyle,
       @required this.lotIcon,
       @required this.driverIcon,
-      @required this.showPOI});
+      @required this.showPOI,
+      @required this.scrollEnabled});
   @override
-  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, driverIcon, showPOI];
+  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, driverIcon, showPOI, scrollEnabled];
 
-  copyWith({Set<Marker> markers, bool showPOI}) {
-    if (markers != null && showPOI != null)
-      return new MapSettings(
-          markers: markers,
-          showPOI: showPOI,
-          mapStylePOI: this.mapStylePOI,
-          mapStyle: this.mapStyle,
-          lotIcon: this.lotIcon,
-          driverIcon: this.driverIcon);
-    if (markers != null)
-      return new MapSettings(
-          markers: markers,
-          showPOI: this.showPOI,
-          mapStylePOI: this.mapStylePOI,
-          mapStyle: this.mapStyle,
-          lotIcon: this.lotIcon,
-          driverIcon: this.driverIcon);
-    if (showPOI != null)
-      return new MapSettings(
-          markers: this.markers,
-          showPOI: showPOI,
-          mapStylePOI: this.mapStylePOI,
-          mapStyle: this.mapStyle,
-          lotIcon: this.lotIcon,
-          driverIcon: this.driverIcon);
+  copyWith({Set<Marker> markers, bool showPOI, bool scrollEnabled}) {
+    Set<Marker> m;
+    bool sPOI;
+    bool scroll;
+    m = markers ?? this.markers;
+    sPOI = showPOI ?? this.showPOI;
+    scroll = scrollEnabled ?? this.scrollEnabled;
+    return new MapSettings(
+        markers: m,
+        showPOI: sPOI,
+        scrollEnabled: scroll,
+        mapStylePOI: this.mapStylePOI,
+        mapStyle: this.mapStyle,
+        lotIcon: this.lotIcon,
+        driverIcon: this.driverIcon);
   }
 }

@@ -28,7 +28,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
         BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png')
       ]);
-      settings = MapSettings(mapStylePOI: result[0], mapStyle: result[1], lotIcon: result[2], driverIcon: result[3],markers:HashSet<Marker>(),showPOI: false);
+      settings = MapSettings(mapStylePOI: result[0], mapStyle: result[1], lotIcon: result[2], driverIcon: result[3],markers:HashSet<Marker>(),showPOI: false, scrollEnabled: false);
       add(UpdateMap(settings: settings));
     }
     if (event is UpdateMap) {

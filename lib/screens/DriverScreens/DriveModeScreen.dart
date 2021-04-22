@@ -3,13 +3,16 @@ import 'dart:collection';
 import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DriveModeScreen extends StatefulWidget {
   @override
@@ -56,13 +59,15 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
         listeners: [
           BlocListener<GeolocationBloc, GeolocationState>(
             listener: (BuildContext context, state) {
-              print("POSITION UPDATED");
               if (state is PositionUpdated) {
-                driver = Marker(
-                    markerId: MarkerId("DRIVER"),
-                    icon: mapBloc.settings.driverIcon,
-                    position: LatLng(state.position.latitude, state.position.longitude));
-                lotBloc.add(UpdateLotRepoCenter(position: state.position));
+                if (mapBloc.state is MapSettingsReady) {
+                  driver = Marker(
+                      markerId: MarkerId("DRIVER"),
+                      icon: mapBloc.settings.driverIcon,
+                      position: LatLng(state.position.latitude, state.position.longitude));
+                  lotBloc.add(UpdateLotRepoCenter(position: state.position));
+                } else
+                  print("MAP IS NOT YET READY");
               }
             },
           ),
@@ -95,14 +100,32 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
             brightness: Brightness.dark,
             title: Text("Drive Mode"),
             centerTitle: true,
+            elevation: 0,
             // actions: <Widget>[action],
-            // bottom: PreferredSize(
-            //   preferredSize: Size(MediaQuery.of(context).size.width, 52),
-            //   child: LocationSearchWidget(
-            //     // callback: locationSearchCallback,
-            //     // controller: _searchController,
-            //   ),
-            // ),
+            bottom: PreferredSize(
+              preferredSize: Size(MediaQuery.of(context).size.width, 52),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 52,
+                color: Colors.transparent,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CSTile(
+                      onTap: () {
+                        showRadiusOptions(context, lotBloc);
+                      },
+                      expanded: true,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      margin: EdgeInsets.all(8),
+                      showBorder: true,
+                      color: TileColor.White,
+                      child: CSText("Searching for lots within ${lotBloc.searchRadius} km"),
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
           body: Container(
             child: Column(children: [
@@ -110,13 +133,17 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
                 child: CSMap(),
               ),
               CSTile(
-                color: lotsAvailable > 0 ? TileColor.Primary : TileColor.Grey,
+                color: lotsAvailable > 0 ? TileColor.Secondary : TileColor.DarkGrey,
                 margin: EdgeInsets.zero,
                 padding: EdgeInsets.symmetric(vertical: 32),
-                child: CSText(
-                  lotsAvailable > 0 ? "BOOK NOW" : "NO LOTS AVAILABLE",
-                  textColor: lotsAvailable > 0 ? TextColor.White : TextColor.Primary,
-                  textType: TextType.Button,
+                child: Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: lotsAvailable > 0 ? Colors.white70 : Colors.white,
+                  child: CSText(
+                    lotsAvailable > 0 ? "BOOK NOW" : "NO LOTS AVAILABLE",
+                    textColor: lotsAvailable > 0 ? TextColor.White : TextColor.Primary,
+                    textType: TextType.Button,
+                  ),
                 ),
               )
             ]),
@@ -124,5 +151,34 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
         ),
       ),
     );
+  }
+
+  showRadiusOptions(BuildContext context, LotGeoRepoBloc bloc) {
+    Map<String, double> distance = {
+      "Walking Distance: 500m": 0.5,
+      "Near: 1km": 1,
+      "Short drive: 3km": 3,
+      "Far: 5km": 5,
+      "Very, very far: 10km": 10
+    };
+    Map<double, String> distanceToString = {
+      0.5: "Walking Distance: 500m",
+      1: "Near: 1km",
+      3: "Short drive: 3km",
+      5: "Far: 5km",
+      10: "Very, very far: 10km"
+    };
+
+    showMaterialRadioPicker(
+        context: context,
+        title: "Search Radius",
+        confirmText: "OK",
+        cancelText: "CANCEL",
+        items: distance.keys.toList(),
+        selectedItem: distanceToString[bloc.searchRadius],
+        onChanged: (String v) {
+          bloc.add(UpdateSearchTerms(searchRadius: distance[v]));
+          setState(() {});
+        });
   }
 }

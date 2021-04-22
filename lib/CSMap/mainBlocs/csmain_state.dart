@@ -1,10 +1,10 @@
 part of 'csmain_bloc.dart';
 
-abstract class CsmainState extends Equatable {
-  const CsmainState();
+abstract class CSMainState extends Equatable {
+  const CSMainState();
 }
 
-class CsmainInitial extends CsmainState {
+class CSMainInitial extends CSMainState {
   @override
   List<Object> get props => [];
 }

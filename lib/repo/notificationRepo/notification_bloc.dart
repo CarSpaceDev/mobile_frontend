@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
+import 'package:carspace/navigation.dart';
+import 'package:carspace/screens/Home/PopupNotifications.dart';
+import 'package:carspace/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-
+import 'package:flutter/material.dart';
 part 'notification_event.dart';
 part 'notification_state.dart';
 
@@ -13,6 +16,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   StreamSubscription<QuerySnapshot> notifications;
   CollectionReference repoReference;
+  List<CSNotification> nRepo = [];
   @override
   Stream<NotificationState> mapEventToState(
     NotificationEvent event,
@@ -20,12 +24,24 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     if (event is InitializeNotificationRepo) {
       repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
       notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
-        List<CSNotification> nRepo = [];
+        List<CSNotification> temp = [];
         for (QueryDocumentSnapshot r in result.docs) {
-          nRepo.add(CSNotification.fromDoc(r));
+          temp.add(CSNotification.fromDoc(r));
         }
-        add(NotificationsUpdated(notifications: nRepo));
+        if (temp.length > nRepo.length && nRepo.isNotEmpty) {
+          nRepo = temp;
+          add(NewNotificationReceived());
+        } else {
+          nRepo = temp;
+          add(NotificationsUpdated(notifications: nRepo));
+        }
       });
+    }
+    if (event is NewNotificationReceived) {
+      print("New notification added to the collection");
+      PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+          child: Text("A notification update was received"), barrierDismissible: true);
+      add(NotificationsUpdated(notifications: nRepo));
     }
     if (event is NotificationOpened) {
       print(event.uid);

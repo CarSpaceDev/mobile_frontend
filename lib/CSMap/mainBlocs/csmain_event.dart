@@ -1,5 +1,5 @@
 part of 'csmain_bloc.dart';
 
-abstract class CsmainEvent extends Equatable {
-  const CsmainEvent();
+abstract class CSMainEvent extends Equatable {
+  const CSMainEvent();
 }

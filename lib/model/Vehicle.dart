@@ -1,12 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-enum VehicleStatus {
-  Unverified,
-  Blocked,
-  Rejected,
-  Available,
-  Unavailable
-}
+enum VehicleStatus { Unverified, Blocked, Rejected, Available, Unavailable }
+
+enum VehicleType { Motorcycle, Sedan, PickUp, Van, Truck4W, Truck8W }
 
 class Vehicle extends Equatable {
   final String plateNumber;
@@ -17,7 +13,7 @@ class Vehicle extends Equatable {
   final String vehicleImage;
   final String make;
   final String model;
-  final int type;
+  final VehicleType type;
   final String color;
   final VehicleStatus status;
   // ignore: non_constant_identifier_names
@@ -34,9 +30,17 @@ class Vehicle extends Equatable {
         ownerId = json['ownerId'] as String,
         make = json['make'] as String,
         model = json['model'] as String,
-        type = json['type'] as int,
+        type = VehicleType.values[json['type']],
         color = json['color'] as String,
-        status = json["isBlocked"] ? VehicleStatus.Blocked : json["isRejected"] ? VehicleStatus.Rejected : json['isVerified'] == false ? VehicleStatus.Unverified : json["status"]==1? VehicleStatus.Unavailable : VehicleStatus.Available,
+        status = json["isBlocked"]
+            ? VehicleStatus.Blocked
+            : json["isRejected"]
+                ? VehicleStatus.Rejected
+                : json['isVerified'] == false
+                    ? VehicleStatus.Unverified
+                    : json["status"] == 1
+                        ? VehicleStatus.Unavailable
+                        : VehicleStatus.Available,
         currentUsers = json['currentUsers'] as List<dynamic>;
 
   toJson() {
@@ -55,8 +59,8 @@ class Vehicle extends Equatable {
     };
   }
 
-  static String vehicleStatus(VehicleStatus status){
-    switch (status){
+  static String vehicleStatus(VehicleStatus status) {
+    switch (status) {
       case VehicleStatus.Unavailable:
         return "Unavailable";
       case VehicleStatus.Unverified:
@@ -98,4 +102,3 @@ class VehicleAddAuth {
     };
   }
 }
-

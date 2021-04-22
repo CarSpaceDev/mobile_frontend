@@ -14,6 +14,7 @@ class CSMap extends StatefulWidget {
 
 class _CSMapState extends State<CSMap> {
   CSPosition currentPosition;
+  MapSettings settings;
   Widget csMap;
   GoogleMapController mapController;
   double zoom = 16;
@@ -39,14 +40,14 @@ class _CSMapState extends State<CSMap> {
         BlocListener<MapBloc, MapState>(listener: (BuildContext context, state) {
           if (state is MapSettingsReady) {
             print("UPDATING MAP");
-            print(state.settings.markers);
-            setState(() {});
+            setState(() {
+              settings = state.settings;
+            });
           }
         })
       ],
       child: BlocBuilder<MapBloc, MapState>(
         builder: (BuildContext context, state) {
-          // print(state);
           if (state is MapInitial) {
             print("Firing Initialize GeoLoc Event");
             context.bloc<GeolocationBloc>().add(StartGeolocation());
@@ -54,6 +55,7 @@ class _CSMapState extends State<CSMap> {
             context.bloc<MapBloc>().add(InitializeMapSettings());
           }
           if (state is MapSettingsReady) {
+            if (settings == null) settings = state.settings;
             return Stack(
               children: [
                 GoogleMap(
@@ -65,12 +67,12 @@ class _CSMapState extends State<CSMap> {
                     zoom = camera.zoom;
                   },
                   myLocationButtonEnabled: false,
+                  scrollGesturesEnabled: settings.scrollEnabled,
                   mapToolbarEnabled: false,
                   zoomControlsEnabled: true,
                   onMapCreated: (GoogleMapController controller) async {
                     mapController = controller;
-                    mapController
-                        .setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+                    mapController.setMapStyle(settings.showPOI ? settings.mapStylePOI : settings.mapStyle);
                   },
                   initialCameraPosition: currentPosition != null
                       ? CameraPosition(
@@ -81,7 +83,7 @@ class _CSMapState extends State<CSMap> {
                           target: LatLng(10.313741830368738, 123.89023728796286),
                           zoom: 15.0,
                         ),
-                  markers: state.settings.markers,
+                  markers: settings.markers,
                 )
               ],
             );

@@ -6,12 +6,12 @@ import 'package:equatable/equatable.dart';
 part 'csmain_event.dart';
 part 'csmain_state.dart';
 
-class CsmainBloc extends Bloc<CsmainEvent, CsmainState> {
-  CsmainBloc() : super(CsmainInitial());
+class CSMainBloc extends Bloc<CSMainEvent, CSMainState> {
+  CSMainBloc() : super(CSMainInitial());
 
   @override
-  Stream<CsmainState> mapEventToState(
-    CsmainEvent event,
+  Stream<CSMainState> mapEventToState(
+    CSMainEvent event,
   ) async* {
     // TODO: implement mapEventToState
   }

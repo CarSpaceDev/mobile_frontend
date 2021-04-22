@@ -24,6 +24,13 @@ class NotificationOpened extends NotificationEvent {
   List<Object> get props => [uid];
 }
 
+class NewNotificationReceived extends NotificationEvent {
+  NewNotificationReceived();
+  @override
+  List<Object> get props => [];
+}
+
+
 class DisposeNotificationRepo extends NotificationEvent {
   @override
   List<Object> get props => [];
