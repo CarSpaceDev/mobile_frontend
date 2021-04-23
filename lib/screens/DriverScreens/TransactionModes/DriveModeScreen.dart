@@ -7,6 +7,7 @@ import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
@@ -153,6 +154,9 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
                 }),
               ),
               CSTile(
+                onTap: (){
+                //BookingMode.Booking.index
+              },
                 color: lotsAvailable > 0 ? TileColor.Secondary : TileColor.DarkGrey,
                 margin: EdgeInsets.zero,
                 padding: EdgeInsets.symmetric(vertical: 32),

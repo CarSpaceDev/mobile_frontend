@@ -1,27 +1,21 @@
-import 'dart:collection';
-
 import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
-import 'package:carspace/model/Lot.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
-import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:shimmer/shimmer.dart';
 
-enum DestinationMode { ReserveLot, DriveToDestination }
+enum BookingMode { Booking, Reservation }
 
 class DestinationPicker extends StatefulWidget {
-  final DestinationMode mode;
-  DestinationPicker({this.mode = DestinationMode.ReserveLot});
+  final BookingMode mode;
+  DestinationPicker({this.mode = BookingMode.Reservation});
   @override
   _DestinationPickerState createState() => _DestinationPickerState();
 }
@@ -60,7 +54,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Brightness.dark,
-          title: Text(widget.mode == DestinationMode.ReserveLot ? "Reserve a Lot" : "Park at Destination"),
+          title: Text(widget.mode == BookingMode.Reservation ? "Reserve a Lot" : "Park at Destination"),
           centerTitle: true,
           elevation: 0,
         ),
@@ -121,6 +115,11 @@ class _DestinationPickerState extends State<DestinationPicker> {
               }),
             ),
             CSTile(
+              onTap: (){
+                //sends api data
+                //locator<AuthService>().currentUser().uid
+                //widget.mode.index
+              },
               color: TileColor.Secondary,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.symmetric(vertical: 32),
@@ -149,6 +148,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
               position: LatLng(position.latitude, position.longitude),
               onDragEnd: (LatLng newPos) {
                 print("NewPosition: ${newPos.toJson()}");
+                destination.location = newPos;
               }),
         ),
       );

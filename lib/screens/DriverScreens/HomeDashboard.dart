@@ -154,7 +154,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     onTap: () {
                       nav.pushNavigateToWidget(FadeRoute(
                           child: DestinationPicker(
-                            mode: DestinationMode.ReserveLot,
+                            mode: BookingMode.Reservation,
                           ),
                           routeName: "ReserveParking"));
                       _pageController.jumpToPage(0);
@@ -170,7 +170,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     onTap: () async {
                       nav.pushNavigateToWidget(FadeRoute(
                           child: DestinationPicker(
-                            mode: DestinationMode.DriveToDestination,
+                            mode: BookingMode.Booking,
                           ),
                           routeName: "ReserveParking"));
                       _pageController.jumpToPage(0);
