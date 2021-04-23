@@ -34,6 +34,14 @@ class UpdatePosition extends GeolocationEvent {
   List<Object> get props => [position];
 }
 
+class UpdatePositionManual extends GeolocationEvent {
+  final CSPosition position;
+  UpdatePositionManual({@required this.position});
+  @override
+  List<Object> get props => [position];
+}
+
+
 class CloseGeolocationStream extends GeolocationEvent {
   @override
   List<Object> get props => [];

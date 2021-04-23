@@ -714,13 +714,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: <Widget>[action],
-      bottom: PreferredSize(
-        preferredSize: Size(MediaQuery.of(context).size.width, 52),
-        child: LocationSearchWidget(
-          callback: locationSearchCallback,
-          controller: _searchController,
-        ),
-      ),
+      // bottom: PreferredSize(
+      //   preferredSize: Size(MediaQuery.of(context).size.width, 52),
+      //   child: LocationSearchWidget(
+      //     callback: locationSearchCallback,
+      //     controller: _searchController,
+      //   ),
+      // ),
     );
   }
 

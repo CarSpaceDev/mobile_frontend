@@ -20,3 +20,9 @@ class UpdateMapPosition extends MapEvent {
   @override
   List<Object> get props => [position];
 }
+class ShowDestinationMarker extends MapEvent {
+  final Marker marker;
+  ShowDestinationMarker({@required this.marker});
+  @override
+  List<Object> get props => [marker];
+}

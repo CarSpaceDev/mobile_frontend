@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:carspace/services/AuthService.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -62,9 +62,11 @@ class PushMessagingService {
       onLaunch: (Map<String, dynamic> message) async {},
       onResume: (Map<String, dynamic> message) async {},
     );
-    firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: true));
-    firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {});
+    if (Platform.isIOS) {
+      firebaseMessaging.requestNotificationPermissions(
+          const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: true));
+      firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {});
+    }
     firebaseMessaging.getToken().then((String token) async {
       assert(token != null);
       this.token = token;
