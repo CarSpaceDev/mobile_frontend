@@ -2,14 +2,20 @@ import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
+import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/screens/Home/LotFound.dart';
+import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../serviceLocator.dart';
 
 enum BookingMode { Booking, Reservation }
 
@@ -54,7 +60,9 @@ class _DestinationPickerState extends State<DestinationPicker> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Brightness.dark,
-          title: Text(widget.mode == BookingMode.Reservation ? "Reserve a Lot" : "Park at Destination"),
+          title: Text(widget.mode == BookingMode.Reservation
+              ? "Reserve a Lot"
+              : "Park at Destination"),
           centerTitle: true,
           elevation: 0,
         ),
@@ -103,7 +111,8 @@ class _DestinationPickerState extends State<DestinationPicker> {
                 ]),
               ),
             Flexible(
-              child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+              child: BlocBuilder<MapBloc, MapState>(
+                  builder: (BuildContext context, state) {
                 if (state is MapInitial) {
                   print("Firing Initialize MapSettings Event");
                   context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -115,7 +124,8 @@ class _DestinationPickerState extends State<DestinationPicker> {
               }),
             ),
             CSTile(
-              onTap: (){
+              onTap: () {
+                callToAction();
                 //sends api data
                 //locator<AuthService>().currentUser().uid
                 //widget.mode.index
@@ -135,11 +145,89 @@ class _DestinationPickerState extends State<DestinationPicker> {
     );
   }
 
+  callToAction() async {
+    if (destination == null) {
+      return print('Test');
+    }
+    var userId = locator<AuthService>().currentUser().uid;
+    var body = ({
+      "lat": destination.location.latitude,
+      "lng": destination.location.longitude,
+      "radiusInKm": .5,
+      "type": widget.mode.index,
+      "userId": userId
+    });
+
+    var result = await locator<ApiService>().getLotFromAlgo(body);
+
+    if (result.body['returnPayLoad'] == null) {
+      return showMessage(result.body['message']);
+    } else {
+      Lot lot = Lot.fromJson(result.body["returnPayLoad"][0]);
+      return showDialog(
+          barrierDismissible: true,
+          context: context,
+          builder: (_) => Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: new SizedBox(
+                  height: 500,
+                  width: 300,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: LotFound(lot, userId, widget.mode.index),
+                    ),
+                  ),
+                ),
+              ));
+    }
+  }
+
+  showMessage(String v) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "$v",
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text('Close'))
+            ],
+          );
+        });
+  }
+
   getLocation() async {
     destination = await LocationSearchService.findLocation(context);
     if (destination != null) {
-      CSPosition position =
-          CSPosition.fromMap({"longitude": destination.location.longitude, "latitude": destination.location.latitude});
+      CSPosition position = CSPosition.fromMap({
+        "longitude": destination.location.longitude,
+        "latitude": destination.location.latitude
+      });
       mapBloc.add(
         ShowDestinationMarker(
           marker: Marker(

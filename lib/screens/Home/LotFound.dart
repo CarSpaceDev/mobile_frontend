@@ -13,10 +13,9 @@ import '../../serviceLocator.dart';
 
 class LotFound extends StatefulWidget {
   final Lot lot;
-  final Vehicle vehicle;
-  final CSUser user;
-  final double currentBalance;
-  const LotFound(this.lot, this.vehicle, this.user, this.currentBalance);
+  final String user;
+  final int type;
+  const LotFound(this.lot, this.user, this.type);
   @override
   _LotFoundState createState() => _LotFoundState();
 }
@@ -65,8 +64,11 @@ class _LotFoundState extends State<LotFound> {
                       )),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text("Price :\n${widget.lot.pricing}Php / Hour",
-                        textAlign: TextAlign.center),
+                    child: widget.type == 0
+                        ? Text("Price :\n${widget.lot.pricing}Php / Hour",
+                            textAlign: TextAlign.center)
+                        : Text("Price :\n${widget.lot.pricePerDay}Php / Hour",
+                            textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -121,14 +123,25 @@ class _LotFoundState extends State<LotFound> {
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(10),
-                                  child: Text(
-                                    'Book',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize:
-                                            SizeConfig.textMultiplier * 2.5),
-                                  ),
+                                  child: widget.type == 0
+                                      ? Text(
+                                          'Book',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  SizeConfig.textMultiplier *
+                                                      2.5),
+                                        )
+                                      : Text(
+                                          'Reserve',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  SizeConfig.textMultiplier *
+                                                      2.5),
+                                        ),
                                 ),
                               ),
                             ),
@@ -187,13 +200,11 @@ class _LotFoundState extends State<LotFound> {
   reserve() async {
     print(widget.lot.pricing);
     var body = ({
-      "userId": widget.user.uid,
+      "userId": widget.user,
       "lotId": widget.lot.lotId,
       "partnerId": widget.lot.partnerId,
-      "vehicleId": widget.vehicle.plateNumber,
       "reservationType": 1,
       "lotAddress": widget.lot.address.toString(),
-      "balance": widget.currentBalance,
       "lotPrice": widget.lot.pricing
     });
     setState(() {
@@ -213,14 +224,6 @@ class _LotFoundState extends State<LotFound> {
     }).catchError((err) {
       print(err);
     });
-  }
-
-  navigateViaGoogleMaps(double lat, double lng) {
-    final AndroidIntent intent = AndroidIntent(
-        action: 'action_view',
-        data: Uri.encodeFull('google.navigation:q=$lat,$lng'),
-        package: 'com.google.android.apps.maps');
-    intent.launch();
   }
 
   successfulBooking(DriverReservation v) {
@@ -253,9 +256,7 @@ class _LotFoundState extends State<LotFound> {
                                 .currentContext)
                             .pop(null);
                         locator<ApiService>().notifyOnTheWay({
-                          "userId": widget.user.uid,
-                          "driverName": widget.user.displayName,
-                          "vehicleId": widget.vehicle.plateNumber,
+                          "userId": widget.user,
                           "lotAddress": widget.lot.address.toString(),
                           "partnerId": widget.lot.partnerId
                         });

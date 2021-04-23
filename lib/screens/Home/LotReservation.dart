@@ -449,17 +449,15 @@ class _LotReservationState extends State<LotReservation> {
 
   Future<dynamic> populateVehicles() async {
     await locator<ApiService>().getVehicles(uid: _userId).then((data) {
-      print(data.body);
-      print(_userId);
+
       List<dynamic> vehiclesFromApi = new List.from(data.body);
       if (vehiclesFromApi.isEmpty) {
-        print('here');
+
         noVehicles = true;
       } else {
         vehiclesFromApi.forEach((data) {
           vehicles.add(Vehicle.fromJson(data));
         });
-        print('Also here');
         setState(() {
           noVehicles = false;
         });

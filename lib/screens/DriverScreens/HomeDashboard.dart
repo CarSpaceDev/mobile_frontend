@@ -23,7 +23,11 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
-    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<GeolocationBloc>()
+        .add(InitializeGeolocator());
     super.initState();
   }
 
@@ -39,7 +43,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
-        title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
+        title: CSText("Dashboard",
+            textType: TextType.H4, textColor: TextColor.White),
         actions: [WalletInfoWidget()],
       ),
       drawer: HomeNavigationDrawer(),

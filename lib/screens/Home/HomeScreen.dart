@@ -87,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
               .then((value) {
             if (value.statusCode == 200) {
               currentReservation = DriverReservation.fromJson(value.body);
-              print(currentReservation.toJson());
             }
           });
         }
@@ -195,8 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: actionButton(),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
-        child:
-        Stack(
+        child: Stack(
           children: [
             Container(
               child: Stack(
@@ -475,7 +473,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .then((data) {
       if (data.statusCode == 200) {
         userData = CSUser.fromJson(data.body);
-        print(userData.toJson());
         result = true;
       } else
         result = false;
@@ -528,13 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
       "type": sortType,
       "selectedVehicleType": _selectedVehicleData.type
     };
-    print("called");
-    print(location.latitude);
-    print(location);
-    print(location.longitude);
-    print(body);
     locator<ApiService>().getLotsInRadius(body).then((res) {
-      print(res);
       if (res.statusCode == 200) {
         for (var v in List<Map<String, dynamic>>.from(res.body)) {
           Lot temp = Lot.fromJson(v);
@@ -592,7 +583,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _showPOI(bool v) {
-    print(v);
     if (v == false) {
       setState(() {
         mapController.setMapStyle(_mapStyle);
@@ -673,8 +663,6 @@ class _HomeScreenState extends State<HomeScreen> {
             : Color(0xff6200EE),
         onPressed: () {
           if (userData != null) {
-            print(userData != null);
-            print(userData.currentReservation != null);
             if (userData.currentReservation != null) {
               locator<ApiService>().notifyOnTheWay({
                 "userId": userData.uid,
@@ -687,7 +675,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       reservationId: currentReservation.reservationId)
                   .navigateViaMapBox(currentReservation.coordinates);
             } else {
-              print('clicked');
               checkBeforeReserve(lotsInRadius);
             }
           }
@@ -727,13 +714,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: <Widget>[action],
-      // bottom: PreferredSize(
-      //   preferredSize: Size(MediaQuery.of(context).size.width, 52),
-      //   child: LocationSearchWidget(
-      //     callback: locationSearchCallback,
-      //     controller: _searchController,
-      //   ),
-      // ),
+      bottom: PreferredSize(
+        preferredSize: Size(MediaQuery.of(context).size.width, 52),
+      ),
     );
   }
 
@@ -832,7 +815,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value.statusCode == 200)
         setState(() {
           currentBalance = double.parse("${value.body["balance"]}");
-          print(currentBalance);
         });
     });
     return result;
@@ -971,9 +953,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 300,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                      child: LotFound(lotData, selectedVehicleData, userData,
-                          currentBalance)),
+                  child: Center(child: LotFound(lotData, userData.uid, 1)),
                 ),
               ),
             ));
