@@ -8,69 +8,21 @@ import 'package:uuid/uuid.dart';
 
 import '../serviceLocator.dart';
 
-class LocationSearchWidget extends StatefulWidget {
-  final TextEditingController controller;
-  LocationSearchWidget({Key key, this.callback, this.controller}) : super(key: key);
-  final Function callback;
-
-  @override
-  _LocationSearchWidgetState createState() => _LocationSearchWidgetState(this.callback, this.controller);
-}
-
-class _LocationSearchWidgetState extends State<LocationSearchWidget> {
-  final TextEditingController _controller;
-  final Function callback;
-  _LocationSearchWidgetState(this.callback, this._controller);
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.zero,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: new BoxDecoration(
-          color: Colors.white,
-          // borderRadius: BorderRadius.all(
-          //   Radius.circular(25.0),
-          // ),
-        ),
-        padding: EdgeInsets.only(left: 16, right: 16),
-        child: TextField(
-          controller: _controller,
-          readOnly: true,
-          onTap: () async {
-            // generate a new token here
-            final sessionToken = Uuid().v4();
-            final Suggestion result = await showSearch(
-              context: context,
-              delegate: AddressSearch(sessionToken),
-            );
-            // This will change the text displayed in the TextField
-            if (result != null) {
-              final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
-              setState(() {
-                _controller.text = result.description;
-              });
-              if (callback != null) callback(placeDetails);
-            }
-          },
-          decoration: InputDecoration(
-            icon: Icon(
-              Icons.map_outlined,
-              color: Colors.black,
-            ),
-            hintText: "Enter Destination",
-            border: InputBorder.none,
-          ),
-        ),
-      ),
+class LocationSearchService {
+  static Future<LocationSearchResult> findLocation(BuildContext context) async {
+    final sessionToken = Uuid().v4();
+    final Suggestion result = await showSearch(
+      context: context,
+      delegate: AddressSearch(sessionToken),
     );
+    if (result != null) {
+      final LocationSearchResult placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
+      return placeDetails;
+    }
+    else return null;
   }
 }
+
 
 class AddressSearch extends SearchDelegate<Suggestion> {
   AddressSearch(this.sessionToken) {
@@ -139,17 +91,19 @@ class Place {
   String street;
   String city;
   String zipCode;
+  String name;
 
   Place({
     this.streetNumber,
     this.street,
     this.city,
     this.zipCode,
+    this.name
   });
 
   @override
   String toString() {
-    return 'Place(streetNumber: $streetNumber, street: $street, city: $city, zipCode: $zipCode)';
+    return 'Place(name:$name,streetNumber: $streetNumber, street: $street, city: $city, zipCode: $zipCode)';
   }
 }
 
@@ -194,14 +148,15 @@ class PlaceApiProvider {
 
   Future<LocationSearchResult> getPlaceDetailFromId(String placeId) async {
     if (placeId == "0") return null;
+    final place = Place();
     GoogleMapsPlaces _places = new GoogleMapsPlaces(apiKey: apiKey); //Same API_KEY as above
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(placeId);
     double latitude = detail.result.geometry.location.lat;
     double longitude = detail.result.geometry.location.lng;
-
     var components = detail.result.addressComponents;
-    final place = Place();
-    components.forEach((c) {
+    place.name = detail.result.name;
+    components.forEach((AddressComponent c) {
+      print(c.toJson());
       if (c.types.contains('street_number')) {
         place.streetNumber = c.longName;
       }

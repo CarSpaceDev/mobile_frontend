@@ -16,8 +16,6 @@ class CSMap extends StatefulWidget {
 
 class _CSMapState extends State<CSMap> {
   CSPosition currentPosition;
-  MapSettings settings;
-  Widget csMap;
   GoogleMapController mapController;
   double zoom = 16;
   @override
@@ -35,42 +33,15 @@ class _CSMapState extends State<CSMap> {
             mapController?.animateCamera(CameraUpdate.newCameraPosition(
                 CameraPosition(target: LatLng(state.position.latitude, state.position.longitude), zoom: zoom)));
             setState(() {
-              currentPosition = state.position;
             });
           }
         }),
-        BlocListener<MapBloc, MapState>(listener: (BuildContext context, state) {
-          if (state is MapSettingsReady) {
-            print("UPDATING MAP");
-            var markers = HashSet<Marker>();
-            markers.add(Marker(
-                markerId: MarkerId("DRIVER"),
-                icon: state.settings.driverIcon,
-                position: LatLng(currentPosition.latitude, currentPosition.longitude)));
-            if (state.settings.markers.isEmpty) {
-              MapSettings temp = state.settings.copyWith(markers: markers);
-              setState(() {
-                settings = temp;
-              });
-            } else {
-              setState(() {
-                settings = state.settings;
-              });
-            }
-          }
-        })
       ],
       child: BlocBuilder<MapBloc, MapState>(
         builder: (BuildContext context, state) {
-          if (state is MapInitial) {
-            print("Firing Initialize GeoLoc Event");
-            currentPosition = context.bloc<GeolocationBloc>().lastKnownPosition;
-            context.bloc<GeolocationBloc>().add(StartGeolocation());
-            print("Firing Init Map Event");
-            context.bloc<MapBloc>().add(InitializeMapSettings());
-          }
           if (state is MapSettingsReady) {
-            if (settings == null) settings = state.settings;
+            print("INTERNAL MARKER LIST");
+            print(state.settings.markers);
             return Stack(
               children: [
                 GoogleMap(
@@ -82,23 +53,19 @@ class _CSMapState extends State<CSMap> {
                     zoom = camera.zoom;
                   },
                   myLocationButtonEnabled: false,
-                  scrollGesturesEnabled: settings.scrollEnabled,
+                  scrollGesturesEnabled: state.settings.scrollEnabled,
                   mapToolbarEnabled: false,
                   zoomControlsEnabled: true,
                   onMapCreated: (GoogleMapController controller) async {
                     mapController = controller;
-                    mapController.setMapStyle(settings.showPOI ? settings.mapStylePOI : settings.mapStyle);
+                    mapController
+                        .setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
                   },
-                  initialCameraPosition: currentPosition != null
-                      ? CameraPosition(
-                          target: LatLng(currentPosition.latitude, currentPosition.longitude),
-                          zoom: zoom,
-                        )
-                      : CameraPosition(
-                          target: LatLng(10.313741830368738, 123.89023728796286),
-                          zoom: zoom,
-                        ),
-                  markers: settings.markers,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(context.bloc<GeolocationBloc>().lastKnownPosition.latitude, context.bloc<GeolocationBloc>().lastKnownPosition.longitude),
+                    zoom: zoom,
+                  ),
+                  markers: state.settings.markers,
                 )
               ],
             );

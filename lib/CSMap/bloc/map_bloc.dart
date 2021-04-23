@@ -31,6 +31,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       settings = MapSettings(mapStylePOI: result[0], mapStyle: result[1], lotIcon: result[2], driverIcon: result[3],markers:HashSet<Marker>(),showPOI: false, scrollEnabled: false);
       add(UpdateMap(settings: settings));
     }
+    if (event is ShowDestinationMarker){
+      HashSet<Marker> markers = HashSet<Marker>();
+      markers.add(event.marker);
+      add(UpdateMap(settings: settings.copyWith(markers: markers)));
+    }
     if (event is UpdateMap) {
       yield MapSettingsReady(settings: event.settings);
     }

@@ -38,6 +38,8 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           currentPermission == null) {
         add(RequestPermission());
       } else {
+        print("StartRequest $startRequest");
+        print("Ready $ready");
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
         if (startRequest)
@@ -77,6 +79,10 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
       print("Position updated: ${event.position.toJson()}");
       yield PositionUpdated(position: event.position);
     }
+    if (event is UpdatePositionManual) {
+      print("Position updated manually: ${event.position.toJson()}");
+      yield PositionUpdated(position: event.position);
+    }
     if (event is GeolocationErrorDetected) {
       if (event.status == GeolocationError.LocationServiceDisabled)
         PopUp.showInfo(
@@ -105,6 +111,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     if (event is CloseGeolocationStream) {
       print("Closing Geolocation Stream");
       startRequest = false;
+      ready= false;
       add(InitializeGeolocator());
     }
   }

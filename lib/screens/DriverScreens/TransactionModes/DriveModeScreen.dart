@@ -141,7 +141,16 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
           body: Container(
             child: Column(children: [
               Flexible(
-                child: CSMap(),
+                child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+                  if (state is MapInitial) {
+                    print("Firing Initialize MapSettings Event");
+                    context.bloc<MapBloc>().add(InitializeMapSettings());
+                  }
+                  if (state is MapSettingsReady) {
+                    return CSMap();
+                  } else
+                    return Container();
+                }),
               ),
               CSTile(
                 color: lotsAvailable > 0 ? TileColor.Secondary : TileColor.DarkGrey,

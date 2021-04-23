@@ -170,7 +170,7 @@ class MapSettings extends Equatable {
   final BitmapDescriptor lotIcon;
   final BitmapDescriptor driverIcon;
   final bool showPOI;
-  final scrollEnabled;
+  final bool scrollEnabled;
   MapSettings(
       {@required this.markers,
       @required this.mapStylePOI,

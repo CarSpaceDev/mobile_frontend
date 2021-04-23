@@ -1,12 +1,16 @@
 import 'dart:collection';
 
 import 'package:carspace/CSMap/CSMap.dart';
+import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
 import 'package:carspace/model/Lot.dart';
+import 'package:carspace/navigation.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
@@ -25,9 +29,8 @@ class DestinationPicker extends StatefulWidget {
 class _DestinationPickerState extends State<DestinationPicker> {
   MapBloc mapBloc;
   GeolocationBloc geoBloc;
-  LotGeoRepoBloc lotBloc;
-  Marker driver;
-  int lotsAvailable = 0;
+  bool enablePan;
+  LocationSearchResult destination;
   @override
   void initState() {
     super.initState();
@@ -37,7 +40,6 @@ class _DestinationPickerState extends State<DestinationPicker> {
   void dispose() {
     mapBloc.close();
     geoBloc.add(CloseGeolocationStream());
-    lotBloc.close();
     super.dispose();
   }
 
@@ -50,122 +52,109 @@ class _DestinationPickerState extends State<DestinationPicker> {
       geoBloc = new GeolocationBloc();
     } else
       geoBloc = context.bloc<GeolocationBloc>();
-    if (lotBloc == null) {
-      lotBloc = new LotGeoRepoBloc();
-    }
     return MultiBlocProvider(
       providers: [
         BlocProvider<MapBloc>(create: (BuildContext context) => mapBloc),
-        BlocProvider<LotGeoRepoBloc>(create: (BuildContext context) => lotBloc),
       ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<GeolocationBloc, GeolocationState>(
-            listener: (BuildContext context, state) {
-              driver = Marker(
-                  markerId: MarkerId("DRIVER"),
-                  icon: mapBloc.settings.driverIcon,
-                  position: LatLng(geoBloc.lastKnownPosition.latitude, geoBloc.lastKnownPosition.longitude));
-              if (state is GeolocatorReady) {
-                if (mapBloc.state is MapSettingsReady) {
-                  print("FIRST ADD OF DRIVER MARKER");
-                  var markers = HashSet<Marker>();
-                  markers.add(driver);
-                  mapBloc.add(UpdateMap(settings: mapBloc.settings.copyWith(markers: markers)));
-                }
-              }
-              if (state is PositionUpdated) {
-                if (mapBloc.state is MapSettingsReady) {
-                  driver = Marker(
-                      markerId: MarkerId("DRIVER"),
-                      icon: mapBloc.settings.driverIcon,
-                      position: LatLng(state.position.latitude, state.position.longitude));
-                  lotBloc.add(UpdateLotRepoCenter(position: state.position));
-                } else
-                  print("MAP IS NOT YET READY");
-              }
-            },
-          ),
-          BlocListener<LotGeoRepoBloc, LotGeoRepoState>(
-            listener: (BuildContext context, state) {
-              if (state is LotsUpdated) {
-                print("Updating Lot count");
-                setState(() {
-                  lotsAvailable = state.lots.length;
-                });
-                print(lotsAvailable);
-                var markers = HashSet<Marker>();
-                markers.add(driver);
-                for (Lot lot in state.lots) {
-                  markers.add(Marker(
-                      markerId: MarkerId(lot.lotId),
-                      onTap: null,
-                      icon: mapBloc.settings.lotIcon,
-                      position: LatLng(lot.coordinates[0], lot.coordinates[1])));
-                }
-                mapBloc.add(UpdateMap(settings: mapBloc.settings.copyWith(markers: markers)));
-              }
-            },
-          ),
-        ],
-        child: Scaffold(
-          // drawer: HomeNavigationDrawer(),
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).primaryColor,
-            brightness: Brightness.dark,
-            title: Text(widget.mode == DestinationMode.ReserveLot ? "Reserve a Lot" : "Park at Destination"),
-            centerTitle: true,
-            elevation: 0,
-            // actions: <Widget>[action],
-            bottom: PreferredSize(
-              preferredSize: Size(MediaQuery.of(context).size.width, 52),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 52,
-                color: Colors.transparent,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CSTile(
-                      onTap: () {
-                        showRadiusOptions(context, lotBloc);
-                      },
-                      expanded: true,
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      margin: EdgeInsets.all(8),
-                      showBorder: true,
-                      color: TileColor.White,
-                      child: CSText("Searching for lots within ${lotBloc.searchRadius} km"),
-                    )
-                  ],
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          brightness: Brightness.dark,
+          title: Text(widget.mode == DestinationMode.ReserveLot ? "Reserve a Lot" : "Park at Destination"),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: Container(
+          child: Column(children: [
+            if (destination == null)
+              CSTile(
+                onTap: () async {
+                  await getLocation();
+                },
+                color: TileColor.White,
+                shadow: true,
+                margin: EdgeInsets.zero,
+                child: CSText(
+                  "Select Destination",
+                  textColor: TextColor.Primary,
+                  textType: TextType.Button,
                 ),
+              ),
+            if (destination != null)
+              CSSegmentedTile(
+                onTap: () async {
+                  await getLocation();
+                },
+                color: TileColor.White,
+                shadow: true,
+                margin: EdgeInsets.zero,
+                // padding: EdgeInsets.symmetric(vertical: 32),
+                title: CSText(
+                  destination.locationDetails.name,
+                  textColor: TextColor.Primary,
+                  textType: TextType.Button,
+                ),
+                body: Column(children: [
+                  CSText(
+                    destination.locationDetails.toString(),
+                    textColor: TextColor.Primary,
+                    textType: TextType.Body,
+                  ),
+                  CSText(
+                    "Tap to select new location, drag pin to refine position",
+                    textColor: TextColor.Primary,
+                    textType: TextType.Body,
+                    padding: EdgeInsets.only(top: 16),
+                  ),
+                ]),
+              ),
+            Flexible(
+              child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+                if (state is MapInitial) {
+                  print("Firing Initialize MapSettings Event");
+                  context.bloc<MapBloc>().add(InitializeMapSettings());
+                }
+                if (state is MapSettingsReady) {
+                  return CSMap();
+                } else
+                  return Container();
+              }),
+            ),
+            CSTile(
+              color: TileColor.Secondary,
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: CSText(
+                "Reserve Now",
+                textColor: TextColor.White,
+                textType: TextType.Button,
               ),
             ),
-          ),
-          body: Container(
-            child: Column(children: [
-              Flexible(
-                child: CSMap(),
-              ),
-              CSTile(
-                color: lotsAvailable > 0 ? TileColor.Secondary : TileColor.DarkGrey,
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.symmetric(vertical: 32),
-                child: Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: lotsAvailable > 0 ? Colors.white70 : Colors.white,
-                  child: CSText(
-                    lotsAvailable > 0 ? "BOOK NOW" : "NO LOTS AVAILABLE",
-                    textColor: lotsAvailable > 0 ? TextColor.White : TextColor.Primary,
-                    textType: TextType.Button,
-                  ),
-                ),
-              )
-            ]),
-          ),
+          ]),
         ),
       ),
     );
+  }
+
+  getLocation() async {
+    destination = await LocationSearchService.findLocation(context);
+    if (destination != null) {
+      CSPosition position =
+          CSPosition.fromMap({"longitude": destination.location.longitude, "latitude": destination.location.latitude});
+      mapBloc.add(
+        ShowDestinationMarker(
+          marker: Marker(
+              markerId: MarkerId("DESTINATION"),
+              draggable: true,
+              position: LatLng(position.latitude, position.longitude),
+              onDragEnd: (LatLng newPos) {
+                print("NewPosition: ${newPos.toJson()}");
+              }),
+        ),
+      );
+      geoBloc.add(UpdatePositionManual(position: position));
+    }
+    setState(() {});
   }
 
   showRadiusOptions(BuildContext context, LotGeoRepoBloc bloc) {
