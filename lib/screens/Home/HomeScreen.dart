@@ -86,7 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
               .getReservation(reservationId: userData.currentReservation)
               .then((value) {
             if (value.statusCode == 200) {
-              currentReservation = DriverReservation.fromJson(value.body);          }
+              currentReservation = DriverReservation.fromJson(value.body);
+            }
           });
         }
         _initGeolocatorStream();
@@ -193,8 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: actionButton(),
       bottomNavigationBar: homeBottomNavBar(),
       body: SafeArea(
-        child:
-        Stack(
+        child: Stack(
           children: [
             Container(
               child: Stack(
@@ -714,13 +714,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: <Widget>[action],
-      // bottom: PreferredSize(
-      //   preferredSize: Size(MediaQuery.of(context).size.width, 52),
-      //   child: LocationSearchWidget(
-      //     callback: locationSearchCallback,
-      //     controller: _searchController,
-      //   ),
-      // ),
+      bottom: PreferredSize(
+        preferredSize: Size(MediaQuery.of(context).size.width, 52),
+      ),
     );
   }
 
@@ -957,9 +953,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 300,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                      child: LotFound(lotData, selectedVehicleData, userData,
-                          currentBalance)),
+                  child: Center(child: LotFound(lotData, userData.uid, 1)),
                 ),
               ),
             ));

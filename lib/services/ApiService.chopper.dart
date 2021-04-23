@@ -136,6 +136,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> reserveLot(dynamic uid, Map<String, dynamic> body) {
+    final $url = '/user/reserve/$uid';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getUserEmails(Map<String, dynamic> body) {
     final $url = '/user/find';
     final $body = body;
@@ -237,6 +245,14 @@ class _$ApiService extends ApiService {
   @override
   Future<Response<dynamic>> getLotsInRadius(Map<String, dynamic> body) {
     final $url = '/partner/getLotsInRadius';
+    final $body = body;
+    final $request = Request('GET', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getLotFromAlgo(Map<String, dynamic> body) {
+    final $url = '/partner/getLotFromAlgo';
     final $body = body;
     final $request = Request('GET', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);

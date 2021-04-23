@@ -76,6 +76,10 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/user/book/')
   Future<Response> bookLot(@Body() Map<String, dynamic> body);
 
+  @Post(path: '/user/reserve/{type}')
+  Future<Response> reserveLot(
+      @Path('type') uid, @Body() Map<String, dynamic> body);
+
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
 
@@ -125,6 +129,9 @@ abstract class ApiService extends ChopperService {
 
   @Get(path: '/partner/getLotsInRadius')
   Future<Response> getLotsInRadius(@Body() Map<String, dynamic> body);
+
+  @Get(path: '/partner/getLotFromAlgo')
+  Future<Response> getLotFromAlgo(@Body() Map<String, dynamic> body);
 
   @Get(path: '/partner/partnerReservations/{uid}')
   Future<Response> getPartnerReservations({@Path('uid') String uid});
