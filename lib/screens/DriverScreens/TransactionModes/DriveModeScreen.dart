@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
@@ -59,6 +58,18 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
         listeners: [
           BlocListener<GeolocationBloc, GeolocationState>(
             listener: (BuildContext context, state) {
+              driver = Marker(
+                  markerId: MarkerId("DRIVER"),
+                  icon: mapBloc.settings.driverIcon,
+                  position: LatLng(geoBloc.lastKnownPosition.latitude, geoBloc.lastKnownPosition.longitude));
+              if (state is GeolocatorReady) {
+                if (mapBloc.state is MapSettingsReady) {
+                  print("FIRST ADD OF DRIVER MARKER");
+                  var markers = HashSet<Marker>();
+                  markers.add(driver);
+                  mapBloc.add(UpdateMap(settings: mapBloc.settings.copyWith(markers: markers)));
+                }
+              }
               if (state is PositionUpdated) {
                 if (mapBloc.state is MapSettingsReady) {
                   driver = Marker(

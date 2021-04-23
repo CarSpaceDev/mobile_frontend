@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,9 +42,21 @@ class _CSMapState extends State<CSMap> {
         BlocListener<MapBloc, MapState>(listener: (BuildContext context, state) {
           if (state is MapSettingsReady) {
             print("UPDATING MAP");
-            setState(() {
-              settings = state.settings;
-            });
+            var markers = HashSet<Marker>();
+            markers.add(Marker(
+                markerId: MarkerId("DRIVER"),
+                icon: state.settings.driverIcon,
+                position: LatLng(currentPosition.latitude, currentPosition.longitude)));
+            if (state.settings.markers.isEmpty) {
+              MapSettings temp = state.settings.copyWith(markers: markers);
+              setState(() {
+                settings = temp;
+              });
+            } else {
+              setState(() {
+                settings = state.settings;
+              });
+            }
           }
         })
       ],
@@ -50,6 +64,7 @@ class _CSMapState extends State<CSMap> {
         builder: (BuildContext context, state) {
           if (state is MapInitial) {
             print("Firing Initialize GeoLoc Event");
+            currentPosition = context.bloc<GeolocationBloc>().lastKnownPosition;
             context.bloc<GeolocationBloc>().add(StartGeolocation());
             print("Firing Init Map Event");
             context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -77,11 +92,11 @@ class _CSMapState extends State<CSMap> {
                   initialCameraPosition: currentPosition != null
                       ? CameraPosition(
                           target: LatLng(currentPosition.latitude, currentPosition.longitude),
-                          zoom: 15.0,
+                          zoom: zoom,
                         )
                       : CameraPosition(
                           target: LatLng(10.313741830368738, 123.89023728796286),
-                          zoom: 15.0,
+                          zoom: zoom,
                         ),
                   markers: settings.markers,
                 )

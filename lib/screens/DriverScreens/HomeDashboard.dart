@@ -1,10 +1,9 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/navigation.dart';
-import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
+import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Home/WalletInfoWidget.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
 import '../Widgets/NavigationDrawer.dart';
+import 'TransactionModes/DriveModeScreen.dart';
 
 class HomeDashboard extends StatefulWidget {
   @override
@@ -25,6 +25,12 @@ class _HomeDashboardState extends State<HomeDashboard> {
   void initState() {
     locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
+    super.dispose();
   }
 
   @override
@@ -49,7 +55,16 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   margin: EdgeInsets.symmetric(vertical: 8),
                 ),
                 VehicleSelectorWidget(),
-                ParkNowWidget()
+                BlocBuilder<GeolocationBloc, GeolocationState>(builder: (BuildContext context, GeolocationState state) {
+                  if (state is GeolocatorReady || state is PositionUpdated) {
+                    return ParkNowWidget(
+                      enabled: true,
+                    );
+                  } else
+                    return ParkNowWidget(
+                      enabled: false,
+                    );
+                }),
               ],
             ),
           ),
@@ -60,6 +75,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
 }
 
 class ParkNowWidget extends StatefulWidget {
+  final bool enabled;
+  ParkNowWidget({this.enabled = false});
   @override
   _ParkNowWidgetState createState() => _ParkNowWidgetState();
 }
@@ -76,16 +93,20 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
       color: TileColor.None,
       child: Container(
         height: 160,
-        decoration: BoxDecoration(color: csStyle.primary, borderRadius: BorderRadius.all(Radius.circular(8))),
+        decoration: BoxDecoration(
+            color: widget.enabled ? csStyle.primary : csStyle.csGrey,
+            borderRadius: BorderRadius.all(Radius.circular(8))),
         child: PageView(
           controller: _pageController,
           physics: new NeverScrollableScrollPhysics(),
           children: [
             //page 1
             InkWell(
-              onTap: () {
-                _pageController.animateToPage(1, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
-              },
+              onTap: widget.enabled
+                  ? () {
+                      _pageController.animateToPage(1, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                    }
+                  : null,
               child: Container(
                 child: Center(
                   child: Column(
@@ -110,89 +131,94 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Flexible(
-                    child: InkWell(
-                      onTap: () async {
-                        _pageController.jumpToPage(0);
-                        nav.pushNavigateTo(DriveModeRoute);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(height: 0, width: 0),
-                            Icon(
-                              CupertinoIcons.car_detailed,
-                              color: csStyle.csWhite,
-                              size: 50,
-                            ),
-                            CSText("DRIVE\n(ON DEMAND)", textColor: TextColor.White, textAlign: TextAlign.center)
-                          ],
-                        ),
-                      ),
+                  DriverOptions(
+                    icon: Icon(
+                      CupertinoIcons.car_detailed,
+                      color: csStyle.csWhite,
+                      size: 50,
                     ),
+                    label: "DRIVE\n(ON DEMAND)",
+                    onTap: () {
+                      nav.pushNavigateToWidget(FadeRoute(child: DriveModeScreen(), routeName: "TransactionDriveMode"));
+                      _pageController.jumpToPage(0);
+                    },
                   ),
-                  Flexible(
-                    child: InkWell(
-                      onTap: () async {
-                        _pageController.jumpToPage(0);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            border: Border(
-                                left: BorderSide(width: 1, color: csStyle.csWhite),
-                                right: BorderSide(width: 1, color: csStyle.csWhite))),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(height: 0, width: 0),
-                            Icon(
-                              CupertinoIcons.time,
-                              color: csStyle.csWhite,
-                              size: 50,
-                            ),
-                            CSText(
-                              "RESERVE A PARKING SLOT",
-                              textColor: TextColor.White,
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        ),
-                      ),
+                  DriverOptions(
+                    icon: Icon(
+                      CupertinoIcons.time,
+                      color: csStyle.csWhite,
+                      size: 50,
                     ),
+                    label: "RESERVE A PARKING SLOT",
+                    borderEnabled: true,
+                    onTap: () {
+                      nav.pushNavigateToWidget(FadeRoute(
+                          child: DestinationPicker(
+                            mode: DestinationMode.ReserveLot,
+                          ),
+                          routeName: "ReserveParking"));
+                      _pageController.jumpToPage(0);
+                    },
                   ),
-                  Flexible(
-                    child: InkWell(
-                      onTap: () async {
-                        _pageController.jumpToPage(0);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(height: 0, width: 0),
-                            Icon(
-                              CupertinoIcons.map_pin_ellipse,
-                              color: csStyle.csWhite,
-                              size: 50,
-                            ),
-                            CSText(
-                              "PARK AT DESTINATION",
-                              textColor: TextColor.White,
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        ),
-                      ),
+                  DriverOptions(
+                    icon: Icon(
+                      CupertinoIcons.map_pin_ellipse,
+                      color: csStyle.csWhite,
+                      size: 50,
                     ),
+                    label: "PARK AT DESTINATION",
+                    onTap: () async {
+                      nav.pushNavigateToWidget(FadeRoute(
+                          child: DestinationPicker(
+                            mode: DestinationMode.DriveToDestination,
+                          ),
+                          routeName: "ReserveParking"));
+                      _pageController.jumpToPage(0);
+                    },
                   ),
                 ],
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class DriverOptions extends StatelessWidget {
+  final bool borderEnabled;
+  final Icon icon;
+  final String label;
+  final Function onTap;
+  DriverOptions({@required this.icon, @required this.label, this.borderEnabled = false, this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          decoration: borderEnabled
+              ? BoxDecoration(
+                  border: Border(
+                    left: BorderSide(width: 1, color: csStyle.csWhite),
+                    right: BorderSide(width: 1, color: csStyle.csWhite),
+                  ),
+                )
+              : null,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(height: 0, width: 0),
+              icon,
+              CSText(
+                label,
+                textColor: TextColor.White,
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
         ),
       ),
     );

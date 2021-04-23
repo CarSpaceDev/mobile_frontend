@@ -1,4 +1,4 @@
-import 'package:carspace/screens/DriverScreens/DriveModeScreen.dart';
+import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/screens/Home/HomeScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
@@ -43,7 +43,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 }
 
 PageRoute _getPageRoute(Widget child, RouteSettings settings) {
-  return _FadeRoute(child: child, routeName: settings.name);
+  return FadeRoute(child: child, routeName: settings.name);
 }
 
 class NavigationService {
@@ -57,15 +57,23 @@ class NavigationService {
     return navigatorKey.currentState.pushReplacementNamed(routeName);
   }
 
+  Future<dynamic> pushNavigateToWidget(Route<dynamic> route) {
+    return navigatorKey.currentState.push(route);
+  }
+
+  Future<dynamic> pushReplaceNavigateToWidget(Route<dynamic> route) {
+    return navigatorKey.currentState.pushReplacement(route);
+  }
+
   goBack() {
     return navigatorKey.currentState.pop();
   }
 }
 
-class _FadeRoute extends PageRouteBuilder {
+class FadeRoute extends PageRouteBuilder {
   final Widget child;
   final String routeName;
-  _FadeRoute({this.child, this.routeName})
+  FadeRoute({this.child, this.routeName})
       : super(
           settings: RouteSettings(name: routeName),
           pageBuilder: (
