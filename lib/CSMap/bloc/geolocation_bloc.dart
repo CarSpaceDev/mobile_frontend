@@ -112,6 +112,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
       print("Closing Geolocation Stream");
       startRequest = false;
       ready= false;
+      positionStream?.cancel();
       add(InitializeGeolocator());
     }
   }

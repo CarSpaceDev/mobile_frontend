@@ -53,9 +53,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
     if (mapBloc == null) {
       mapBloc = new MapBloc();
     }
-    if (context.bloc<GeolocationBloc>() == null) {
-      geoBloc = new GeolocationBloc();
-    } else
+    if(geoBloc==null)
       geoBloc = context.bloc<GeolocationBloc>();
     return MultiBlocProvider(
       providers: [
@@ -169,15 +167,11 @@ class _DestinationPickerState extends State<DestinationPicker> {
   }
 
   callToAction() async {
-    // if (destination == null) {
-    //   return print('Test');
-    // }
-
     var userId = locator<AuthService>().currentUser().uid;
     var body = ({
       "lat": destination.location.latitude,
       "lng": destination.location.longitude,
-      "radiusInKm": .5,
+      "radiusInKm": 0.5,
       "type": widget.mode.index,
       "userId": userId
     });
@@ -192,6 +186,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
           barrierDismissible: true,
           context: context,
           builder: (_) => Dialog(
+            insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height*.25, horizontal: 32),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                 child: new SizedBox(
                   height: 500,
