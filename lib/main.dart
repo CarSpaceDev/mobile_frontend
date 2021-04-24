@@ -1,6 +1,7 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
+import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,9 @@ class CarSpaceApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (BuildContext context) => UserRepoBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => VehicleRepoBloc(),
             ),
             BlocProvider(
               create: (BuildContext context) => LoginBloc(),

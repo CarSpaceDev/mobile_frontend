@@ -19,6 +19,7 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
     VehicleEvent event,
   ) async* {
     if (event is SetSelectedVehicle){
+      print("Updating selected vehicle: ${event.vehicle.plateNumber}");
       await db.collection("users").doc(locator<AuthService>().currentUser().uid).update({"currentVehicle": event.vehicle.plateNumber});
       yield VehicleInitial();
     }
