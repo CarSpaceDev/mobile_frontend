@@ -38,8 +38,8 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           currentPermission == null) {
         add(RequestPermission());
       } else {
-        print("StartRequest $startRequest");
-        print("Ready $ready");
+        // print("StartRequest $startRequest");
+        // print("Ready $ready");
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
         if (startRequest)
@@ -67,7 +67,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     }
     if (event is RequestPermission) {
       LocationPermission currentPermission = await Geolocator.requestPermission();
-      print("Permission after it is shown $currentPermission");
+      // print("Permission after it is shown $currentPermission");
       if (currentPermission == LocationPermission.denied ||
           currentPermission == LocationPermission.deniedForever ||
           currentPermission == null) {

@@ -61,41 +61,19 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
         listeners: [
           BlocListener<GeolocationBloc, GeolocationState>(
             listener: (BuildContext context, state) {
-              // driver = Marker(
-              //     markerId: MarkerId("DRIVER"),
-              //     icon: mapBloc.settings.driverIcon,
-              //     position: LatLng(geoBloc.lastKnownPosition.latitude, geoBloc.lastKnownPosition.longitude));
-              // if (state is GeolocatorReady) {
-              //   geoBloc.add(StartGeolocation());
-              //   // if (mapBloc.state is MapSettingsReady) {
-              //   //   print("FIRST ADD OF DRIVER MARKER");
-              //   //   var markers = HashSet<Marker>();
-              //   //   markers.add(driver);
-              //   //   mapBloc.add(UpdateMap(settings: mapBloc.settings.copyWith(markers: markers)));
-              //   // }
-              // }
               if (state is PositionUpdated) {
-                if (mapBloc.state is MapSettingsReady) {
-                  // driver = Marker(
-                  //     markerId: MarkerId("DRIVER"),
-                  //     icon: mapBloc.settings.driverIcon,
-                  //     position: LatLng(state.position.latitude, state.position.longitude));
                   lotBloc.add(UpdateLotRepoCenter(position: state.position));
-                } else
-                  print("MAP IS NOT YET READY");
               }
             },
           ),
           BlocListener<LotGeoRepoBloc, LotGeoRepoState>(
             listener: (BuildContext context, state) {
               if (state is LotsUpdated) {
-                print("Updating Lot count");
+                print("Updating Lot count ${state.lots.length}");
                 setState(() {
                   lotsAvailable = state.lots.length;
                 });
-                print(lotsAvailable);
                 var markers = HashSet<Marker>();
-                // markers.add(driver);
                 for (Lot lot in state.lots) {
                   markers.add(Marker(
                       markerId: MarkerId(lot.lotId),

@@ -47,12 +47,12 @@ class _CSMapState extends State<CSMap> {
       child: BlocBuilder<MapBloc, MapState>(
         builder: (BuildContext context, state) {
           if (state is MapSettingsReady) {
-            print("INTERNAL MARKER LIST");
-            print(state.settings.markers);
+            // print("INTERNAL MARKER LIST");
+            // print(state.settings.markers);
             return GoogleMap(
               onCameraIdle: () {
                 setState(() {});
-                print("CurrentZoomLevel: $zoom");
+                // print("CurrentZoomLevel: $zoom");
               },
               onCameraMove: (CameraPosition camera) {
                 zoom = camera.zoom;

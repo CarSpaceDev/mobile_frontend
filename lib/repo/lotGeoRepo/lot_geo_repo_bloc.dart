@@ -17,7 +17,7 @@ enum GeoSearchType { Booking, Reservation }
 class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
   GeoSearchType searchType = GeoSearchType.Booking;
   VehicleType vehicleSearchType = VehicleType.Motorcycle;
-  double searchRadius = 10;
+  double searchRadius = 0.5;
   CSPosition lastPosition;
   LotGeoRepoBloc() : super(LotGeoRepoInitial());
   @override
@@ -36,7 +36,7 @@ class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
       if (result.statusCode == 200) {
         List<Lot> lots = [];
         for (var lot in result.body) {
-          print(lot);
+          // print(lot);
           lots.add(Lot.fromJson(lot));
         }
         yield LotsUpdated(lots: lots);
