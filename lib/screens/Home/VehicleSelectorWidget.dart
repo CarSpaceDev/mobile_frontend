@@ -87,8 +87,17 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                         selectedVehicle = null;
                         header = "";
                       }
-                      print(selectedVehicle?.plateNumber);
-                      if (selectedVehicle.status == VehicleStatus.Available)
+                      // print(selectedVehicle?.plateNumber);
+                      if (selectedVehicle == null)
+                        return CurrentVehicleCard(
+                            vehicle: selectedVehicle,
+                            vehiclesAvailable: vehiclesAvailable,
+                            onTap: () {
+                              setState(() {
+                                tapped = true;
+                              });
+                            });
+                      else if (selectedVehicle?.status == VehicleStatus.Available)
                         return CurrentVehicleCard(
                             vehicle: selectedVehicle,
                             vehiclesAvailable: vehiclesAvailable,
@@ -148,11 +157,21 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                         header = "Selected Vehicle";
                                         actualIndex = 0;
                                       });
-                                    } else
+                                    } else if (state.vehicles[index].status == VehicleStatus.Unavailable)
+                                      PopUp.showError(
+                                          context: context,
+                                          title: "Vehicle is Unavailable",
+                                          body: "This vehicle is currently unavailable");
+                                    else if (state.vehicles[index].status == VehicleStatus.Unverified)
                                       PopUp.showError(
                                           context: context,
                                           title: "Vehicle is Unverified",
-                                          body: "Please allow 5-10 minutes for the vehicle to be verified");
+                                          body: "Please allow 5-15 minutes for verification or contact support");
+                                    else
+                                      PopUp.showError(
+                                          context: context,
+                                          title: "Contact Support",
+                                          body: "Please email zenithdevgroup@gmail.com for details.");
                                   },
                                   vehicle: state.vehicles[index],
                                   height:

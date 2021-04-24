@@ -7,10 +7,12 @@ import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Home/WalletInfoWidget.dart';
 import 'package:carspace/screens/repository/submitRepo.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +63,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 ),
                 VehicleSelectorWidget(),
                 BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
-                  if (userState is UserRepoReady)
+                  if (userState is UserRepoReady && userState.user.currentVehicle != null)
                     return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
                         builder: (BuildContext context, VehicleRepoState vehicleState) {
                       if (vehicleState is VehicleRepoReady) {
@@ -77,6 +79,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                               vehicle?.status == VehicleStatus.Available) {
                             return ParkNowWidget(
                               enabled: true,
+                              selectedVehicle: vehicle,
                             );
                           } else
                             return ParkNowWidget(
@@ -103,8 +106,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
 }
 
 class ParkNowWidget extends StatefulWidget {
+  final Vehicle selectedVehicle;
   final bool enabled;
-  ParkNowWidget({this.enabled = false});
+  ParkNowWidget({this.enabled = false, this.selectedVehicle});
   @override
   _ParkNowWidgetState createState() => _ParkNowWidgetState();
 }
@@ -181,12 +185,19 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     label: "RESERVE A PARKING SLOT",
                     borderEnabled: true,
                     onTap: () {
-                      nav.pushNavigateToWidget(FadeRoute(
-                          child: DestinationPicker(
-                            mode: ParkingType.Reservation,
-                          ),
-                          routeName: "ReserveParking"));
-                      _pageController.jumpToPage(0);
+                      if (widget.selectedVehicle.ownerId == locator<AuthService>().currentUser().uid) {
+                        context.read<GeolocationBloc>().add(StartGeolocation());
+                        nav.pushNavigateToWidget(FadeRoute(
+                            child: DestinationPicker(
+                              mode: ParkingType.Reservation,
+                            ),
+                            routeName: "ReserveParking"));
+                        _pageController.jumpToPage(0);
+                      } else
+                        PopUp.showError(
+                            context: context,
+                            title: "UNAVAILABLE",
+                            body: "Reservation mode is only available to the owner of the vehicle.");
                     },
                   ),
                   DriverOptions(
