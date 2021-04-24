@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/services/ApiMapService.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:uuid/uuid.dart';
 
@@ -102,7 +102,7 @@ class Place {
 
   @override
   String toString() {
-    return 'Place(name:$name,streetNumber: $streetNumber, street: $street, city: $city, zipCode: $zipCode)';
+    return '${streetNumber!=null? streetNumber+', ':''}${street!=null? street+', ':''}${city!=null? city+', ':''}${zipCode!=null? zipCode:''}';
   }
 }
 
@@ -178,11 +178,13 @@ class PlaceApiProvider {
 
 class LocationSearchResult {
   Place locationDetails;
-  LatLng location;
+  CSPosition location;
+  CSPosition originalLocation;
 
   LocationSearchResult(double latitude, double longitude,
       {this.locationDetails}) {
-    this.location = new LatLng(latitude, longitude);
+    this.location =  CSPosition.fromMap({"latitude":latitude, "longitude":longitude});
+    this.originalLocation =  CSPosition.fromMap({"latitude":latitude, "longitude":longitude});
   }
 
   toJson() {

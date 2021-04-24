@@ -36,41 +36,44 @@ class _CSMapState extends State<CSMap> {
             });
           }
         }),
+        BlocListener<MapBloc, MapState>(listener: (BuildContext context, state) {
+          if (state is MapSettingsReady) {
+            mapController.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+            setState(() {
+            });
+          }
+        }),
       ],
       child: BlocBuilder<MapBloc, MapState>(
         builder: (BuildContext context, state) {
           if (state is MapSettingsReady) {
             print("INTERNAL MARKER LIST");
             print(state.settings.markers);
-            return Stack(
-              children: [
-                GoogleMap(
-                  onCameraIdle: () {
-                    setState(() {});
-                    print("CurrentZoomLevel: $zoom");
-                  },
-                  onCameraMove: (CameraPosition camera) {
-                    zoom = camera.zoom;
-                  },
-                  myLocationButtonEnabled: false,
-                  scrollGesturesEnabled: state.settings.scrollEnabled,
-                  mapToolbarEnabled: false,
-                  zoomControlsEnabled: true,
-                  onMapCreated: (GoogleMapController controller) async {
-                    mapController = controller;
-                    mapController
-                        .setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(context.bloc<GeolocationBloc>().lastKnownPosition.latitude, context.bloc<GeolocationBloc>().lastKnownPosition.longitude),
-                    zoom: zoom,
-                  ),
-                  markers: state.settings.markers,
-                )
-              ],
+            return GoogleMap(
+              onCameraIdle: () {
+                setState(() {});
+                print("CurrentZoomLevel: $zoom");
+              },
+              onCameraMove: (CameraPosition camera) {
+                zoom = camera.zoom;
+              },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              scrollGesturesEnabled: state.settings.scrollEnabled,
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: true,
+              onMapCreated: (GoogleMapController controller) async {
+                mapController = controller;
+                mapController.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+              },
+              initialCameraPosition: CameraPosition(
+                target: LatLng(context.bloc<GeolocationBloc>().lastKnownPosition.latitude, context.bloc<GeolocationBloc>().lastKnownPosition.longitude),
+                zoom: zoom,
+              ),
+              markers: state.settings.markers,
             );
           }
-          return Container();
+          else return Container();
         },
       ),
     );

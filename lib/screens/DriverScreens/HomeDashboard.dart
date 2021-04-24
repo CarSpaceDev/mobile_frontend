@@ -144,6 +144,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     ),
                     label: "DRIVE\n(ON DEMAND)",
                     onTap: () {
+                      context.read<GeolocationBloc>().add(StartGeolocation());
                       nav.pushNavigateToWidget(FadeRoute(child: DriveModeScreen(), routeName: "TransactionDriveMode"));
                       _pageController.jumpToPage(0);
                     },
@@ -159,7 +160,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     onTap: () {
                       nav.pushNavigateToWidget(FadeRoute(
                           child: DestinationPicker(
-                            mode: BookingMode.Reservation,
+                            mode: ParkingType.Reservation,
                           ),
                           routeName: "ReserveParking"));
                       _pageController.jumpToPage(0);
@@ -175,7 +176,7 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     onTap: () async {
                       nav.pushNavigateToWidget(FadeRoute(
                           child: DestinationPicker(
-                            mode: BookingMode.Booking,
+                            mode: ParkingType.Booking,
                           ),
                           routeName: "ReserveParking"));
                       _pageController.jumpToPage(0);

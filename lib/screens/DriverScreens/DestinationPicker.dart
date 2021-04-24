@@ -2,26 +2,32 @@ import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../serviceLocator.dart';
 
-enum BookingMode { Booking, Reservation }
+enum ParkingType { Booking, Reservation, Both }
 
 class DestinationPicker extends StatefulWidget {
-  final BookingMode mode;
-  DestinationPicker({this.mode = BookingMode.Reservation});
+  final ParkingType mode;
+  DestinationPicker({this.mode = ParkingType.Reservation});
   @override
   _DestinationPickerState createState() => _DestinationPickerState();
 }
@@ -29,7 +35,6 @@ class DestinationPicker extends StatefulWidget {
 class _DestinationPickerState extends State<DestinationPicker> {
   MapBloc mapBloc;
   GeolocationBloc geoBloc;
-  bool enablePan;
   LocationSearchResult destination;
   @override
   void initState() {
@@ -60,28 +65,32 @@ class _DestinationPickerState extends State<DestinationPicker> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Brightness.dark,
-          title: Text(widget.mode == BookingMode.Reservation
-              ? "Reserve a Lot"
-              : "Park at Destination"),
+          title: Text(widget.mode == ParkingType.Reservation ? "Reserve a Lot" : "Park at Destination"),
           centerTitle: true,
-          elevation: 0,
+          actions: [
+            BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+              if (state is MapSettingsReady) {
+                return Row(
+                  children: [
+                    Icon(state.settings.showPOI ? CupertinoIcons.map_pin : CupertinoIcons.map_pin_slash),
+                    Switch(
+                      value: state.settings.showPOI,
+                      onChanged: (bool v) {
+                        mapBloc.add(UpdateMap(settings: state.settings.copyWith(showPOI: v)));
+                      },
+                      inactiveTrackColor: csStyle.csWhite,
+                      activeTrackColor: csStyle.csGrey,
+                      activeColor: csStyle.csWhite,
+                    ),
+                  ],
+                );
+              } else
+                return Container();
+            })
+          ],
         ),
         body: Container(
           child: Column(children: [
-            if (destination == null)
-              CSTile(
-                onTap: () async {
-                  await getLocation();
-                },
-                color: TileColor.White,
-                shadow: true,
-                margin: EdgeInsets.zero,
-                child: CSText(
-                  "Select Destination",
-                  textColor: TextColor.Primary,
-                  textType: TextType.Button,
-                ),
-              ),
             if (destination != null)
               CSSegmentedTile(
                 onTap: () async {
@@ -96,23 +105,36 @@ class _DestinationPickerState extends State<DestinationPicker> {
                   textColor: TextColor.Primary,
                   textType: TextType.Button,
                 ),
-                body: Column(children: [
+                body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   CSText(
                     destination.locationDetails.toString(),
                     textColor: TextColor.Primary,
                     textType: TextType.Body,
+                    padding: EdgeInsets.only(top: 16, bottom: 8),
                   ),
-                  CSText(
-                    "Tap to select new location, drag pin to refine position",
-                    textColor: TextColor.Primary,
-                    textType: TextType.Body,
-                    padding: EdgeInsets.only(top: 16),
+                  Row(
+                    children: [
+                      Icon(
+                        CupertinoIcons.map_pin_ellipse,
+                        size: 16,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      CSText(
+                        "${(Geolocator.distanceBetween(
+                              destination.originalLocation.latitude,
+                              destination.originalLocation.longitude,
+                              destination.location.latitude,
+                              destination.location.longitude,
+                            ) / 1000).toStringAsFixed(2)} km from landmark",
+                        textColor: TextColor.Primary,
+                        padding: EdgeInsets.only(top: 4, left: 8),
+                      ),
+                    ],
                   ),
                 ]),
               ),
             Flexible(
-              child: BlocBuilder<MapBloc, MapState>(
-                  builder: (BuildContext context, state) {
+              child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
                 if (state is MapInitial) {
                   print("Firing Initialize MapSettings Event");
                   context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -125,18 +147,19 @@ class _DestinationPickerState extends State<DestinationPicker> {
             ),
             CSTile(
               onTap: () {
-                callToAction();
-                //sends api data
-                //locator<AuthService>().currentUser().uid
-                //widget.mode.index
+                destination != null ? callToAction() : getLocation();
               },
-              color: TileColor.Secondary,
+              color: destination != null ? TileColor.Secondary : TileColor.DarkGrey,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.symmetric(vertical: 32),
-              child: CSText(
-                "Reserve Now",
-                textColor: TextColor.White,
-                textType: TextType.Button,
+              child: Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: destination != null ? Colors.white70 : Colors.white,
+                child: CSText(
+                  destination != null ? "RESERVE NOW" : "Select A Destination",
+                  textColor: TextColor.White,
+                  textType: TextType.H3Bold,
+                ),
               ),
             ),
           ]),
@@ -146,9 +169,10 @@ class _DestinationPickerState extends State<DestinationPicker> {
   }
 
   callToAction() async {
-    if (destination == null) {
-      return print('Test');
-    }
+    // if (destination == null) {
+    //   return print('Test');
+    // }
+
     var userId = locator<AuthService>().currentUser().uid;
     var body = ({
       "lat": destination.location.latitude,
@@ -168,8 +192,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
           barrierDismissible: true,
           context: context,
           builder: (_) => Dialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                 child: new SizedBox(
                   height: 500,
                   width: 300,
@@ -224,10 +247,8 @@ class _DestinationPickerState extends State<DestinationPicker> {
   getLocation() async {
     destination = await LocationSearchService.findLocation(context);
     if (destination != null) {
-      CSPosition position = CSPosition.fromMap({
-        "longitude": destination.location.longitude,
-        "latitude": destination.location.latitude
-      });
+      CSPosition position =
+          CSPosition.fromMap({"longitude": destination.location.longitude, "latitude": destination.location.latitude});
       mapBloc.add(
         ShowDestinationMarker(
           marker: Marker(
@@ -236,7 +257,10 @@ class _DestinationPickerState extends State<DestinationPicker> {
               position: LatLng(position.latitude, position.longitude),
               onDragEnd: (LatLng newPos) {
                 print("NewPosition: ${newPos.toJson()}");
-                destination.location = newPos;
+                setState(() {
+                  destination.location =
+                      CSPosition.fromMap({"latitude": newPos.latitude, "longitude": newPos.longitude});
+                });
               }),
         ),
       );

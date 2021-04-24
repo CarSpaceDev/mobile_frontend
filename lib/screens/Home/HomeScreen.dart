@@ -402,8 +402,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ?.animateCamera(CameraUpdate.newCameraPosition(
                               CameraPosition(
                                 target: LatLng(
-                                    lotsInRadius[index].coordinates[0],
-                                    lotsInRadius[index].coordinates[1]),
+                                    lotsInRadius[index].coordinates.latitude,
+                                    lotsInRadius[index].coordinates.longitude),
                                 zoom: 17.0,
                               ),
                             ));
@@ -543,8 +543,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     _showLotDialog(resultLotsInRadius[i]);
                 },
                 icon: _lotIcon,
-                position: LatLng(resultLotsInRadius[i].coordinates[0],
-                    resultLotsInRadius[i].coordinates[1])));
+                position: LatLng(resultLotsInRadius[i].coordinates.latitude,
+                    resultLotsInRadius[i].coordinates.longitude)));
           }
         }
         setState(() {
@@ -596,11 +596,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  locationSearchCallback(LocationSearchResult data) {
-    mapController.animateCamera(CameraUpdate.newLatLng(data.location));
-    searchPosition = data.location;
-    getLotsInRadius(data.location);
-  }
+  // locationSearchCallback(LocationSearchResult data) {
+  //   mapController.animateCamera(CameraUpdate.newLatLng(data.location));
+  //   searchPosition = data.location;
+  //   getLotsInRadius(data.location);
+  // }
 
   void _onCameraMove(CameraPosition d) {
     searchPosition = LatLng(d.target.latitude, d.target.longitude);

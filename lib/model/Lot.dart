@@ -1,15 +1,25 @@
+import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:equatable/equatable.dart';
+
+import 'Vehicle.dart';
+
+enum LotStatus {
+  Active,
+  Inactive,
+  Disabled,
+}
 
 class Lot extends Equatable {
   final String lotId;
   final String partnerId;
+  final LotStatus status;
   final List<String> lotImage;
   final LotAddress address;
   final double pricing;
   final double pricePerDay;
-  final int parkingType;
-  final int vehicleTypeAccepted;
-  final bool isActive;
+  final ParkingType parkingType;
+  final VehicleType vehicleTypeAccepted;
   final double rating;
   final int numberOfRatings;
   final int availableFrom;
@@ -17,21 +27,20 @@ class Lot extends Equatable {
   final List<int> availableDays;
   final int availableSlots;
   final int capacity;
-  final bool isDisabled;
-  final List<double> coordinates;
+  final CSPosition coordinates;
   final double distance;
 
   @override
   List<Object> get props => [
         lotId,
         parkingType,
+        status,
         lotImage,
         address,
         pricing,
         pricePerDay,
         parkingType,
         vehicleTypeAccepted,
-        isActive,
         rating,
         numberOfRatings,
         availableFrom,
@@ -39,7 +48,6 @@ class Lot extends Equatable {
         availableDays,
         availableSlots,
         capacity,
-        isDisabled,
         coordinates,
         distance
       ];
@@ -47,32 +55,32 @@ class Lot extends Equatable {
   Lot.fromJson(Map<String, dynamic> json)
       : lotId = json["lotId"] as String,
         partnerId = json["partnerId"] as String,
-        isActive = json["isActive"] as bool,
-        isDisabled = json["isDisabled"] as bool,
+        status = json["isDisabled"]
+            ? LotStatus.Disabled
+            : json["isActive"]
+                ? LotStatus.Active
+                : LotStatus.Inactive,
         lotImage = List<String>.from(json["lotImage"]),
         address = LotAddress.fromJson(json["address"]),
-        pricing =
-            double.parse(int.parse(json["pricing"].toString()).toString()),
-        pricePerDay =
-            double.parse(int.parse(json["pricePerDay"].toString()).toString()),
-        parkingType = json["parkingType"] as int,
-        vehicleTypeAccepted = json["vehicleTypeAccepted"] as int,
-        rating = json["rating"] as double,
+        pricing = json["pricing"]!=null ? double.parse("${json['pricing']}") : null,
+        pricePerDay = json["pricePerDay"]!=null ? double.parse("${json['pricePerDay']}") : null,
+        parkingType = ParkingType.values[json["parkingType"]],
+        vehicleTypeAccepted = VehicleType.values[json["vehicleTypeAccepted"]],
+        rating = json["rating"]!=null ? double.parse("${json['rating']}") : null,
         numberOfRatings = json["numberOfRatings"] as int,
         availableFrom = int.parse(json["availableFrom"]),
         availableTo = int.parse(json["availableTo"]),
         availableDays = List<int>.from(json["availableDays"]),
         availableSlots = json["availableSlots"] as int,
         capacity = json["capacity"] as int,
-        coordinates = List<double>.from(json["coordinates"]),
+        coordinates = CSPosition.fromMap({"latitude": json["coordinates"][0], "longitude": json["coordinates"][1]}),
         distance = json["distance"] as double;
 
   Map<String, dynamic> toJson() {
     return {
       "lotId": lotId,
       "partnerId": partnerId,
-      "isActive": isActive,
-      "isDisabled": isDisabled,
+      "status": status,
       "lotImage": lotImage,
       "address": address.toString(),
       "pricing": pricing,
@@ -102,8 +110,7 @@ class LotAddress extends Equatable {
   final String zipCode;
 
   @override
-  List<Object> get props =>
-      [houseAndStreet, brgy, municipality, city, province, country, zipCode];
+  List<Object> get props => [houseAndStreet, brgy, municipality, city, province, country, zipCode];
 
   LotAddress.fromJson(Map<String, dynamic> json)
       : houseAndStreet = json["houseAndStreet"] as String,
