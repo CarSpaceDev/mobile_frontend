@@ -116,7 +116,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                             });
                           },
                           child: CSText(
-                            "${selectedVehicle.plateNumber} is unavailable, please choose another",
+                            "${selectedVehicle.plateNumber} is unavailable for use, please choose another vehicle",
                             textAlign: TextAlign.center,
                           ),
                         );

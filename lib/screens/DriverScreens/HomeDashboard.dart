@@ -1,5 +1,4 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
-import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/navigation.dart';
@@ -11,7 +10,6 @@ import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:carspace/screens/Home/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Home/WalletInfoWidget.dart';
-import 'package:carspace/screens/repository/submitRepo.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -167,54 +165,70 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     icon: Icon(
                       CupertinoIcons.car_detailed,
                       color: csStyle.csWhite,
-                      size: 50,
+                      size: 45,
                     ),
                     label: "DRIVE\n(ON DEMAND)",
-                    onTap: () {
-                      context.read<GeolocationBloc>().add(StartGeolocation());
-                      nav.pushNavigateToWidget(FadeRoute(child: DriveModeScreen(), routeName: "TransactionDriveMode"));
-                      _pageController.jumpToPage(0);
-                    },
+                    onTap: widget.enabled
+                        ? () {
+                            context.read<GeolocationBloc>().add(StartGeolocation());
+                            nav.pushNavigateToWidget(
+                                FadeRoute(child: DriveModeScreen(), routeName: "TransactionDriveMode"));
+                            _pageController.jumpToPage(0);
+                          }
+                        : () {
+                            _pageController.animateToPage(0,
+                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                          },
                   ),
                   DriverOptions(
                     icon: Icon(
                       CupertinoIcons.time,
                       color: csStyle.csWhite,
-                      size: 50,
+                      size: 45,
                     ),
                     label: "RESERVE A PARKING SLOT",
                     borderEnabled: true,
-                    onTap: () {
-                      if (widget.selectedVehicle.ownerId == locator<AuthService>().currentUser().uid) {
-                        context.read<GeolocationBloc>().add(StartGeolocation());
-                        nav.pushNavigateToWidget(FadeRoute(
-                            child: DestinationPicker(
-                              mode: ParkingType.Reservation,
-                            ),
-                            routeName: "ReserveParking"));
-                        _pageController.jumpToPage(0);
-                      } else
-                        PopUp.showError(
-                            context: context,
-                            title: "UNAVAILABLE",
-                            body: "Reservation mode is only available to the owner of the vehicle.");
-                    },
+                    onTap: widget.enabled
+                        ? () {
+                            if (widget.selectedVehicle.ownerId == locator<AuthService>().currentUser().uid) {
+                              context.read<GeolocationBloc>().add(StartGeolocation());
+                              nav.pushNavigateToWidget(FadeRoute(
+                                  child: DestinationPicker(
+                                    mode: ParkingType.Reservation,
+                                  ),
+                                  routeName: "ReserveParking"));
+                              _pageController.jumpToPage(0);
+                            } else
+                              PopUp.showError(
+                                  context: context,
+                                  title: "UNAVAILABLE",
+                                  body: "Reservation mode is only available to the owner of the vehicle.");
+                          }
+                        : () {
+                            _pageController.animateToPage(0,
+                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                          },
                   ),
                   DriverOptions(
                     icon: Icon(
                       CupertinoIcons.map_pin_ellipse,
                       color: csStyle.csWhite,
-                      size: 50,
+                      size: 45,
                     ),
                     label: "PARK AT DESTINATION",
-                    onTap: () async {
-                      nav.pushNavigateToWidget(FadeRoute(
-                          child: DestinationPicker(
-                            mode: ParkingType.Booking,
-                          ),
-                          routeName: "ReserveParking"));
-                      _pageController.jumpToPage(0);
-                    },
+                    onTap: widget.enabled
+                        ? () {
+                            nav.pushNavigateToWidget(FadeRoute(
+                                child: DestinationPicker(
+                                  mode: ParkingType.Booking,
+                                ),
+                                routeName: "ReserveParking"));
+                            _pageController.jumpToPage(0);
+                          }
+                        : () {
+                            _pageController.animateToPage(0,
+                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                          },
                   ),
                 ],
               ),
@@ -256,6 +270,7 @@ class DriverOptions extends StatelessWidget {
                 label,
                 textColor: TextColor.White,
                 textAlign: TextAlign.center,
+                textType: TextType.Caption,
               )
             ],
           ),
