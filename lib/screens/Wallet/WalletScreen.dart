@@ -212,7 +212,7 @@ class TransactionRecordDetailWidget extends StatelessWidget {
     return CSSegmentedTile(
       padding: EdgeInsets.all(16),
       title: CSText(
-        transaction.fromName,
+        transaction.fromId!=locator<AuthService>().currentUser().uid? transaction.fromName: "YOU",
         textType: TextType.Button,
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -263,7 +263,7 @@ class TransactionListTile extends StatelessWidget {
       shadow: true,
       borderRadius: 20,
       title: CSText(
-        transaction.fromName,
+        transaction.fromId!=locator<AuthService>().currentUser().uid? transaction.fromName: "${transaction.fromName} (you)",
         textColor: TextColor.Primary,
         textType: TextType.Button,
       ),
