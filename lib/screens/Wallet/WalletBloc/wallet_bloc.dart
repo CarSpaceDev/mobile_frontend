@@ -12,6 +12,7 @@ part 'wallet_event.dart';
 part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
+  Wallet walletData;
   WalletBloc() : super(WalletInitial());
   StreamSubscription<DocumentSnapshot> wallet;
   @override
@@ -25,10 +26,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       });
     }
     if(event is RefreshWallet){
-      locator<ApiService>().getWalletStatus(uid: event.uid);
+      yield WalletInitial();
+      await locator<ApiService>().getWalletStatus(uid: event.uid);
+      yield WalletReady(wallet: walletData);
     }
     if (event is UpdateWallet) {
       print("New update to wallet");
+      walletData = event.wallet;
       yield WalletReady(wallet: event.wallet);
     }
     if (event is DisposeWallet) {

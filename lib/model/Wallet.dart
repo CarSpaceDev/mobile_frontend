@@ -37,7 +37,7 @@ class WalletTransaction extends Equatable {
         toId = json["toId"] as String,
         fromName = json["fromName"] as String,
         toName = json["toName"] as String,
-        timestamp = DateTime.fromMicrosecondsSinceEpoch(json["ts"]),
+        timestamp = DateTime.fromMillisecondsSinceEpoch(json["ts"]),
         type = json["type"] as String,
         transactionRef = json["uid"]??null;
 
