@@ -85,6 +85,22 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> walletCashIn({Map<String, dynamic> data}) {
+    final $url = '/admin/wallet/cash-in';
+    final $body = data;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> walletCashOut({Map<String, dynamic> data}) {
+    final $url = '/admin/wallet/cash-out';
+    final $body = data;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getUserData({String uid}) {
     final $url = '/user/$uid';
     final $request = Request('GET', $url, client.baseUrl);

@@ -131,7 +131,8 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
 class BackgroundImage extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
-  BackgroundImage({this.child, this.padding = EdgeInsets.zero});
+  final AssetBundleImageProvider background;
+  BackgroundImage({this.child, this.padding = EdgeInsets.zero, this.background = const AssetImage("assets/login_screen_assets/bg.png")});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -140,7 +141,7 @@ class BackgroundImage extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/login_screen_assets/bg.png"),
+          image: background,
           fit: BoxFit.cover,
           colorFilter: new ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.dstATop),
         ),

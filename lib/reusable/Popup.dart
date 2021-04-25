@@ -187,7 +187,7 @@ class PopUp extends StatelessWidget {
                   children: [
                     OutlinedButton(
                       child: CSText(
-                        "YES",
+                        "NO",
                         textType: TextType.Button,
                         textColor: TextColor.Primary,
                       ),
@@ -198,7 +198,7 @@ class PopUp extends StatelessWidget {
                     Container(width: 8),
                     ElevatedButton(
                       child: CSText(
-                        "NO",
+                        "YES",
                         textType: TextType.Button,
                         textColor: TextColor.White,
                       ),

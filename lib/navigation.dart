@@ -24,25 +24,25 @@ const String DriveModeRoute = '/drive';
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case InitializationRoute:
-      return _getPageRoute(InitializationBlocHandler(), settings);
+      return getPageRoute(InitializationBlocHandler(), settings);
     case LoginRoute:
-      return _getPageRoute(LoginBlocHandler(), settings);
+      return getPageRoute(LoginBlocHandler(), settings);
     case DashboardRoute:
-      return _getPageRoute(HomeDashboard(), settings);
+      return getPageRoute(HomeDashboard(), settings);
     case VehicleManagement:
-      return _getPageRoute(VehicleManagementScreen(), settings);
+      return getPageRoute(VehicleManagementScreen(), settings);
     case Reservations:
-      return _getPageRoute(ReservationScreen(), settings);
+      return getPageRoute(ReservationScreen(), settings);
     case PartnerReservations:
-      return _getPageRoute(PartnerReservationScreen(), settings);
+      return getPageRoute(PartnerReservationScreen(), settings);
     case WalletRoute:
-      return _getPageRoute(WalletScreen(), settings);
+      return getPageRoute(WalletScreen(), settings);
     case DriveModeRoute:
-      return _getPageRoute(DriveModeScreen(), settings);
+      return getPageRoute(DriveModeScreen(), settings);
   }
 }
 
-PageRoute _getPageRoute(Widget child, RouteSettings settings) {
+PageRoute getPageRoute(Widget child, RouteSettings settings) {
   return FadeRoute(child: child, routeName: settings.name);
 }
 

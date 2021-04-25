@@ -52,6 +52,7 @@ dependencies:
   mqtt_client: ^8.1.0
   flutter_mapbox_navigation: ^0.0.19
   flutter_svg: ^0.19.3
+  date_format: ^2.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

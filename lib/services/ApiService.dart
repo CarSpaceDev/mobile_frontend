@@ -54,6 +54,12 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/user/wallet-status/{uid}')
   Future<Response> getWalletStatus({@Path('uid') String uid});
 
+  @Post(path: '/admin/wallet/cash-in')
+  Future<Response> walletCashIn({@Body() Map<String,dynamic> data});
+
+  @Post(path: '/admin/wallet/cash-out')
+  Future<Response> walletCashOut({@Body() Map<String,dynamic> data});
+
   @Get(path: '/user/{uid}')
   Future<Response> getUserData({@Path('uid') String uid});
 

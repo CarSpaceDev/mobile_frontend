@@ -17,6 +17,20 @@ class RefreshWallet extends WalletEvent {
   List<Object> get props => [uid];
 }
 
+class CashOut extends WalletEvent {
+  final int amount;
+  CashOut({this.amount});
+  @override
+  List<Object> get props => [amount];
+}
+
+class CashIn extends WalletEvent {
+  final int amount;
+  CashIn({this.amount});
+  @override
+  List<Object> get props => [amount];
+}
+
 class UpdateWallet extends WalletEvent {
   final Wallet wallet;
   UpdateWallet({this.wallet});

@@ -35,6 +35,7 @@ class _WalletInfoWidgetState extends State<WalletInfoWidget> {
               padding: EdgeInsets.only(top: 2, right: 10),
               textColor: widget.textColor,
               textType: widget.textType,
+              textAlign: TextAlign.center,
             );
           } else
             return CSText(
@@ -42,6 +43,7 @@ class _WalletInfoWidgetState extends State<WalletInfoWidget> {
               padding: EdgeInsets.only(top: 2, right: 10),
               textColor: widget.textColor,
               textType: widget.textType,
+              textAlign: TextAlign.center,
             );
         }),
       ),
