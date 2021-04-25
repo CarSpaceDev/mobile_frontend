@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
-import '../Home/WalletInfoWidget.dart';
+import '../Wallet/WalletInfoWidget.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
   @override
@@ -103,14 +103,6 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                     locator<NavigationService>().pushNavigateTo(Reservations);
                   },
                   child: Text("Reservations")),
-            ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(DashboardRoute);
-                  },
-                  child: Text("Dashboard WIP")),
             ),
             if (state is UserRepoReady && state.user.partnerAccess > 200)
               ListTile(

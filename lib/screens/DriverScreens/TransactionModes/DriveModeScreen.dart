@@ -8,7 +8,6 @@ import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

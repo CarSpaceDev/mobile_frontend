@@ -7,38 +7,30 @@ import 'package:carspace/services/AuthService.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 
-import '../../serviceLocator.dart';
+import '../../../serviceLocator.dart';
 
-class VehicleAddAuthDetails extends StatefulWidget {
+class VehicleAddDetails extends StatefulWidget {
   final String code;
-  VehicleAddAuthDetails({@required this.code});
+  VehicleAddDetails({@required this.code});
   @override
-  _VehicleAddAuthDetailsState createState() =>
-      _VehicleAddAuthDetailsState(this.code);
+  _VehicleAddDetailsState createState() => _VehicleAddDetailsState(this.code);
 }
 
-class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
+class _VehicleAddDetailsState extends State<VehicleAddDetails> {
   final String code;
-  VehicleAddAuth vehicleDetails;
-  _VehicleAddAuthDetailsState(this.code);
+  Vehicle vehicleDetails;
+  _VehicleAddDetailsState(this.code);
   @override
   void initState() {
-    locator<ApiService>()
-        .getVehicleAddAuthDetails(
-            uid: locator<AuthService>().currentUser().uid, code: code)
-        .then((Response value) {
+    locator<ApiService>().getVehicleAddDetails(code).then((Response value) {
       if (value.statusCode == 200) {
         setState(() {
-          vehicleDetails = VehicleAddAuth.fromJson(value.body);
+          vehicleDetails = Vehicle.fromJson(value.body);
         });
       } else {
         Navigator.of(context).pop();
         showError(error: json.decode(value.error)["error"]);
       }
-    }).catchError((err) {
-      showError(
-          error:
-              "We're currently having difficulty adding this vehicle. Please try again");
     });
     super.initState();
   }
@@ -56,43 +48,35 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Authorize ${vehicleDetails.newUser} to use the vehicle",
+                      "Vehicle Info",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: CachedNetworkImage(
                       imageUrl: vehicleDetails.vehicleImage,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Center(
-                              child: Container(
-                                  height: 50,
-                                  width: 50,
-                                  child: AspectRatio(
-                                      aspectRatio: 1,
-                                      child: CircularProgressIndicator(
-                                          value: downloadProgress.progress)))),
+                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                          child: Container(
+                              height: 50,
+                              width: 50,
+                              child: AspectRatio(
+                                  aspectRatio: 1, child: CircularProgressIndicator(value: downloadProgress.progress)))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        "${vehicleDetails.make} ${vehicleDetails.model}",
-                        textAlign: TextAlign.center),
+                    child: Text("${vehicleDetails.make} ${vehicleDetails.model}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Plate Number: ${vehicleDetails.plateNumber}",
-                        textAlign: TextAlign.center),
+                    child: Text("Plate Number: ${vehicleDetails.plateNumber}", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("Color: ${vehicleDetails.color}",
-                        textAlign: TextAlign.center),
+                    child: Text("Color: ${vehicleDetails.color}", textAlign: TextAlign.center),
                   ),
                   Container(
                     height: 50,
@@ -145,7 +129,7 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
         builder: (_) {
           return AlertDialog(
             title: Text("Confirm"),
-            content: Text("Are you sure you want to authorize?"),
+            content: Text("Are you sure you want to add this vehicle?"),
             actions: [
               FlatButton(
                   onPressed: () {
@@ -161,19 +145,16 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
           );
         });
     if (choice) {
-      Navigator.of(context).pop();
-      locator<ApiService>()
-          .authorizeVehicleAddition(
-              locator<AuthService>().currentUser().uid, code)
-          .then((value) {
+      locator<ApiService>().addVehicleFromCode(locator<AuthService>().currentUser().uid, code).then((value) {
         if (value.statusCode == 200) {
+          Navigator.of(context).pop();
+          showSuccess();
         } else {
+          Navigator.of(context).pop();
           showError(error: json.decode(value.error)["error"]);
         }
       }).catchError((err) {
-        showError(
-            error:
-                "We're currently having problems processing your request. Please try again");
+        showError(error: "We're currently having problems processing your request. Please try again");
       });
     }
   }
@@ -223,10 +204,7 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }
@@ -250,17 +228,14 @@ class _VehicleAddAuthDetailsState extends State<VehicleAddAuthDetails> {
                       ),
                     ),
                     Text(
-                      "You authorized the use of ${vehicleDetails.make} ${vehicleDetails.model} ${vehicleDetails.plateNumber} by user ${vehicleDetails.newUser}",
+                      "Your request to add the vehicle ${vehicleDetails.make} ${vehicleDetails.model} ${vehicleDetails.plateNumber} has been sent to the owner. You will be notified when the vehicle has been added to your account.",
                       textAlign: TextAlign.center,
                     )
                   ],
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }

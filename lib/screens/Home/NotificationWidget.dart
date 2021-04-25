@@ -2,7 +2,7 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/Home/VehicleAddAuthDetails.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
 import 'package:flutter/material.dart';
 
 class NotificationWidget extends StatelessWidget {
