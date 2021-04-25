@@ -4,14 +4,8 @@ class StringConstants {
   static const bool debugMessages = true;
   static const kAppName = 'CarSpace';
   // static const kApiUrl = "https://api.zdgph.tech";
-  static const kApiUrl = "https://540cbf44966f.ngrok.io";
+  static const kApiUrl = "https://853642a41590.ngrok.io";
 }
-
-double getRelativeSize(BuildContext context, double v) {
-  return MediaQuery.of(context).size.width * v / 375;
-}
-
-double kDefaultPaddingHorizontal = 16;
 
 final csStyle = CSTheme();
 
@@ -136,16 +130,6 @@ class CSTheme {
       bodyText2: body,
       caption: caption,
     );
-  }
-
-  EdgeInsets csPaddingDepth1(BuildContext context) {
-    return EdgeInsets.symmetric(
-        horizontal: getRelativeSize(context, kDefaultPaddingHorizontal));
-  }
-
-  EdgeInsets csPaddingLeft(BuildContext context) {
-    return EdgeInsets.only(
-        left: getRelativeSize(context, kDefaultPaddingHorizontal));
   }
 
   MaterialColor createMaterialColor(Color color) {

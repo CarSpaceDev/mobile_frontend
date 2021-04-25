@@ -35,18 +35,6 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
           add(UpdateVehicleRepo(vehicles: vehicles));
         });
       }
-      // vehicles = FirebaseFirestore.instance
-      //       .collection("vehicles")
-      //       .where("currentUsers", arrayContains: uid)
-      //       .snapshots()
-      //       .listen((result) {
-      //     print("updateReceived");
-      //     List<Vehicle> vehicles = [];
-      //     for (var doc in result.docs) {
-      //       vehicles.add(Vehicle.fromJson(doc.data()));
-      //     }
-      //     add(UpdateVehicleRepo(vehicles: vehicles));
-      //   });
     }
     if (event is UpdateVehicleRepo) {
       print("New update to vehicles repo");

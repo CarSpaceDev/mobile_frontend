@@ -1,18 +1,39 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:carspace/model/Wallet.dart';
+import 'package:carspace/services/ApiService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../../serviceLocator.dart';
 
 part 'wallet_event.dart';
 part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc() : super(WalletInitial());
-
+  StreamSubscription<DocumentSnapshot> wallet;
   @override
   Stream<WalletState> mapEventToState(
     WalletEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is InitializeWallet) {
+      locator<ApiService>().getWalletStatus(uid: event.uid);
+      wallet = FirebaseFirestore.instance.collection("wallets").doc(event.uid).snapshots().listen((result) {
+        add(UpdateWallet(wallet: Wallet.fromDoc(result)));
+      });
+    }
+    if(event is RefreshWallet){
+      locator<ApiService>().getWalletStatus(uid: event.uid);
+    }
+    if (event is UpdateWallet) {
+      print("New update to wallet");
+      yield WalletReady(wallet: event.wallet);
+    }
+    if (event is DisposeWallet) {
+      print("WalletBlocCalledDispose");
+      await wallet.cancel();
+    }
   }
 }
