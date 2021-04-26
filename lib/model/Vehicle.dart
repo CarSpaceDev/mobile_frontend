@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
 enum VehicleStatus { Unverified, Blocked, Rejected, Available, Unavailable, Expired }
 
@@ -7,7 +8,7 @@ enum VehicleType { Motorcycle, Sedan, PickUp, Van, Truck4W, Truck8W }
 
 class Vehicle extends Equatable {
   final String plateNumber;
-  // ignore: non_constant_identifier_names
+  final String OR;
   final String CR;
   final List<dynamic> currentUsers;
   final String ownerId;
@@ -18,12 +19,67 @@ class Vehicle extends Equatable {
   final String color;
   final VehicleStatus status;
   final DateTime expireDate;
-  // ignore: non_constant_identifier_names
-  final String OR;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final bool isBlocked;
+  final bool isRejected;
+  final bool isVerified;
 
   @override
-  List<Object> get props =>
-      [plateNumber, CR, currentUsers, ownerId, vehicleImage, make, model, type, color, status, OR, expireDate];
+  List<Object> get props => [
+        plateNumber,
+        CR,
+        currentUsers,
+        ownerId,
+        vehicleImage,
+        make,
+        model,
+        type,
+        color,
+        status,
+        OR,
+        expireDate,
+        dateCreated,
+        dateUpdated,
+        isBlocked,
+        isRejected,
+        isVerified,
+      ];
+  Vehicle({
+    @required String plateNumber,
+    @required String OR,
+    @required String CR,
+    @required List<dynamic> currentUsers,
+    @required String ownerId,
+    @required String vehicleImage,
+    @required String make,
+    @required String model,
+    @required VehicleType type,
+    @required String color,
+    @required VehicleStatus status,
+    @required DateTime expireDate,
+    @required DateTime dateCreated,
+    @required DateTime dateUpdated,
+    @required bool isBlocked,
+    @required bool isRejected,
+    @required bool isVerified,
+  })  : plateNumber = plateNumber,
+        OR = OR,
+        CR = CR,
+        currentUsers = currentUsers,
+        ownerId = ownerId,
+        vehicleImage = vehicleImage,
+        make = make,
+        model = model,
+        type = type,
+        color = color,
+        status = status,
+        expireDate = expireDate,
+        dateCreated = dateCreated,
+        dateUpdated = dateUpdated,
+        isBlocked = isBlocked,
+        isRejected = isRejected,
+        isVerified = isVerified;
   Vehicle.fromDoc(DocumentSnapshot doc)
       : plateNumber = doc.id,
         vehicleImage = doc.data()['vehicleImage'] as String,
@@ -35,6 +91,11 @@ class Vehicle extends Equatable {
         type = VehicleType.values[doc.data()['type']],
         color = doc.data()['color'] as String,
         expireDate = doc.data()["expireDate"].toDate(),
+        dateCreated = doc.data()["dateCreated"].toDate(),
+        dateUpdated = doc.data()["dateUpdated"].toDate(),
+        isBlocked = doc.data()["isBlocked"],
+        isRejected = doc.data()["isRejected"],
+        isVerified = doc.data()["isRejected"],
         status = doc.data()["isBlocked"]
             ? VehicleStatus.Blocked
             : doc.data()["isRejected"]
@@ -57,11 +118,16 @@ class Vehicle extends Equatable {
       "ownerId": this.ownerId,
       "make": this.make,
       "model": this.model,
-      "type": this.type,
+      "type": this.type.index,
       "color": this.color,
-      "status": this.status,
+      "status": this.status.index,
       "currentUsers": this.currentUsers,
-      "expireDate": this.expireDate
+      "expireDate": this.expireDate,
+      "dateCreated": this.dateCreated,
+      "dateUpdated": this.dateUpdated,
+      "isBlocked": this.isBlocked,
+      "isRejected": this.isRejected,
+      "isVerified": this.isVerified,
     };
   }
 

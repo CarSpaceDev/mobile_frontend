@@ -40,30 +40,8 @@ class DeleteVehicle extends VehicleEvent {
 }
 
 class AddVehicle extends VehicleEvent {
-  final String plateNumber;
-  final int type;
-  final String color;
-  // ignore: non_constant_identifier_names
-  final String OR;
-  // ignore: non_constant_identifier_names
-  final String CR;
-  final String vehicleImage;
-  final String make;
-  final String model;
-  final bool fromHomeScreen;
-  // ignore: non_constant_identifier_names
-  AddVehicle(
-      {this.plateNumber,
-      this.type,
-      this.color,
-      // ignore: non_constant_identifier_names
-      this.OR,
-      // ignore: non_constant_identifier_names
-      this.CR,
-      this.vehicleImage,
-      this.make,
-      this.model,
-      this.fromHomeScreen});
+  final Vehicle vehicle;
+  AddVehicle({@required this.vehicle});
   @override
-  List<Object> get props => [plateNumber, type, color, OR, CR, make, model];
+  List<Object> get props => [vehicle];
 }

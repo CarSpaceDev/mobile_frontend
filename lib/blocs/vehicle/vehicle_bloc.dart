@@ -8,6 +8,7 @@ import 'package:carspace/services/UploadService.dart';
 import 'package:chopper/chopper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../navigation.dart';
 import '../../serviceLocator.dart';
@@ -18,8 +19,6 @@ part 'vehicle_state.dart';
 class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
   VehicleBloc() : super(VehicleInitial());
   final NavigationService _navService = locator<NavigationService>();
-  final UploadService _uploadService = locator<UploadService>();
-  final ApiService _apiService = locator<ApiService>();
   final AuthService _authService = locator<AuthService>();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   @override
@@ -35,33 +34,15 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
     }
     if (event is RemoveVehicle){
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({"currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])});
+      await _db.collection("users").doc(_authService.currentUser().uid).update({"vehicles": FieldValue.arrayRemove([event.vehicle.plateNumber])});
     }
     if (event is DeleteVehicle){
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).delete();
     }
     if (event is AddVehicle) {
-      var payload = {
-        "OR": event.OR,
-        "CR": event.CR,
-        "vehicleImage": event.vehicleImage,
-        "make": event.make,
-        "model": event.model,
-        "plateNumber": event.plateNumber,
-        "type": event.type,
-        "color": event.color
-      };
-      _navService.pushReplaceNavigateTo(DashboardRoute);
-      Response res = await _apiService.addVehicle((_authService.currentUser()).uid, payload);
-      // if (res.statusCode == 201) {
-      //   if (event.fromHomeScreen) {
-      //     navService.goBack();
-      //   } else {
-      //     setPushTokenCache();
-      //     cache.put(authService.currentUser().uid, {"skipVehicle": false});
-      //     navService.pushReplaceNavigateTo(DashboardRoute);
-      //   }
-      // } else
-      //   yield LoginError(message: res.error.toString());
+      await _db.collection("vehicles").doc(event.vehicle.plateNumber).set(event.vehicle.toJson());
+      await _db.collection("users").doc(_authService.currentUser().uid).update({"vehicles": FieldValue.arrayUnion([event.vehicle.plateNumber])});
+      _navService.goBack();
     }
   }
 }

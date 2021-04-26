@@ -8,6 +8,7 @@ import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -610,8 +611,12 @@ void showAddVehicleChoices(BuildContext context) {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.of(context).pop();
-                          locator<NavigationService>().pushNavigateTo(LoginRoute);
-                          context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
+                          locator<NavigationService>().pushNavigateToWidget(
+                            getPageRoute(
+                              VehicleRegistrationScreen(fromHomeScreen: true,),
+                              RouteSettings(name: "ADD-VEHICLE"),
+                            ),
+                          );
                         },
                         child: Column(
                           children: [
