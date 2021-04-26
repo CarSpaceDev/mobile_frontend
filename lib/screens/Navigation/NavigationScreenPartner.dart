@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/PartnerReservation.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
+import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/MqttService.dart';
@@ -147,7 +148,12 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
-                Navigator.of(context).pop();
+                locator<NavigationService>().pushNavigateToWidget(
+                  getPageRoute(
+                    HomeDashboard(),
+                    RouteSettings(name: "HomeDashboard"),
+                  ),
+                );
               },
             ),
             bottom: null),

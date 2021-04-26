@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
+import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -82,7 +83,12 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
-              Navigator.of(context).pop();
+              locator<NavigationService>().pushNavigateToWidget(
+                getPageRoute(
+                  HomeDashboard(),
+                  RouteSettings(name: "HomeDashboard"),
+                ),
+              );
             },
           ),
           actions: [
