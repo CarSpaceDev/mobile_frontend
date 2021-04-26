@@ -25,7 +25,7 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
     locator<ApiService>().getVehicleAddDetails(code).then((Response value) {
       if (value.statusCode == 200) {
         setState(() {
-          vehicleDetails = Vehicle.fromJson(value.body);
+          vehicleDetails = Vehicle.fromDoc(value.body);
         });
       } else {
         Navigator.of(context).pop();

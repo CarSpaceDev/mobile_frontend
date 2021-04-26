@@ -1,3 +1,4 @@
+import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
@@ -577,7 +578,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     } else {
       var decision = await _showConfirmationDialog();
       if (decision == true) {
-        context.read<LoginBloc>().add(AddVehicleEvent(
+        context.read<VehicleBloc>().add(AddVehicleEvent(
             plateNumber: _plateNumberController.text,
             type: pType,
             make: _vehicleMake.text,

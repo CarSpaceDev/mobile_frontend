@@ -791,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (data.statusCode == 200) {
         List<Vehicle> vehiclesFromApi = [];
         new List.from(data.body).forEach((element) {
-          vehiclesFromApi.add(Vehicle.fromJson(element));
+          vehiclesFromApi.add(Vehicle.fromDoc(element));
         });
 
         if (vehiclesFromApi.isEmpty) {

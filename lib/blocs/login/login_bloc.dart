@@ -4,13 +4,12 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Login/RegistrationScreen.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/PushMessagingService.dart';
-import 'package:carspace/services/UploadService.dart';
-import 'package:chopper/chopper.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +22,11 @@ import '../../serviceLocator.dart';
 part 'login_event.dart';
 part 'login_state.dart';
 
-
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitialState());
   final AuthService authService = locator<AuthService>();
   final ApiService apiService = locator<ApiService>();
   final NavigationService navService = locator<NavigationService>();
-  final UploadService uploadService = locator<UploadService>();
   final cache = Hive.box("localCache");
   @override
   Stream<LoginState> mapEventToState(
@@ -80,31 +77,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     }
     //V2 Update
-    else if (event is AddVehicleEvent) {
-      var payload = {
-        "OR": event.OR,
-        "CR": event.CR,
-        "vehicleImage": event.vehicleImage,
-        "make": event.make,
-        "model": event.model,
-        "plateNumber": event.plateNumber,
-        "type": event.type,
-        "color": event.color
-      };
-      yield WaitingLogin(message: "Adding vehicle");
-      Response res = await apiService.addVehicle((authService.currentUser()).uid, payload);
-      if (res.statusCode == 201) {
-        if (event.fromHomeScreen) {
-          navService.goBack();
-        } else {
-          setPushTokenCache();
-          cache.put(authService.currentUser().uid, {"skipVehicle": false});
-          navService.pushReplaceNavigateTo(DashboardRoute);
-        }
-      } else
-        yield LoginError(message: res.error.toString());
-    }
-    //V2 Update
     else if (event is RestartLoginEvent) {
       yield WaitingLogin(message: "Please wait");
       await authService.logOut();
@@ -116,6 +88,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = authService.currentUser();
       cache.put(user.uid, {"skipVehicle": true});
       setPushTokenCache();
+      startRepos(uid: user.uid);
       navService.pushReplaceNavigateTo(DashboardRoute);
     }
     //V2 Update
@@ -147,7 +120,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
     //V2 Update
     else if (event is NavigateToVehicleAddEvent) {
-      yield ShowVehicleRegistration(fromHomeScreen: true);
+      locator<NavigationService>().pushReplaceNavigateToWidget(
+        getPageRoute(
+          VehicleRegistrationScreen(
+            fromHomeScreen: true,
+          ),
+          RouteSettings(name: "CASH-IN"),
+        ),
+      );
     }
     //V2 Update
     else if (event is LoginGoogleEvent) {
@@ -213,6 +193,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else {
         if (userSettings["skipVehicle"] == true) {
           setPushTokenCache();
+          startRepos(uid: user.uid);
           navService.pushReplaceNavigateTo(DashboardRoute);
         } else {
           result = ShowVehicleRegistration();
@@ -220,10 +201,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } else {
       setPushTokenCache();
-      navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: user.uid));
+      startRepos(uid: user.uid);
       navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
@@ -271,5 +249,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             ],
           );
         });
+  }
+
+  startRepos({@required String uid}) {
+    navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: uid));
+    navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: uid));
+    navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
+    navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
+  }
+
+  stopRepos() {
+    navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
+    navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
+    navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
+    navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
   }
 }

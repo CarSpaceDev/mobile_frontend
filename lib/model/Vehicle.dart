@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-enum VehicleStatus { Unverified, Blocked, Rejected, Available, Unavailable }
+enum VehicleStatus { Unverified, Blocked, Rejected, Available, Unavailable, Expired }
 
 enum VehicleType { Motorcycle, Sedan, PickUp, Van, Truck4W, Truck8W }
 
@@ -16,32 +17,36 @@ class Vehicle extends Equatable {
   final VehicleType type;
   final String color;
   final VehicleStatus status;
+  final DateTime expireDate;
   // ignore: non_constant_identifier_names
   final String OR;
 
   @override
   List<Object> get props =>
-      [plateNumber, CR, currentUsers, ownerId, vehicleImage, make, model, type, color, status, OR];
-  Vehicle.fromJson(Map<String, dynamic> json)
-      : plateNumber = json['plateNumber'] as String,
-        vehicleImage = json['vehicleImage'] as String,
-        CR = json['CR'] as String,
-        OR = json['OR'] as String,
-        ownerId = json['ownerId'] as String,
-        make = json['make'] as String,
-        model = json['model'] as String,
-        type = VehicleType.values[json['type']],
-        color = json['color'] as String,
-        status = json["isBlocked"]
+      [plateNumber, CR, currentUsers, ownerId, vehicleImage, make, model, type, color, status, OR, expireDate];
+  Vehicle.fromDoc(DocumentSnapshot doc)
+      : plateNumber = doc.id,
+        vehicleImage = doc.data()['vehicleImage'] as String,
+        CR = doc.data()['CR'] as String,
+        OR = doc.data()['OR'] as String,
+        ownerId = doc.data()['ownerId'] as String,
+        make = doc.data()['make'] as String,
+        model = doc.data()['model'] as String,
+        type = VehicleType.values[doc.data()['type']],
+        color = doc.data()['color'] as String,
+        expireDate = doc.data()["expireDate"].toDate(),
+        status = doc.data()["isBlocked"]
             ? VehicleStatus.Blocked
-            : json["isRejected"]
+            : doc.data()["isRejected"]
                 ? VehicleStatus.Rejected
-                : json['isVerified'] == false
+                : doc.data()['isVerified'] == false
                     ? VehicleStatus.Unverified
-                    : json["status"] == 1
-                        ? VehicleStatus.Unavailable
-                        : VehicleStatus.Available,
-        currentUsers = json['currentUsers'] as List<dynamic>;
+                    : DateTime.now().isAfter(doc.data()["expireDate"].toDate())
+                        ? VehicleStatus.Expired
+                        : doc.data()["status"] == 1
+                            ? VehicleStatus.Unavailable
+                            : VehicleStatus.Available,
+        currentUsers = doc.data()['currentUsers'] as List<dynamic>;
 
   toJson() {
     return {
@@ -55,7 +60,8 @@ class Vehicle extends Equatable {
       "type": this.type,
       "color": this.color,
       "status": this.status,
-      "currentUsers": this.currentUsers
+      "currentUsers": this.currentUsers,
+      "expireDate": this.expireDate
     };
   }
 

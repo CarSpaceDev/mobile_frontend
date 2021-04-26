@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'DashedLine.dart';
 
-enum TileColor { None, White, Grey, DarkGrey, Primary, Secondary }
+enum TileColor { None, White, Grey,Red, DarkGrey, Primary, Secondary }
 
 class CSSegmentedTile extends StatelessWidget {
   final bool selected; // if the tile is selected and should have green line shown
@@ -223,6 +223,9 @@ class CSTile extends StatelessWidget {
         break;
       case TileColor.White:
         return csStyle.csWhite;
+        break;
+      case TileColor.Red:
+        return csStyle.csRed;
         break;
       default:
         return Colors.transparent;
