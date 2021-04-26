@@ -37,7 +37,7 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({"currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])});
     }
     if (event is DeleteVehicle){
-      
+      await _db.collection("vehicles").doc(event.vehicle.plateNumber).delete();
     }
     if (event is AddVehicle) {
       var payload = {

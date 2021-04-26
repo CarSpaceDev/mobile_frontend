@@ -103,7 +103,19 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    PopUp.showOption(
+                        context: context,
+                        title: "Delete vehicle ${vehicle.plateNumber}?",
+                        body: "You will no longer be able to use this vehicle until you add it again, and it is verified",
+                        onAccept: () {
+                          locator<NavigationService>()
+                              .navigatorKey
+                              .currentContext
+                              .bloc<VehicleBloc>()
+                              .add(DeleteVehicle(vehicle: vehicle));
+                        });},
                     icon: Icon(
                       Icons.delete,
                       color: Colors.redAccent,
@@ -140,11 +152,13 @@ class VehicleOverview extends StatelessWidget {
           if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
             TextButton.icon(
               onPressed: () {
-                if (vehicle.status == VehicleStatus.Available) {
+                if (vehicle.status == VehicleStatus.Unverified && vehicle.status == VehicleStatus.Blocked) {
                   generateQR(context, vehicle: vehicle);
                 } else {
-                  Navigator.of(context).pop();
-                  showError(context, error: "This vehicle is not yet verified");
+                  PopUp.showError(
+                      context: context,
+                      title: "Vehicle has invalid status",
+                      body: "Only verified and unblocked vehicles can be used");
                 }
               },
               icon: Icon(

@@ -33,10 +33,10 @@ class RemoveVehicle extends VehicleEvent {
   List<Object> get props => [vehicle];
 }
 class DeleteVehicle extends VehicleEvent {
-  final String uid;
-  DeleteVehicle({this.uid});
+  final Vehicle vehicle;
+  DeleteVehicle({this.vehicle});
   @override
-  List<Object> get props => [uid];
+  List<Object> get props => [vehicle];
 }
 
 class AddVehicle extends VehicleEvent {

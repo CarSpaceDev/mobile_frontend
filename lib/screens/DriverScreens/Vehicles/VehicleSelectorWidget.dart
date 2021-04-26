@@ -23,7 +23,6 @@ class VehicleSelectorWidget extends StatefulWidget {
 
 class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with TickerProviderStateMixin {
   UserRepoBloc userRepoBloc;
-  VehicleBloc vehicleBloc;
   int actualIndex = 0;
   PageController controller;
   bool noVehicles;
@@ -46,9 +45,6 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
   Widget build(BuildContext context) {
     if (userRepoBloc == null) {
       userRepoBloc = context.read<UserRepoBloc>();
-    }
-    if (vehicleBloc == null) {
-      vehicleBloc = VehicleBloc();
     }
 
     return AnimatedSize(
@@ -151,7 +147,11 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                 return VehicleCard(
                                   onTap: () {
                                     if (state.vehicles[index].status == VehicleStatus.Available) {
-                                      vehicleBloc.add(SetSelectedVehicle(vehicle: state.vehicles[index]));
+                                      locator<NavigationService>()
+                                          .navigatorKey
+                                          .currentContext
+                                          .bloc<VehicleBloc>()
+                                          .add(SetSelectedVehicle(vehicle: state.vehicles[index]));
                                       setState(() {
                                         tapped = !tapped;
                                         header = "Selected Vehicle";
