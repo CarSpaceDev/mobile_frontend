@@ -89,6 +89,9 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);
 
+  @Post(path: '/user/rate-lot/')
+  Future<Response> rateLot(@Body() Map<String, dynamic> body);
+
   @Post(path: '/user/requestUserInfo')
   Future<Response> requestUserInfo(@Header('firebase_auth_jwt') String jwt,
       @Body() Map<String, dynamic> body);
@@ -150,6 +153,9 @@ abstract class ApiService extends ChopperService {
 
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
+
+  @Post(path: '/partner/rate-driver/')
+  Future<Response> rateDriver(@Body() Map<String, dynamic> body);
 
   @Put(path: '/upload/remove')
   Future<Response> deleteImage(@Body() Map<String, dynamic> body);

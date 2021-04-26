@@ -1,7 +1,19 @@
+import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
+import 'package:carspace/screens/Home/ReservationScreen.dart';
+import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
+import '../navigation.dart';
+import '../serviceLocator.dart';
+
 class RatingAndFeedback extends StatefulWidget {
+  final String user;
+  final reservation;
+  final type;
+  const RatingAndFeedback(this.reservation, this.user, this.type);
   @override
   _RatingAndFeedbackState createState() => _RatingAndFeedbackState();
 }
@@ -19,13 +31,16 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 "Rating and Feedback",
                 textAlign: TextAlign.center,
-                style: TextStyle(height: 5, fontSize: 20),
+                style: TextStyle(height: 2, fontSize: 20),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Center(
                   child: SmoothStarRating(
@@ -43,12 +58,15 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
                   // print("rating value dd -> ${value.truncate()}");
                 },
               )),
-              Expanded(
+              Flexible(
                 child: TextField(
                   controller: searchController,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(), hintText: 'Enter Feedback'),
                 ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               TextButton(
                   child: Text("Submit".toUpperCase(),
@@ -68,9 +86,83 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
         ));
   }
 
-  callToAction() {
-    print("called");
-    print(rating);
-    print(searchController.text);
+  callToAction() async {
+    if (this.widget.type == 0) {
+      var ratingBody = {
+        "userId": this.widget.user,
+        "reservationId": this.widget.reservation.reservationId,
+        "lotId": this.widget.reservation.lotId,
+        "rating": rating,
+        "feedback": searchController.text
+      };
+      print(ratingBody);
+      await locator<ApiService>().rateLot(ratingBody).then((data) {
+        showMessage(data.body);
+      });
+    } else {
+      var ratingBody = {
+        "userId": this.widget.user,
+        "reservationId": this.widget.reservation.reservationId,
+        "lotId": this.widget.reservation.lotId,
+        "rating": rating,
+        "feedback": searchController.text
+      };
+      print(ratingBody);
+      await locator<ApiService>().rateDriver(ratingBody).then((data) {
+        showMessage(data.body);
+      });
+    }
+  }
+
+  showMessage(String v) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    Text(
+                      "$v",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(height: 5, fontSize: 20),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    if (this.widget.type == 0) {
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          ReservationScreen(),
+                          RouteSettings(name: "Reservation"),
+                        ),
+                      );
+                    } else {
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          PartnerReservationScreen(),
+                          RouteSettings(name: "PartnerReservation"),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text("Close"))
+            ],
+          );
+        });
   }
 }

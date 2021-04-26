@@ -325,7 +325,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _reservationData[index].status == 0
+                    _reservationData[index].status == ReservationStatus.BOOKED
                         ? Column(
                             children: [
                               Padding(
@@ -409,26 +409,46 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                           )
                         : Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    rating();
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.car_repair,
-                                        color: Colors.blueAccent,
+                              _reservationData[index].userRating == false
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          rating(_reservationData[index], _uid);
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons.car_repair,
+                                              color: Colors.blueAccent,
+                                            ),
+                                            Text('Give rating and feedback',
+                                                style: TextStyle(
+                                                    color: Colors.blueAccent))
+                                          ],
+                                        ),
                                       ),
-                                      Text('Give rating and feedback',
-                                          style: TextStyle(
-                                              color: Colors.blueAccent))
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons.car_repair,
+                                              color: Colors.blueAccent,
+                                            ),
+                                            Text(
+                                                'You have already rated and sent your feedback',
+                                                style: TextStyle(
+                                                    color: Colors.blueAccent))
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                   ],
@@ -482,22 +502,24 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
     });
   }
 
-  rating() async {
+  rating(reservationData, userId) async {
     var userId = locator<AuthService>().currentUser().uid;
     return showDialog(
         barrierDismissible: true,
         context: context,
         builder: (_) => Dialog(
-              insetPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              insetPadding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * .1,
+                  horizontal: 32),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
-                height: 500,
-                width: 300,
+                height: 250,
+                width: 350,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-                    child: RatingAndFeedback(),
+                    child: RatingAndFeedback(reservationData, userId, 0),
                   ),
                 ),
               ),
