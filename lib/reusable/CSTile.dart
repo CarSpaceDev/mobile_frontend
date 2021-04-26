@@ -219,7 +219,7 @@ class CSTile extends StatelessWidget {
         return csStyle.primary;
         break;
       case TileColor.Secondary:
-        return csStyle.theme().secondaryHeaderColor;
+        return Colors.blue[500];
         break;
       case TileColor.White:
         return csStyle.csWhite;

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
@@ -36,8 +38,8 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CSTile(
-                      margin: EdgeInsets.only(bottom:16),
-                      padding: EdgeInsets.only(bottom:16),
+                      margin: EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.only(bottom: 16),
                       linePaddingLeft: 0,
                       linePaddingRight: 0,
                       solidDivider: true,
@@ -55,7 +57,9 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                         ],
                       ),
                     ),
-                    WalletInfoWidget(textColor: TextColor.Black,),
+                    WalletInfoWidget(
+                      textColor: TextColor.Black,
+                    ),
                   ],
                 ),
               ),
@@ -84,7 +88,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    PopupNotifications.showNotificationDialog(context,child:NotificationList());
+                    PopupNotifications.showNotificationDialog(context, child: NotificationList());
                   },
                   child: Text("Notifications")),
             ),
@@ -132,21 +136,35 @@ class BackgroundImage extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
   final AssetBundleImageProvider background;
-  BackgroundImage({this.child, this.padding = EdgeInsets.zero, this.background = const AssetImage("assets/login_screen_assets/bg.png")});
+  final double blur;
+  final double opacity;
+  BackgroundImage(
+      {this.child,
+      this.padding = EdgeInsets.zero,
+        this.blur = 0.0,
+        this.opacity = 0.6,
+      this.background = const AssetImage("assets/login_screen_assets/bg.png")});
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding,
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: background,
           fit: BoxFit.cover,
-          colorFilter: new ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.dstATop),
+          colorFilter: new ColorFilter.mode(Colors.black.withOpacity(opacity), BlendMode.dstATop),
         ),
       ),
-      child: child,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10*blur, sigmaY: 10*blur),
+        child: Container(
+          padding: padding,
+          alignment: Alignment.center,
+          color: Colors.grey.withOpacity(0.1),
+          child: child,
+        ),
+      ),
     );
   }
 }

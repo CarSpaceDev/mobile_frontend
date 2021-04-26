@@ -1,10 +1,9 @@
-import 'package:carspace/screens/login/EulaScreen.dart';
-import 'package:carspace/screens/login/LandingScreen.dart';
-import 'package:carspace/screens/login/PhoneNumberInputScreen.dart';
-import 'package:carspace/screens/login/RegistrationScreen.dart';
-import 'package:carspace/screens/login/ReturnScreen.dart';
-import 'package:carspace/screens/login/TestScreen.dart';
-import 'package:carspace/screens/login/VehicleRegistrationScreen.dart';
+import 'package:carspace/screens/Login/EulaScreen.dart';
+import 'package:carspace/screens/Login/LoginScreen.dart';
+import 'package:carspace/screens/Login/PhoneNumberInputScreen.dart';
+import 'package:carspace/screens/Login/RegistrationScreen.dart';
+import 'package:carspace/screens/Login/ReturnScreen.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/prompts/ErrorScreen.dart';
 import 'package:carspace/screens/prompts/LoadingScreen.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +38,7 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
               prompt: 'Getting user data',
             );
           } else if (state is LoggedOut) {
-            return LandingScreen();
+            return LoginScreen();
           } else if (state is GoogleToEulaState)
             return EulaScreen();
           else if (state is NavToEula) {
@@ -75,13 +74,8 @@ class _LoginBlocHandlerState extends State<LoginBlocHandler> {
             return VehicleRegistrationScreen(fromHomeScreen: state.fromHomeScreen);
           } else if (state is NavToRegister)
             return RegistrationScreen();
-          else if (state is NavToTestPage) {
-            // globalData.heldEmail = state.email;
-            // globalData.heldFirstName = state.firstName;
-            // globalData.heldLastName = state.lastName;
-            return TestScreen();
-          } else if (state is NavToLandingPage)
-            return LandingScreen();
+          else if (state is NavToLandingPage)
+            return LoginScreen();
           else if (state is NavToReturnScreen) {
             // globalData.heldEmail = state.email;
             // globalData.heldFirstName = state.firstName;

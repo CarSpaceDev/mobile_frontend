@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/init/initialization_bloc.dart';
 
-class InitializationBlocHandler extends StatefulWidget {
+class InitializationScreen extends StatefulWidget {
   @override
-  _InitializationBlocHandlerState createState() => _InitializationBlocHandlerState();
+  _InitializationScreenState createState() => _InitializationScreenState();
 }
 
-class _InitializationBlocHandlerState extends State<InitializationBlocHandler> {
+class _InitializationScreenState extends State<InitializationScreen> {
   @override
   void initState() {
     context.bloc<InitializationBloc>().add(BeginInitEvent());

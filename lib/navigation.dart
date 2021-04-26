@@ -1,12 +1,11 @@
 import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
-import 'package:carspace/screens/Home/HomeScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
+import 'package:carspace/screens/Login/LoginBlocHandler.dart';
 import 'package:carspace/screens/Wallet/WalletScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
-import 'package:carspace/screens/login/LoginBlocHandler.dart';
 import 'package:flutter/material.dart';
 
 const String LoginRoute = '/login';
@@ -24,7 +23,7 @@ const String DriveModeRoute = '/drive';
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case InitializationRoute:
-      return getPageRoute(InitializationBlocHandler(), settings);
+      return getPageRoute(InitializationScreen(), settings);
     case LoginRoute:
       return getPageRoute(LoginBlocHandler(), settings);
     case DashboardRoute:

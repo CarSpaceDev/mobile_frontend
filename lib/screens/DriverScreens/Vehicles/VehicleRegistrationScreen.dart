@@ -4,17 +4,16 @@ import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-import '../../blocs/login/login_bloc.dart';
+import '../../../blocs/login/login_bloc.dart';
 
 class VehicleRegistrationScreen extends StatefulWidget {
   final bool fromHomeScreen;
-  VehicleRegistrationScreen({this.fromHomeScreen});
+  VehicleRegistrationScreen({this.fromHomeScreen = false});
   @override
-  _VehicleRegistrationScreenState createState() => _VehicleRegistrationScreenState(this.fromHomeScreen);
+  _VehicleRegistrationScreenState createState() => _VehicleRegistrationScreenState();
 }
 
 class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
-  bool fromHomeScreen;
   TextEditingController _plateNumberController;
   TextEditingController _vehicleMake;
   TextEditingController _vehicleModel;
@@ -32,10 +31,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   List<String> colors;
   TextStyle style;
   TextStyle hStyle;
-
-  _VehicleRegistrationScreenState(bool v) {
-    this.fromHomeScreen = v != null ? v : false;
-  }
 
   @override
   void initState() {
@@ -73,11 +68,11 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
         leading: IconButton(
           color: Colors.white,
           onPressed: () {
-            fromHomeScreen ? showCancelDialog(context) : backToLogin(context);
+            widget.fromHomeScreen ? showCancelDialog(context) : backToLogin(context);
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
-        actions: fromHomeScreen
+        actions: widget.fromHomeScreen
             ? null
             : [
                 Center(
@@ -407,7 +402,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              fromHomeScreen ? "Save" : 'Next',
+              widget.fromHomeScreen ? "Save" : 'Next',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -591,7 +586,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
             vehicleImage: vehicleImageUrl,
             OR: orImageUrl,
             CR: crImageUrl,
-            fromHomeScreen: fromHomeScreen));
+            fromHomeScreen: widget.fromHomeScreen));
         // }
       }
     }

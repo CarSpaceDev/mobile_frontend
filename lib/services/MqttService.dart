@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:carspace/services/AuthService.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
+import '../serviceLocator.dart';
+
 class MqttService {
-  final String identifier = "zdg_sms_app";
+  final String identifier = "zdg_${DateTime.now().millisecondsSinceEpoch}";
   final String url = 'mqtt.zdgph.tech';
   final String username = 'zdgdev';
   final String password = 'zdgcs21!';
