@@ -1,0 +1,579 @@
+import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
+import 'package:carspace/model/Vehicle.dart';
+import 'package:carspace/reusable/ImageUploadWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/services/AuthService.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import '../../../serviceLocator.dart';
+
+class VehicleEditScreen extends StatefulWidget {
+  final Vehicle vehicle;
+  VehicleEditScreen({@required this.vehicle});
+  @override
+  _VehicleEditScreenState createState() => _VehicleEditScreenState();
+}
+
+class _VehicleEditScreenState extends State<VehicleEditScreen> {
+  TextEditingController _plateNumberController;
+  TextEditingController _vehicleMake;
+  TextEditingController _vehicleModel;
+  FocusNode _plateNumberFN;
+  FocusNode _vehicleMakeFN;
+  FocusNode _vehicleModelFN;
+  String orImageUrl;
+  String crImageUrl;
+  String vehicleImageUrl;
+  DateTime expireDate;
+
+  final cache = Hive.box("localCache");
+  String pColor;
+  int pType;
+  List<String> vehicleTypes;
+  List<String> colors;
+  TextStyle style;
+  TextStyle hStyle;
+
+  @override
+  void initState() {
+    super.initState();
+    style = TextStyle(fontSize: 14, color: Colors.black87);
+    hStyle = TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold);
+    vehicleTypes = List<String>.from(cache.get("data")["vehicleTypes"]);
+    colors = List<String>.from(cache.get("data")["colors"]);
+    orImageUrl = widget.vehicle.OR;
+    crImageUrl = widget.vehicle.CR;
+    vehicleImageUrl = widget.vehicle.vehicleImage;
+    pType = widget.vehicle.type.index;
+    pColor = widget.vehicle.color;
+    expireDate = widget.vehicle.expireDate;
+    _plateNumberController = TextEditingController(text: widget.vehicle.plateNumber);
+    _vehicleMake = TextEditingController(text: widget.vehicle.make);
+    _vehicleModel = TextEditingController(text: widget.vehicle.model);
+    _plateNumberFN = new FocusNode();
+    _vehicleMakeFN = new FocusNode();
+    _vehicleModelFN = new FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _plateNumberFN.dispose();
+    _vehicleMakeFN.dispose();
+    _vehicleModelFN.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: _nextButton(context),
+      appBar: AppBar(
+        brightness: Brightness.dark,
+        elevation: 0,
+        leading: IconButton(
+          color: Colors.white,
+          onPressed: () {
+            PopUp.showOption(
+                context: context,
+                title: "Cancel Vehicle Update",
+                body: "Changes will not be saved",
+                onAccept: () {
+                  Navigator.of(context).pop();
+                });
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+        centerTitle: true,
+        title: Text(
+          "Editing ${widget.vehicle.plateNumber}",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              child: Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(20.0), bottomLeft: Radius.circular(20.0)),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF1a237e), Color(0xFF000051)]),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Vehicle Photo",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: ImageUploadWidget(16 / 9, saveVehicleImage, prompt: "Upload photo of vehicle", imageUrl: vehicleImageUrl,),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Owner's Receipt(OR)",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: ImageUploadWidget(1, saveOR, prompt: "Upload photo of OR", imageUrl: orImageUrl,),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  "Certification of Registration(CR)",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: ImageUploadWidget(1, saveCR, prompt: "Upload photo of CR", imageUrl: crImageUrl,),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Vehicle Information",
+                                style: hStyle,
+                              ),
+                              plateNumberInput(),
+                              reusableInput(
+                                  label: "Brand/make",
+                                  hint: "Enter brand/make",
+                                  controller: _vehicleMake,
+                                  fn: _vehicleMakeFN,
+                                  nextFn: _vehicleModelFN),
+                              reusableInput(
+                                  label: "Model",
+                                  hint: "Enter model",
+                                  controller: _vehicleModel,
+                                  fn: _vehicleModelFN,
+                                  nextFn: null),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Registration expiry"),
+                                    InkWell(
+                                      onTap: () {
+                                        DateTime startDate = DateTime.now();
+                                        startDate.add(Duration(days: 1));
+                                        showDatePicker(
+                                                context: context,
+                                                initialDate: startDate,
+                                                firstDate: startDate,
+                                                lastDate: new DateTime.now().add(Duration(days: 365 * 2)))
+                                            .then((value) {
+                                          DateTime temp = DateTime(value.year, value.month, value.day, 23, 59, 59);
+                                          setState(() {
+                                            expireDate = temp;
+                                          });
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        color: Colors.grey,
+                                        child: Text(expireDate != null
+                                            ? "${formatDate(expireDate, [MM, " ", dd, ", ", yyyy])}"
+                                            : "Set expiry"),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Type"),
+                                    InkWell(
+                                      onTap: () {
+                                        showMaterialScrollPicker(
+                                          context: context,
+                                          title: "Select vehicle type",
+                                          items: vehicleTypes,
+                                          selectedItem: vehicleTypes[pType],
+                                          onChanged: (value) => setState(() {
+                                            pType = vehicleTypes.indexWhere((v) => v == value);
+                                          }),
+                                        );
+                                      },
+                                      child: Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          color: Colors.grey,
+                                          child: Text(vehicleTypes[pType])),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Color"),
+                                    InkWell(
+                                      onTap: () {
+                                        showMaterialScrollPicker(
+                                          context: context,
+                                          title: "Select vehicle type",
+                                          items: colors,
+                                          selectedItem: pColor,
+                                          onChanged: (value) => setState(() {
+                                            pColor = value;
+                                          }),
+                                        );
+                                      },
+                                      child: Container(
+                                          padding: EdgeInsets.all(8.0), color: Colors.grey, child: Text(pColor)),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding plateNumberInput() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Plate Number"),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.45,
+            child: TextField(
+              focusNode: _plateNumberFN,
+              controller: _plateNumberController,
+              enabled: false,
+              style: style,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(color: Colors.black87, fontSize: 14),
+                hintText: "Enter plate number",
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
+              onEditingComplete: () {
+                _plateNumberController.text = _plateNumberController.text.toUpperCase();
+                if (_vehicleMakeFN != null)
+                  _vehicleMakeFN.requestFocus();
+                else
+                  _plateNumberFN.unfocus();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding reusableInput({String label, String hint, TextEditingController controller, FocusNode fn, FocusNode nextFn}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label != null ? label : "Label"),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.45,
+            child: TextField(
+              focusNode: fn,
+              controller: controller,
+              style: style,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(color: Colors.black87, fontSize: 14),
+                hintText: hint != null ? hint : "Hint Text",
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
+              onEditingComplete: () {
+                controller.text = controller.text.toUpperCase();
+                if (nextFn != null)
+                  nextFn.requestFocus();
+                else
+                  fn.unfocus();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<int>> typeOptions() {
+    List<DropdownMenuItem<int>> result = [];
+    List<dynamic> types = cache.get("data")["vehicleTypes"];
+    types.forEach((element) {
+      result.add(
+        DropdownMenuItem<int>(
+          value: result.length,
+          child: Text(
+            element,
+            style: style,
+          ),
+        ),
+      );
+    });
+    return result;
+  }
+
+  List<DropdownMenuItem<String>> colorOptions() {
+    List<DropdownMenuItem<String>> result = [];
+    List<dynamic> colors = cache.get("data")["colors"];
+    colors.forEach((element) {
+      result.add(
+        DropdownMenuItem<String>(
+          value: element,
+          child: Text(
+            element,
+            style: style,
+          ),
+        ),
+      );
+    });
+    return result;
+  }
+
+  Widget _nextButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 10.0, top: 0),
+      child: Container(
+        color: Colors.transparent,
+        child: FlatButton(
+          height: 40,
+          color: Color(0xFF534BAE),
+          //534bae
+          onPressed: () {
+            validatePayload(context);
+          },
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "SAVE CHANGES",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Error"),
+          content: new Text(errorMessage.toString()),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  saveVehicleImage(String v) {
+    setState(() {
+      vehicleImageUrl = v;
+    });
+  }
+
+  saveOR(String v) {
+    setState(() {
+      orImageUrl = v;
+    });
+  }
+
+  saveCR(String v) {
+    setState(() {
+      crImageUrl = v;
+    });
+  }
+
+  Future<dynamic> _showConfirmationDialog() async {
+    return await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Proceed with saving vehicle details?"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("I confirm that all information below is correct."),
+              Text("After saving, the vehicle details will need to be verified."),
+              Container(
+                height: 16,
+              ),
+              Text("Plate Number: ${_plateNumberController.text}"),
+              Text("Make: ${_vehicleMake.text}"),
+              Text("Model: ${_vehicleModel.text}"),
+              Text("Type: ${vehicleTypes[pType]}"),
+              Text("Color: $pColor"),
+              Text("Reg. Expiration: ${formatDate(expireDate, [MM, " ", dd, ", ", yyyy])}"),
+            ],
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void validatePayload(BuildContext context) async {
+    if (vehicleImageUrl == null) {
+      _showErrorDialog("Please add a photo of your vehicle");
+    } else if (orImageUrl == null) {
+      _showErrorDialog("Please add a photo of your vehicle OR");
+    } else if (crImageUrl == null) {
+      _showErrorDialog("Please add a photo of your vehicle CR");
+    } else if (_plateNumberController.text.length < 6) {
+      _showErrorDialog("Please enter a valid plate number(min 6)");
+    } else if (_vehicleMake.text.length < 3) {
+      _showErrorDialog("Please enter a valid brand/make(min 3)");
+    } else if (_vehicleModel.text.length < 2) {
+      _showErrorDialog("Please enter a valid model(min 2)");
+    } else if (pType == null) {
+      _showErrorDialog("Please enter your vehicle type");
+    } else if (pColor == null) {
+      _showErrorDialog("Please enter your vehicle color");
+    } else if (expireDate == null) {
+      _showErrorDialog("Please enter vehicle registration expiry");
+    } else {
+      var decision = await _showConfirmationDialog();
+      if (decision == true) {
+        context.read<VehicleBloc>().add(
+              UpdateVehicleDetails(
+                vehicle: Vehicle(
+                    plateNumber: widget.vehicle.plateNumber,
+                    OR: orImageUrl,
+                    CR: crImageUrl,
+                    currentUsers: widget.vehicle.currentUsers,
+                    ownerId: widget.vehicle.ownerId,
+                    vehicleImage: vehicleImageUrl,
+                    make: _vehicleMake.text,
+                    model: _vehicleModel.text,
+                    type: VehicleType.values[pType],
+                    color: pColor,
+                    status: VehicleStatus.Unverified,
+                    expireDate: expireDate,
+                    dateCreated: widget.vehicle.dateCreated,
+                    dateUpdated: DateTime.now(),
+                    isBlocked: false,
+                    isRejected: false,
+                    isVerified: false),
+              ),
+            );
+      }
+    }
+  }
+}

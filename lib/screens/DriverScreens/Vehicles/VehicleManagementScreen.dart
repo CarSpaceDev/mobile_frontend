@@ -21,6 +21,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../navigation.dart';
+import 'VehicleEditScreen.dart';
 import 'VehicleQRCodeGeneration.dart';
 
 class VehicleManagementScreen extends StatefulWidget {
@@ -93,7 +94,19 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () { Navigator.of(context).pop();
+                    PopUp.showOption(
+                        context: context,
+                        title: "Edit ${vehicle.plateNumber}?",
+                        body: "After saving, the vehicle will need to be reverified. Proceed?",
+                        onAccept: () {
+                          locator<NavigationService>().pushNavigateToWidget(
+                            getPageRoute(
+                              VehicleEditScreen(vehicle: vehicle,),
+                              RouteSettings(name: "EDIT-VEHICLE"),
+                            ),
+                          );
+                        });},
                     icon: Icon(
                       Icons.edit,
                       color: Colors.blueAccent,

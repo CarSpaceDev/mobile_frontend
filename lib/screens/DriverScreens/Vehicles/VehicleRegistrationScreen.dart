@@ -103,7 +103,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
               ],
         centerTitle: true,
         title: Text(
-          "CarSpace",
+          "Vehicle Registration",
           style: TextStyle(color: Colors.white),
         ),
       ),
