@@ -25,8 +25,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     NotificationEvent event,
   ) async* {
     if (event is InitializeNotificationRepo) {
-      repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
-      notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
+      repoReference = FirebaseFirestore.instance
+          .collection("archive")
+          .doc(event.uid)
+          .collection("notifications");
+      notifications = repoReference
+          .orderBy("dateCreated", descending: true)
+          .snapshots()
+          .listen((result) {
         List<CSNotification> temp = [];
         for (QueryDocumentSnapshot r in result.docs) {
           temp.add(CSNotification.fromDoc(r));
@@ -43,21 +49,22 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     if (event is NewNotificationReceived) {
       print("New notification added to the collection");
       print(nRepo[0].type);
-      PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+      PopupNotifications.showNotificationDialog(
+          locator<NavigationService>().navigatorKey.currentContext,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               NotificationWidget(notification: nRepo[0]),
-              CSTile(
-                onTap: () {
-                  print("some actions");
-                },
-                color: TileColor.Primary,
-                child: CSText(
-                  "SOME ACTIONS HERE",
-                  textType: TextType.Button,
-                ),
-              )
+              // CSTile(
+              //   onTap: () {
+              //     print("some actions");
+              //   },
+              //   color: TileColor.Primary,
+              //   child: CSText(
+              //     "SOME ACTIONS HERE",
+              //     textType: TextType.Button,
+              //   ),
+              // )
             ],
           ),
           barrierDismissible: true);

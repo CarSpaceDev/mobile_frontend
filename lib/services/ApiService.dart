@@ -151,6 +151,9 @@ abstract class ApiService extends ChopperService {
   @Get(path: '/partner/markAsComplete/')
   Future<Response> markAsComplete(@Body() Map<String, dynamic> body);
 
+  @Get(path: '/partner/markAsCompleteV2/')
+  Future<Response> markAsCompleteV2(@Body() Map<String, dynamic> body);
+
   @Post(path: '/resource/lot/from-radius')
   Future<Response> findLotsFromRadius(@Body() Map<String, dynamic> body);
 

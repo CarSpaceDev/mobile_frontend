@@ -99,7 +99,12 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
           child: FlatButton(
             color: Color(0xff6200EE),
             onPressed: () {
-              if (this.widget.reservation.status == ReservationStatus.BOOKED)
+              if (this.widget.reservation.status ==
+                  ReservationStatus.BOOKED) if (this
+                      .widget
+                      .reservation
+                      .type ==
+                  ReservationType.BOOKING)
                 markAsComplete(
                     widget.reservation.driverId,
                     widget.reservation.lotId,
@@ -107,6 +112,15 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                     widget.reservation.reservationId,
                     widget.reservation.lotAddress,
                     widget.reservation.partnerId);
+              else {
+                markAsCompleteV2(
+                    widget.reservation.driverId,
+                    widget.reservation.lotId,
+                    widget.reservation.vehicleId,
+                    widget.reservation.reservationId,
+                    widget.reservation.lotAddress,
+                    widget.reservation.partnerId);
+              }
               else {
                 if (!this.widget.reservation.partnerRating) {
                   rating(this.widget.reservation);
@@ -124,7 +138,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 height: MediaQuery.of(context).size.height * 0.1,
                 child: Center(
                     child: this.widget.reservation.status ==
-                            ReservationStatus.COMPLETED
+                            ReservationStatus.BOOKED
                         ? Text("Mark as complete",
                             style: TextStyle(
                                 color: Colors.white,
@@ -261,6 +275,21 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       "partnerId": partnerId
     });
     await locator<ApiService>().markAsComplete(body).then((data) {
+      showMessage(data.body);
+    });
+  }
+
+  markAsCompleteV2(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().markAsCompleteV2(body).then((data) {
       showMessage(data.body);
     });
   }

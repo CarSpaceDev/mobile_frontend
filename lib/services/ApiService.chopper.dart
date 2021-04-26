@@ -306,6 +306,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> markAsCompleteV2(Map<String, dynamic> body) {
+    final $url = '/partner/markAsCompleteV2/';
+    final $body = body;
+    final $request = Request('GET', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> findLotsFromRadius(Map<String, dynamic> body) {
     final $url = '/resource/lot/from-radius';
     final $body = body;
