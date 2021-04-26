@@ -62,11 +62,11 @@ class Lot extends Equatable {
                 : LotStatus.Inactive,
         lotImage = List<String>.from(json["lotImage"]),
         address = LotAddress.fromJson(json["address"]),
-        pricing = json["pricing"]!=null ? double.parse("${json['pricing']}") : null,
-        pricePerDay = json["pricePerDay"]!=null ? double.parse("${json['pricePerDay']}") : null,
+        pricing = json["pricing"] != null ? double.parse("${json['pricing']}") : null,
+        pricePerDay = json["pricePerDay"] != null ? double.parse("${json['pricePerDay']}") : null,
         parkingType = ParkingType.values[json["parkingType"]],
         vehicleTypeAccepted = VehicleType.values[json["vehicleTypeAccepted"]],
-        rating = json["rating"]!=null ? double.parse("${json['rating']}") : null,
+        rating = json["rating"] != null ? double.parse("${json['rating']}") : null,
         numberOfRatings = json["numberOfRatings"] as int,
         availableFrom = int.parse(json["availableFrom"]),
         availableTo = int.parse(json["availableTo"]),
@@ -113,13 +113,13 @@ class LotAddress extends Equatable {
   List<Object> get props => [houseAndStreet, brgy, municipality, city, province, country, zipCode];
 
   LotAddress.fromJson(Map<String, dynamic> json)
-      : houseAndStreet = json["houseAndStreet"] as String,
-        brgy = json["brgy"] as String,
-        municipality = json["municipality"] as String,
-        city = json["city"] as String,
-        province = json["province"] as String,
-        country = json["country"] as String,
-        zipCode = json["zipCode"] as String;
+      : houseAndStreet = json["houseAndStreet"].isEmpty ? null : json["houseAndStreet"] as String,
+        brgy = json["brgy"].isEmpty ? null : json["brgy"] as String,
+        municipality = json["municipality"].isEmpty ? null : json["municipality"] as String,
+        city = json["city"].isEmpty ? null : json["city"] as String,
+        province = json["province"].isEmpty ? null : json["province"] as String,
+        country = json["country"].isEmpty ? null : json["country"] as String,
+        zipCode = json["zipCode"].isEmpty ? null : json["zipCode"] as String;
 
   @override
   String toString() {
