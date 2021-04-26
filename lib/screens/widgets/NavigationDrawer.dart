@@ -159,6 +159,8 @@ class BackgroundImage extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10*blur, sigmaY: 10*blur),
         child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           padding: padding,
           alignment: Alignment.center,
           color: Colors.grey.withOpacity(0.1),

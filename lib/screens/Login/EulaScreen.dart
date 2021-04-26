@@ -1,3 +1,5 @@
+import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -20,80 +22,72 @@ class _EulaScreenState extends State<EulaScreen> {
         brightness: Brightness.dark,
         elevation: 0,
         centerTitle: true,
-        title: Text(
-          "End User License Agreement",
-          style: TextStyle(color: Colors.white),
+        title: CSText(
+          "Terms and Conditions",
+          textColor: TextColor.White,
+          textType: TextType.H4,
+          textAlign: TextAlign.center,
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).backgroundColor,
-        child: Container(
-          height: MediaQuery.of(context).size.height * .1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              FlatButton(
-                onPressed: () => {sendResponse(context, false)},
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  children: <Widget>[
-                    Icon(Icons.not_interested),
-                    Text('Decline'),
-                  ],
-                ),
-              ),
-              FlatButton(
-                onPressed: () => {sendResponse(context, true)},
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  children: <Widget>[
-                    Icon(Icons.check),
-                    Text('Accept'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: Center(
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width * .8,
-              height: MediaQuery.of(context).size.height * .6,
-              child: Column(
-                children: <Widget>[
-                  Text("Terms and Conditions"),
-                  Divider(),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * .78,
-                    height: MediaQuery.of(context).size.height * .55,
-                    child: Scrollbar(
-                      isAlwaysShown: true,
+      body: Column(
+        children: [
+          Flexible(
+            child: Center(
+              child: CSTile(
+                color: TileColor.White,
+                shadow: true,
+                borderRadius: 16,
+                margin: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .5,
+                  child: Scrollbar(
+                    controller: scrollController,
+                    isAlwaysShown: true,
+                    child: SingleChildScrollView(
                       controller: scrollController,
-                      child: SingleChildScrollView(
-                        controller: scrollController,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Text(
-                            cache.get("data")["eula"],
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black87,
-                            ),
-                          ),
+                      child: Text(
+                        cache.get("data")["eula"],
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          CSTile(
+            color: TileColor.None,
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: CSTile(
+                    borderRadius: 8,
+                    onTap: () => {sendResponse(context, false)},
+                    margin: EdgeInsets.zero,
+                    padding: EdgeInsets.all(16.0),
+                    child: CSText('DECLINE', textType: TextType.Button, textColor: TextColor.Red,),
+                  ),
+                ),
+                Container(
+                  width: 16,
+                ),
+                Flexible(
+                  child: CSTile(
+                    borderRadius: 8,
+                    onTap: () => {sendResponse(context, true)},
+                    margin: EdgeInsets.zero,
+                    padding: EdgeInsets.all(16.0),
+                    child: CSText('ACCEPT', textType: TextType.Button, textColor: TextColor.Primary,),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

@@ -3,7 +3,7 @@ import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
-import 'package:carspace/screens/Login/LoginBlocHandler.dart';
+import 'package:carspace/screens/Login/LoginScreen.dart';
 import 'package:carspace/screens/Wallet/WalletScreen.dart';
 import 'package:carspace/screens/Initialization/InitializationBlocHandler.dart';
 import 'package:flutter/material.dart';

@@ -21,8 +21,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   Stream<InitializationState> mapEventToState(
     InitializationEvent event,
   ) async* {
-    if (event is BeginInitEvent) {
+    if (event is InitializeAppAssets) {
       try {
+        yield InitialState();
         var existingCache = cache.get("data");
         if (existingCache == null) {
           var result = await apiService.requestInitData(hash: DateTime.now().millisecondsSinceEpoch.toString());
