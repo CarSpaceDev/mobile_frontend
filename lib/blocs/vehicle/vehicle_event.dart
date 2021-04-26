@@ -20,9 +20,10 @@ class UpdateVehicleDetails extends VehicleEvent {
 
 class RevokeVehiclePermission extends VehicleEvent {
   final String uid;
-  RevokeVehiclePermission({this.uid});
+  final Vehicle vehicle;
+  RevokeVehiclePermission({this.vehicle, this.uid});
   @override
-  List<Object> get props => [uid];
+  List<Object> get props => [uid,vehicle];
 }
 
 class RemoveVehicle extends VehicleEvent {

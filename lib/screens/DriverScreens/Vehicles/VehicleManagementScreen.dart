@@ -190,7 +190,18 @@ class OtherVehicleUsers extends StatelessWidget {
                   title: UserName(uid: vehicle.currentUsers[index]),
                   trailing: IconButton(
                     onPressed: () {
-                      context.bloc<VehicleBloc>().add(RevokeVehiclePermission(uid: vehicle.currentUsers[index]));
+                      Navigator.of(context).pop();
+                      PopUp.showOption(
+                          context: context,
+                          title: "Revoke access for vehicle ${vehicle.plateNumber}?",
+                          body: "The selected user will no longer be able to use this vehicle until you authorize again.",
+                          onAccept: () {
+                            locator<NavigationService>()
+                                .navigatorKey
+                                .currentContext
+                                .bloc<VehicleBloc>()
+                                .add(RevokeVehiclePermission(vehicle: vehicle, uid: vehicle.currentUsers[index]));
+                          });
                     },
                     icon: Icon(
                       CupertinoIcons.xmark,
