@@ -578,7 +578,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     } else {
       var decision = await _showConfirmationDialog();
       if (decision == true) {
-        context.read<VehicleBloc>().add(AddVehicleEvent(
+        context.read<VehicleBloc>().add(AddVehicle(
             plateNumber: _plateNumberController.text,
             type: pType,
             make: _vehicleMake.text,

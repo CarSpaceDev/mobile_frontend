@@ -7,6 +7,7 @@ import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -215,25 +216,15 @@ class CurrentVehicleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return vehicle != null
-        ? CSTile(
-            margin: EdgeInsets.zero,
-            shadow: true,
+        ? VehicleListTile(
+            vehicle: vehicle,
             onTap: onTap,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CSText(
-                  "${vehicle.make} ${vehicle.model}",
-                  textType: TextType.Button,
-                ),
-                CSText("${vehicle.plateNumber}"),
-              ],
-            ),
           )
         : InkWell(
             onTap: vehiclesAvailable ? onTap : null,
             child: Padding(
-                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)));
+                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)),
+          );
   }
 }
 

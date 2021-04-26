@@ -18,17 +18,17 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
   ) async* {
     if (event is InitializeVehicleRepo) {
       yield VehicleRepoInitial();
-        vehicles = FirebaseFirestore.instance
-            .collection("vehicles")
-            .where("currentUsers", arrayContains: event.uid)
-            .snapshots()
-            .listen((result) {
-          List<Vehicle> vehicles = [];
-          for (DocumentSnapshot doc in result.docs) {
-            vehicles.add(Vehicle.fromDoc(doc));
-          }
-          add(UpdateVehicleRepo(vehicles: vehicles));
-        });
+      vehicles = FirebaseFirestore.instance
+          .collection("vehicles")
+          .where("currentUsers", arrayContains: event.uid)
+          .snapshots()
+          .listen((result) {
+        List<Vehicle> vehicles = [];
+        for (DocumentSnapshot doc in result.docs) {
+          vehicles.add(Vehicle.fromDoc(doc));
+        }
+        add(UpdateVehicleRepo(vehicles: vehicles));
+      });
     }
     if (event is UpdateVehicleRepo) {
       print("New update to vehicles repo");

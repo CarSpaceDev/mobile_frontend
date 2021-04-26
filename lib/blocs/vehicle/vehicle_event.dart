@@ -26,13 +26,19 @@ class RevokeVehiclePermission extends VehicleEvent {
 }
 
 class RemoveVehicle extends VehicleEvent {
+  final Vehicle vehicle;
+  RemoveVehicle({this.vehicle});
+  @override
+  List<Object> get props => [vehicle];
+}
+class DeleteVehicle extends VehicleEvent {
   final String uid;
-  RemoveVehicle({this.uid});
+  DeleteVehicle({this.uid});
   @override
   List<Object> get props => [uid];
 }
 
-class AddVehicleEvent extends VehicleEvent {
+class AddVehicle extends VehicleEvent {
   final String plateNumber;
   final int type;
   final String color;
@@ -45,7 +51,7 @@ class AddVehicleEvent extends VehicleEvent {
   final String model;
   final bool fromHomeScreen;
   // ignore: non_constant_identifier_names
-  AddVehicleEvent(
+  AddVehicle(
       {this.plateNumber,
       this.type,
       this.color,
