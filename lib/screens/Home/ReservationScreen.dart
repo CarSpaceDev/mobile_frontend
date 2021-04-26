@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Enums.dart';
+import 'package:carspace/reusable/RatingAndFeedback.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -257,15 +258,15 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                       style: TextStyle(color: Colors.black),
                                       children: <TextSpan>[
                                         TextSpan(
-                                            text: 'Reservation Type : ',
+                                            text: 'Type : ',
                                             style:
                                                 TextStyle(color: Colors.grey)),
                                         TextSpan(
                                             text:
                                                 (_reservationData[index].type ==
                                                         ReservationType.BOOKING)
-                                                    ? "Reservation"
-                                                    : "Recurring")
+                                                    ? "Booking"
+                                                    : "Reservation")
                                       ]),
                                 ),
                               ),
@@ -277,7 +278,7 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                       style: TextStyle(color: Colors.black),
                                       children: <TextSpan>[
                                         TextSpan(
-                                            text: 'Reservation Status : ',
+                                            text: 'Status : ',
                                             style:
                                                 TextStyle(color: Colors.grey)),
                                         TextSpan(
@@ -324,79 +325,112 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              DriverNavigationService(
-                                      reservationId:
-                                          _reservationData[index].reservationId)
-                                  .navigateViaMapBox(
-                                      _reservationData[index].coordinates);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.map_outlined,
-                                  color: Colors.blueAccent,
+                    _reservationData[index].status == 0
+                        ? Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    DriverNavigationService(
+                                            reservationId:
+                                                _reservationData[index]
+                                                    .reservationId)
+                                        .navigateViaMapBox(
+                                            _reservationData[index]
+                                                .coordinates);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.map_outlined,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Navigate to Lot',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
                                 ),
-                                Text('Navigate to Lot',
-                                    style: TextStyle(color: Colors.blueAccent))
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              onTheWay(
-                                  this._uid,
-                                  this._driverName,
-                                  _reservationData[index].vehicleId,
-                                  _reservationData[index].lotAddress,
-                                  _reservationData[index].partnerId);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.chat,
-                                  color: Colors.blueAccent,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    onTheWay(
+                                        this._uid,
+                                        this._driverName,
+                                        _reservationData[index].vehicleId,
+                                        _reservationData[index].lotAddress,
+                                        _reservationData[index].partnerId);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.chat,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Notify on the way',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
                                 ),
-                                Text('Notify on the way',
-                                    style: TextStyle(color: Colors.blueAccent))
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              arrived(
-                                  this._uid,
-                                  this._driverName,
-                                  _reservationData[index].vehicleId,
-                                  _reservationData[index].lotAddress,
-                                  _reservationData[index].partnerId);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.car_repair,
-                                  color: Colors.blueAccent,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    arrived(
+                                        this._uid,
+                                        this._driverName,
+                                        _reservationData[index].vehicleId,
+                                        _reservationData[index].lotAddress,
+                                        _reservationData[index].partnerId);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.car_repair,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Notify arrived',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
                                 ),
-                                Text('Notify arrived',
-                                    style: TextStyle(color: Colors.blueAccent))
-                              ],
-                            ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    rating();
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.car_repair,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      Text('Give rating and feedback',
+                                          style: TextStyle(
+                                              color: Colors.blueAccent))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -446,6 +480,28 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
     await locator<ApiService>().notifyArrived(body).then((data) {
       showMessage("Lot owner notified");
     });
+  }
+
+  rating() async {
+    var userId = locator<AuthService>().currentUser().uid;
+    return showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (_) => Dialog(
+              insetPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                height: 500,
+                width: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: RatingAndFeedback(),
+                  ),
+                ),
+              ),
+            ));
   }
 
   showMessage(String v) {
