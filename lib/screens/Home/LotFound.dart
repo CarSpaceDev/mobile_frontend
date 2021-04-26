@@ -21,7 +21,7 @@ class _LotFoundState extends State<LotFound> {
   var namedDays;
   bool noVehicles = true;
   bool working = false;
-
+  bool recurring = false;
   @override
   void initState() {
     super.initState();
@@ -73,6 +73,16 @@ class _LotFoundState extends State<LotFound> {
                         "Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
                         textAlign: TextAlign.center),
                   ),
+                  if (widget.type == 1)
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: CheckboxListTile(
+                          value: recurring,
+                          onChanged: _recurringChangeValue,
+                          title: new Text('Reserve as recurring reservation'),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          activeColor: Colors.blue),
+                    ),
                 ],
               )),
               working
@@ -110,7 +120,10 @@ class _LotFoundState extends State<LotFound> {
                           padding: const EdgeInsets.all(4.0),
                           child: FlatButton(
                             onPressed: () {
-                              reserve();
+                              if (widget.type == 0)
+                                book();
+                              else
+                                reserve();
                             },
                             color: Theme.of(context).secondaryHeaderColor,
                             shape: RoundedRectangleBorder(
@@ -194,7 +207,9 @@ class _LotFoundState extends State<LotFound> {
     );
   }
 
-  reserve() async {
+  void _recurringChangeValue(bool value) => setState(() => recurring = value);
+
+  book() async {
     print(widget.lot.pricing);
     var body = ({
       "userId": widget.user,
@@ -211,6 +226,44 @@ class _LotFoundState extends State<LotFound> {
       print(value.body);
       print(value.statusCode);
       Navigator.of(context).pop();
+      if (value.body["code"] == 200) {
+        locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
+        successfulBooking(
+            DriverReservation.fromJson(value.body["reservationData"]));
+      } else {
+        showMessage(value.body["message"]);
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  reserve() async {
+    var reserve_type;
+    if (recurring == false) {
+      reserve_type = 0;
+    } else {
+      reserve_type = 1;
+    }
+    print(widget.lot.pricePerDay);
+    var body = ({
+      "userId": widget.user,
+      "lotId": widget.lot.lotId,
+      "partnerId": widget.lot.partnerId,
+      "reservationType": 1,
+      "lotAddress": widget.lot.address.toString(),
+      "lotPrice": widget.lot.pricePerDay
+    });
+    setState(() {
+      working = true;
+    });
+    await locator<ApiService>().reserveLot(reserve_type, body).then((value) {
+      print(value.body);
+      print(value.statusCode);
+      setState(() {
+        working = false;
+      });
+      // Navigator.of(context).pop();
       if (value.body["code"] == 200) {
         locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
         successfulBooking(

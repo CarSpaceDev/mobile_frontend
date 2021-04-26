@@ -55,10 +55,10 @@ abstract class ApiService extends ChopperService {
   Future<Response> getWalletStatus({@Path('uid') String uid});
 
   @Post(path: '/admin/wallet/cash-in')
-  Future<Response> walletCashIn({@Body() Map<String,dynamic> data});
+  Future<Response> walletCashIn({@Body() Map<String, dynamic> data});
 
   @Post(path: '/admin/wallet/cash-out')
-  Future<Response> walletCashOut({@Body() Map<String,dynamic> data});
+  Future<Response> walletCashOut({@Body() Map<String, dynamic> data});
 
   @Get(path: '/user/{uid}')
   Future<Response> getUserData({@Path('uid') String uid});
@@ -84,7 +84,7 @@ abstract class ApiService extends ChopperService {
 
   @Post(path: '/user/reserve/{type}')
   Future<Response> reserveLot(
-      @Path('type') uid, @Body() Map<String, dynamic> body);
+      @Path('type') type, @Body() Map<String, dynamic> body);
 
   @Post(path: '/user/find')
   Future<Response> getUserEmails(@Body() Map<String, dynamic> body);

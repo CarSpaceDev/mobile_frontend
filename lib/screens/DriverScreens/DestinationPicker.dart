@@ -51,8 +51,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
     if (mapBloc == null) {
       mapBloc = new MapBloc();
     }
-    if(geoBloc==null)
-      geoBloc = context.bloc<GeolocationBloc>();
+    if (geoBloc == null) geoBloc = context.bloc<GeolocationBloc>();
     return MultiBlocProvider(
       providers: [
         BlocProvider<MapBloc>(create: (BuildContext context) => mapBloc),
@@ -61,18 +60,24 @@ class _DestinationPickerState extends State<DestinationPicker> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Brightness.dark,
-          title: Text(widget.mode == ParkingType.Reservation ? "Reserve a Lot" : "Park at Destination"),
+          title: Text(widget.mode == ParkingType.Reservation
+              ? "Reserve a Lot"
+              : "Park at Destination"),
           centerTitle: true,
           actions: [
-            BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+            BlocBuilder<MapBloc, MapState>(
+                builder: (BuildContext context, state) {
               if (state is MapSettingsReady) {
                 return Row(
                   children: [
-                    Icon(state.settings.showPOI ? CupertinoIcons.map_pin : CupertinoIcons.map_pin_slash),
+                    Icon(state.settings.showPOI
+                        ? CupertinoIcons.map_pin
+                        : CupertinoIcons.map_pin_slash),
                     Switch(
                       value: state.settings.showPOI,
                       onChanged: (bool v) {
-                        mapBloc.add(UpdateMap(settings: state.settings.copyWith(showPOI: v)));
+                        mapBloc.add(UpdateMap(
+                            settings: state.settings.copyWith(showPOI: v)));
                       },
                       inactiveTrackColor: csStyle.csWhite,
                       activeTrackColor: csStyle.csGrey,
@@ -101,36 +106,39 @@ class _DestinationPickerState extends State<DestinationPicker> {
                   textColor: TextColor.Primary,
                   textType: TextType.Button,
                 ),
-                body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  CSText(
-                    destination.locationDetails.toString(),
-                    textColor: TextColor.Primary,
-                    textType: TextType.Body,
-                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                  ),
-                  Row(
+                body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(
-                        CupertinoIcons.map_pin_ellipse,
-                        size: 16,
-                        color: Theme.of(context).primaryColor,
-                      ),
                       CSText(
-                        "${(Geolocator.distanceBetween(
-                              destination.originalLocation.latitude,
-                              destination.originalLocation.longitude,
-                              destination.location.latitude,
-                              destination.location.longitude,
-                            ) / 1000).toStringAsFixed(2)} km from landmark",
+                        destination.locationDetails.toString(),
                         textColor: TextColor.Primary,
-                        padding: EdgeInsets.only(top: 4, left: 8),
+                        textType: TextType.Body,
+                        padding: EdgeInsets.only(top: 16, bottom: 8),
                       ),
-                    ],
-                  ),
-                ]),
+                      Row(
+                        children: [
+                          Icon(
+                            CupertinoIcons.map_pin_ellipse,
+                            size: 16,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          CSText(
+                            "${(Geolocator.distanceBetween(
+                                  destination.originalLocation.latitude,
+                                  destination.originalLocation.longitude,
+                                  destination.location.latitude,
+                                  destination.location.longitude,
+                                ) / 1000).toStringAsFixed(2)} km from landmark",
+                            textColor: TextColor.Primary,
+                            padding: EdgeInsets.only(top: 4, left: 8),
+                          ),
+                        ],
+                      ),
+                    ]),
               ),
             Flexible(
-              child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
+              child: BlocBuilder<MapBloc, MapState>(
+                  builder: (BuildContext context, state) {
                 if (state is MapInitial) {
                   print("Firing Initialize MapSettings Event");
                   context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -145,12 +153,15 @@ class _DestinationPickerState extends State<DestinationPicker> {
               onTap: () {
                 destination != null ? callToAction() : getLocation();
               },
-              color: destination != null ? TileColor.Secondary : TileColor.DarkGrey,
+              color: destination != null
+                  ? TileColor.Secondary
+                  : TileColor.DarkGrey,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.symmetric(vertical: 32),
               child: Shimmer.fromColors(
                 baseColor: Colors.white,
-                highlightColor: destination != null ? Colors.white70 : Colors.white,
+                highlightColor:
+                    destination != null ? Colors.white70 : Colors.white,
                 child: CSText(
                   destination != null ? "RESERVE NOW" : "Select A Destination",
                   textColor: TextColor.White,
@@ -184,10 +195,13 @@ class _DestinationPickerState extends State<DestinationPicker> {
           barrierDismissible: true,
           context: context,
           builder: (_) => Dialog(
-            insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height*.25, horizontal: 32),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                insetPadding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * .1,
+                    horizontal: 32),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
                 child: new SizedBox(
-                  height: 500,
+                  height: 700,
                   width: 300,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -240,8 +254,10 @@ class _DestinationPickerState extends State<DestinationPicker> {
   getLocation() async {
     destination = await LocationSearchService.findLocation(context);
     if (destination != null) {
-      CSPosition position =
-          CSPosition.fromMap({"longitude": destination.location.longitude, "latitude": destination.location.latitude});
+      CSPosition position = CSPosition.fromMap({
+        "longitude": destination.location.longitude,
+        "latitude": destination.location.latitude
+      });
       mapBloc.add(
         ShowDestinationMarker(
           marker: Marker(
@@ -251,8 +267,10 @@ class _DestinationPickerState extends State<DestinationPicker> {
               onDragEnd: (LatLng newPos) {
                 print("NewPosition: ${newPos.toJson()}");
                 setState(() {
-                  destination.location =
-                      CSPosition.fromMap({"latitude": newPos.latitude, "longitude": newPos.longitude});
+                  destination.location = CSPosition.fromMap({
+                    "latitude": newPos.latitude,
+                    "longitude": newPos.longitude
+                  });
                 });
               }),
         ),
