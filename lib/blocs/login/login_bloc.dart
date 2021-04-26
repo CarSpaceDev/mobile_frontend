@@ -192,22 +192,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (user.phoneNumber == null) {
       setPushTokenCache();
       result = ShowPhoneNumberInputScreen();
-    } else if (user.vehicles.length == 0) {
-      var userSettings = cache.get(user.uid);
-      if (userSettings == null) {
-        cache.put(user.uid, {"skipVehicle": false});
-        setPushTokenCache();
-        result = ShowVehicleRegistration();
-      } else {
-        if (userSettings["skipVehicle"] == true) {
-          setPushTokenCache();
-          startRepos(uid: user.uid);
-          navService.pushReplaceNavigateTo(DashboardRoute);
-        } else {
-          result = ShowVehicleRegistration();
-        }
-      }
-    } else {
+    }
+    // else if (user.vehicles.length == 0) {
+    //   var userSettings = cache.get(user.uid);
+    //   if (userSettings == null) {
+    //     cache.put(user.uid, {"skipVehicle": false});
+    //     setPushTokenCache();
+    //     result = ShowVehicleRegistration();
+    //   } else {
+    //     if (userSettings["skipVehicle"] == true) {
+    //       setPushTokenCache();
+    //       startRepos(uid: user.uid);
+    //       navService.pushReplaceNavigateTo(DashboardRoute);
+    //     } else {
+    //       result = ShowVehicleRegistration();
+    //     }
+    //   }
+    // }
+    else {
       setPushTokenCache();
       startRepos(uid: user.uid);
       navService.pushReplaceNavigateTo(DashboardRoute);

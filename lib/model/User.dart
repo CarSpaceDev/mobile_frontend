@@ -69,7 +69,7 @@ class CSUser extends Equatable {
       : uid = json['uid'] as String,
         displayName = json['displayName'] as String,
         emailAddress = json['emailAddress'] as String,
-        currentReservation = json['currentReservation'] as String,
+        currentReservation = json['currentReservation'] ==null ? json['currentReservation'] : null,
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
         credits = json['credits'] as int,
