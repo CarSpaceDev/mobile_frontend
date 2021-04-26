@@ -1,11 +1,16 @@
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
+import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/services/AuthService.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 import '../../../blocs/login/login_bloc.dart';
+import '../../../serviceLocator.dart';
 
 class VehicleRegistrationScreen extends StatefulWidget {
   final bool fromHomeScreen;
@@ -24,6 +29,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   String orImageUrl;
   String crImageUrl;
   String vehicleImageUrl;
+  DateTime expireDate;
 
   final cache = Hive.box("localCache");
   String pColor;
@@ -61,7 +67,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: themeData.primaryColor,
       bottomNavigationBar: _nextButton(context),
       appBar: AppBar(
         brightness: Brightness.dark,
@@ -69,9 +74,17 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
         leading: IconButton(
           color: Colors.white,
           onPressed: () {
-            widget.fromHomeScreen ? showCancelDialog(context) : backToLogin(context);
+            widget.fromHomeScreen
+                ? PopUp.showOption(
+                    context: context,
+                    title: "Cancel Vehicle Registration",
+                    body: "Are you sure you want to cancel adding a vehicle?",
+                    onAccept: () {
+                      Navigator.of(context).pop();
+                    })
+                : backToLogin(context);
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back),
         ),
         actions: widget.fromHomeScreen
             ? null
@@ -90,7 +103,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
               ],
         centerTitle: true,
         title: Text(
-          "CarSpace",
+          "Vehicle Registration",
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -220,6 +233,39 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
                                   controller: _vehicleModel,
                                   fn: _vehicleModelFN,
                                   nextFn: null),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Registration expiry"),
+                                    InkWell(
+                                      onTap: () {
+                                        DateTime startDate = DateTime.now();
+                                        startDate.add(Duration(days: 1));
+                                        showDatePicker(
+                                                context: context,
+                                                initialDate: startDate,
+                                                firstDate: startDate,
+                                                lastDate: new DateTime.now().add(Duration(days: 365 * 2)))
+                                            .then((value) {
+                                          DateTime temp = DateTime(value.year, value.month, value.day, 23, 59, 59);
+                                          setState(() {
+                                            expireDate = temp;
+                                          });
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        color: Colors.grey,
+                                        child: Text(expireDate != null
+                                            ? "${formatDate(expireDate, [MM, " ", dd, ", ", yyyy])}"
+                                            : "Set expiry"),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Row(
@@ -403,7 +449,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              widget.fromHomeScreen ? "Save" : 'Next',
+              widget.fromHomeScreen ? "REGISTER" : 'Next',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -537,6 +583,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
               Text("Model: ${_vehicleModel.text}"),
               Text("Type: ${vehicleTypes[pType]}"),
               Text("Color: $pColor"),
+              Text("Reg. Expiration: ${formatDate(expireDate, [MM, " ", dd, ", ", yyyy])}"),
             ],
           ),
           actions: <Widget>[
@@ -575,20 +622,33 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
       _showErrorDialog("Please enter your vehicle type");
     } else if (pColor == null) {
       _showErrorDialog("Please enter your vehicle color");
+    } else if (expireDate == null) {
+      _showErrorDialog("Please enter vehicle registration expiry");
     } else {
       var decision = await _showConfirmationDialog();
       if (decision == true) {
-        context.read<VehicleBloc>().add(AddVehicleEvent(
-            plateNumber: _plateNumberController.text,
-            type: pType,
-            make: _vehicleMake.text,
-            model: _vehicleModel.text,
-            color: pColor,
-            vehicleImage: vehicleImageUrl,
-            OR: orImageUrl,
-            CR: crImageUrl,
-            fromHomeScreen: widget.fromHomeScreen));
-        // }
+        context.read<VehicleBloc>().add(
+              AddVehicle(
+                vehicle: Vehicle(
+                    plateNumber: _plateNumberController.text.replaceAll(" ", ''),
+                    OR: orImageUrl,
+                    CR: crImageUrl,
+                    currentUsers: [locator<AuthService>().currentUser().uid],
+                    ownerId: locator<AuthService>().currentUser().uid,
+                    vehicleImage: vehicleImageUrl,
+                    make: _vehicleMake.text,
+                    model: _vehicleModel.text,
+                    type: VehicleType.values[pType],
+                    color: pColor,
+                    status: VehicleStatus.Unverified,
+                    expireDate: expireDate,
+                    dateCreated: DateTime.now(),
+                    dateUpdated: DateTime.now(),
+                    isBlocked: false,
+                    isRejected: false,
+                    isVerified: false),
+              ),
+            );
       }
     }
   }

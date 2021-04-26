@@ -321,7 +321,7 @@ class LoginIcon extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
           child: Image.asset(
             'assets/logo/CarSpace.png',
-            width: MediaQuery.of(context).size.width * .3,
+            width: MediaQuery.of(context).size.height * .15,
           ),
         ),
         CSTile(

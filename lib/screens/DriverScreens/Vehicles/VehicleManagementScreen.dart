@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
-import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import '../../../navigation.dart';
+import 'VehicleEditScreen.dart';
 import 'VehicleQRCodeGeneration.dart';
 
 class VehicleManagementScreen extends StatefulWidget {
@@ -92,7 +94,19 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () { Navigator.of(context).pop();
+                    PopUp.showOption(
+                        context: context,
+                        title: "Edit ${vehicle.plateNumber}?",
+                        body: "After saving, the vehicle will need to be reverified. Proceed?",
+                        onAccept: () {
+                          locator<NavigationService>().pushNavigateToWidget(
+                            getPageRoute(
+                              VehicleEditScreen(vehicle: vehicle,),
+                              RouteSettings(name: "EDIT-VEHICLE"),
+                            ),
+                          );
+                        });},
                     icon: Icon(
                       Icons.edit,
                       color: Colors.blueAccent,
@@ -103,7 +117,19 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    PopUp.showOption(
+                        context: context,
+                        title: "Delete vehicle ${vehicle.plateNumber}?",
+                        body: "You will no longer be able to use this vehicle until you add it again, and it is verified",
+                        onAccept: () {
+                          locator<NavigationService>()
+                              .navigatorKey
+                              .currentContext
+                              .bloc<VehicleBloc>()
+                              .add(DeleteVehicle(vehicle: vehicle));
+                        });},
                     icon: Icon(
                       Icons.delete,
                       color: Colors.redAccent,
@@ -114,7 +140,20 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId != locator<AuthService>().currentUser().uid)
                 Flexible(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      PopUp.showOption(
+                          context: context,
+                          title: "Remove vehicle ${vehicle.plateNumber}?",
+                          body: "You will no longer be able to use this vehicle until you add it again.",
+                          onAccept: () {
+                            locator<NavigationService>()
+                                .navigatorKey
+                                .currentContext
+                                .bloc<VehicleBloc>()
+                                .add(RemoveVehicle(vehicle: vehicle));
+                          });
+                    },
                     icon: Icon(
                       Icons.delete,
                       color: Colors.redAccent,
@@ -127,11 +166,13 @@ class VehicleOverview extends StatelessWidget {
           if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
             TextButton.icon(
               onPressed: () {
-                if (vehicle.status == VehicleStatus.Available) {
+                if (vehicle.status == VehicleStatus.Unverified && vehicle.status == VehicleStatus.Blocked) {
                   generateQR(context, vehicle: vehicle);
                 } else {
-                  Navigator.of(context).pop();
-                  showError(context, error: "This vehicle is not yet verified");
+                  PopUp.showError(
+                      context: context,
+                      title: "Vehicle has invalid status",
+                      body: "Only verified and unblocked vehicles can be used");
                 }
               },
               icon: Icon(
@@ -177,7 +218,18 @@ class OtherVehicleUsers extends StatelessWidget {
                   title: UserName(uid: vehicle.currentUsers[index]),
                   trailing: IconButton(
                     onPressed: () {
-                      context.bloc<VehicleBloc>().add(RevokeVehiclePermission(uid: vehicle.currentUsers[index]));
+                      Navigator.of(context).pop();
+                      PopUp.showOption(
+                          context: context,
+                          title: "Revoke access for vehicle ${vehicle.plateNumber}?",
+                          body: "The selected user will no longer be able to use this vehicle until you authorize again.",
+                          onAccept: () {
+                            locator<NavigationService>()
+                                .navigatorKey
+                                .currentContext
+                                .bloc<VehicleBloc>()
+                                .add(RevokeVehiclePermission(vehicle: vehicle, uid: vehicle.currentUsers[index]));
+                          });
                     },
                     icon: Icon(
                       CupertinoIcons.xmark,
@@ -252,11 +304,11 @@ class VehicleDetail extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-                CSText(
-                  vehicle.ownerId == locator<AuthService>().currentUser().uid ? "Owned" : "Shared with me",
-                  textColor: TextColor.Primary,
-                  padding: EdgeInsets.only(top: 4),
-                ),
+              CSText(
+                vehicle.ownerId == locator<AuthService>().currentUser().uid ? "Owned" : "Shared with me",
+                textColor: TextColor.Primary,
+                padding: EdgeInsets.only(top: 4),
+              ),
               CSText(
                 "Registry expires: ${formatDate(vehicle.expireDate, [MM, " ", dd, ", ", yyyy])}",
                 textColor: TextColor.Primary,
@@ -373,23 +425,14 @@ class VehicleListTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .45),
-                              child: CSText(
-                                "${vehicle.make} ${vehicle.model}",
-                                textType: TextType.Button,
-                                overflow: TextOverflow.ellipsis,
-                                textColor: TextColor.Primary,
-                              )),
-                          Icon(
-                            CupertinoIcons.info,
-                            size: 18,
-                            color: csStyle.primary,
-                          ),
-                        ],
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .45),
+                        child: CSText(
+                          "${vehicle.make} ${vehicle.model}",
+                          textType: TextType.Button,
+                          overflow: TextOverflow.ellipsis,
+                          textColor: TextColor.Primary,
+                        ),
                       ),
                       CSText(
                         vehicle.plateNumber,
@@ -581,8 +624,12 @@ void showAddVehicleChoices(BuildContext context) {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.of(context).pop();
-                          locator<NavigationService>().pushNavigateTo(LoginRoute);
-                          context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
+                          locator<NavigationService>().pushNavigateToWidget(
+                            getPageRoute(
+                              VehicleRegistrationScreen(fromHomeScreen: true,),
+                              RouteSettings(name: "ADD-VEHICLE"),
+                            ),
+                          );
                         },
                         child: Column(
                           children: [

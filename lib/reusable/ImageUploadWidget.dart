@@ -17,67 +17,68 @@ class ImageUploadWidget extends StatefulWidget {
   final String prompt;
   final Function callback;
   final double aspectRatio;
-  ImageUploadWidget(this.aspectRatio, this.callback, {this.prompt});
+  final String imageUrl;
+  ImageUploadWidget(this.aspectRatio, this.callback, {this.prompt, this.imageUrl});
   @override
-  _ImageUploadWidgetState createState() => _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
+  _ImageUploadWidgetState createState() => _ImageUploadWidgetState(imageUrl: imageUrl);
 }
 
 class _ImageUploadWidgetState extends State<ImageUploadWidget> {
-  _ImageUploadWidgetState(this.prompt, this.callback, this.aspectRatio);
+  _ImageUploadWidgetState({this.imageUrl});
   File imageFile;
   String imageUrl;
-  final double aspectRatio;
-  final Function callback;
-  final String prompt;
   final picker = ImagePicker();
   final cropKey = GlobalKey<CropState>();
   final UploadService uploadService = locator<UploadService>();
   @override
   Widget build(BuildContext context) {
-    return imageUrl == null
-        ? FDottedLine(
-            color: Colors.black54,
-            strokeWidth: 2.0,
-            dottedLength: 15.0,
-            space: 4.0,
-            child: AspectRatio(
-              aspectRatio: aspectRatio,
-              child: Container(
-                child: Center(
-                  child: InkWell(
-                    onTap: () {
-                      _showChoiceDialog(context);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.upload_file,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        Text(prompt != null ? prompt : "Upload Image",
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54)),
-                      ],
+    if (imageUrl == null)
+      return FDottedLine(
+        color: Colors.black54,
+        strokeWidth: 2.0,
+        dottedLength: 15.0,
+        space: 4.0,
+        child: AspectRatio(
+          aspectRatio: widget.aspectRatio,
+          child: Container(
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  _showChoiceDialog(context);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.upload_file,
+                        color: Colors.black54,
+                      ),
                     ),
-                  ),
+                    Text(widget.prompt != null ? widget.prompt : "Upload Image",
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54)),
+                  ],
                 ),
               ),
             ),
-          )
-        : InkWell(
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  LinearProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-            onTap: () {
-              _showImageViewer(context, true);
-            },
-          );
+          ),
+        ),
+      );
+    return InkWell(
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        progressIndicatorBuilder: (context, url, downloadProgress) =>
+            LinearProgressIndicator(value: downloadProgress.progress),
+        errorWidget: (context, url, error) => Icon(Icons.error),
+      ),
+      onTap: () {
+        if(imageFile==null)
+          _showChoiceDialog(context);
+        else
+        _showImageViewer(context, true);
+      },
+    );
   }
 
   getImageFile() {
@@ -162,7 +163,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                   Column(
                     children: <Widget>[
                       AspectRatio(
-                        aspectRatio: this.aspectRatio,
+                        aspectRatio: widget.aspectRatio,
                         child: Container(
                           padding: EdgeInsets.all(20),
                           child: deleteMode
@@ -173,7 +174,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                               : Crop(
                                   image: FileImage(imageFile),
                                   key: cropKey,
-                                  aspectRatio: this.aspectRatio,
+                                  aspectRatio: widget.aspectRatio,
                                 ),
                         ),
                       ),
@@ -201,7 +202,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                             });
                                             Navigator.pop(context);
                                             Navigator.pop(context);
-                                            this.callback(null);
+                                            widget.callback(null);
                                           });
                                         },
                                         borderSide: BorderSide(color: Colors.red),
@@ -224,7 +225,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
                                               });
                                               Navigator.pop(context);
                                               Navigator.pop(context);
-                                              this.callback(result.body["url"]);
+                                              widget.callback(result.body["url"]);
                                             });
                                           } catch (e) {
                                             Navigator.pop(context);

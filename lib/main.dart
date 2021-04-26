@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'blocs/init/initialization_bloc.dart';
 import 'blocs/login/login_bloc.dart';
+import 'blocs/vehicle/vehicle_bloc.dart';
 import 'constants/GlobalConstants.dart';
 import 'constants/SizeConfig.dart';
 import 'navigation.dart';
@@ -40,7 +41,7 @@ class CarSpaceApp extends StatelessWidget {
         SizeConfig().init(constraints, orientation);
         return MultiBlocProvider(
           providers: [
-            BlocProvider<InitializationBloc>(
+            BlocProvider(
               create: (BuildContext context) => InitializationBloc(),
             ),
             BlocProvider(
@@ -48,6 +49,9 @@ class CarSpaceApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (BuildContext context) => VehicleRepoBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => VehicleBloc(),
             ),
             BlocProvider(
               create: (BuildContext context) => LoginBloc(),

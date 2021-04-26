@@ -7,6 +7,7 @@ import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +23,6 @@ class VehicleSelectorWidget extends StatefulWidget {
 
 class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with TickerProviderStateMixin {
   UserRepoBloc userRepoBloc;
-  VehicleBloc vehicleBloc;
   int actualIndex = 0;
   PageController controller;
   bool noVehicles;
@@ -45,9 +45,6 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
   Widget build(BuildContext context) {
     if (userRepoBloc == null) {
       userRepoBloc = context.read<UserRepoBloc>();
-    }
-    if (vehicleBloc == null) {
-      vehicleBloc = VehicleBloc();
     }
 
     return AnimatedSize(
@@ -150,7 +147,11 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                 return VehicleCard(
                                   onTap: () {
                                     if (state.vehicles[index].status == VehicleStatus.Available) {
-                                      vehicleBloc.add(SetSelectedVehicle(vehicle: state.vehicles[index]));
+                                      locator<NavigationService>()
+                                          .navigatorKey
+                                          .currentContext
+                                          .bloc<VehicleBloc>()
+                                          .add(SetSelectedVehicle(vehicle: state.vehicles[index]));
                                       setState(() {
                                         tapped = !tapped;
                                         header = "Selected Vehicle";
@@ -215,25 +216,15 @@ class CurrentVehicleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return vehicle != null
-        ? CSTile(
-            margin: EdgeInsets.zero,
-            shadow: true,
+        ? VehicleListTile(
+            vehicle: vehicle,
             onTap: onTap,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CSText(
-                  "${vehicle.make} ${vehicle.model}",
-                  textType: TextType.Button,
-                ),
-                CSText("${vehicle.plateNumber}"),
-              ],
-            ),
           )
         : InkWell(
             onTap: vehiclesAvailable ? onTap : null,
             child: Padding(
-                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)));
+                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)),
+          );
   }
 }
 
