@@ -46,7 +46,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (user != null) {
         //case where a user is in the google auth cache
         try {
-          var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+          var userFromApi =
+              (await apiService.checkExistence(uid: user.uid)).body["data"];
           if (userFromApi == null) {
             //if said user is not registered in db
             yield ShowEulaScreen();
@@ -80,7 +81,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = authService.currentUser();
       yield WaitingLogin(message: "Generating code");
       try {
-        var result = await apiService.generateCode(uid: user.uid, phoneNumber: event.phoneNumber);
+        var result = await apiService.generateCode(
+            uid: user.uid, phoneNumber: event.phoneNumber);
         if (result.statusCode == 200) {
           yield ShowPhoneCodeConfirmScreen();
         } else {
@@ -103,7 +105,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         "color": event.color
       };
       yield WaitingLogin(message: "Adding vehicle");
-      Response res = await apiService.addVehicle((authService.currentUser()).uid, payload);
+      Response res =
+          await apiService.addVehicle((authService.currentUser()).uid, payload);
       if (res.statusCode == 201) {
         if (event.fromHomeScreen) {
           navService.goBack();
@@ -133,7 +136,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
       await apiService.unregisterDevice(
-          uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
+          uid: authService.currentUser().uid,
+          token: locator<PushMessagingService>().token);
       await authService.logOut();
       cache.put("user", null);
       yield LoggedOut();
@@ -142,7 +146,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is ConfirmPhoneCodeEvent) {
       User user = authService.currentUser();
       yield WaitingLogin(message: "Confirming code");
-      var result = await apiService.confirmCode(uid: user.uid, code: event.code);
+      var result =
+          await apiService.confirmCode(uid: user.uid, code: event.code);
       if (result.statusCode == 200) {
         User currentUser = authService.currentUser();
         var userResult = await apiService.checkExistence(uid: currentUser.uid);
@@ -162,7 +167,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       User user = await authService.loginGoogle();
       if (user != null) {
         //case where a user is in the google auth cache
-        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+        var userFromApi =
+            (await apiService.checkExistence(uid: user.uid)).body["data"];
         if (userFromApi == null) {
           //if said user is not registered in db
           yield ShowEulaScreen();
@@ -175,9 +181,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedOut();
     } else if (event is LogInEmailEvent) {
       yield LoginInProgress();
-      User user = await authService.signInWithEmail(event.email, event.password);
+      User user =
+          await authService.signInWithEmail(event.email, event.password);
       if (user != null) {
-        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+        var userFromApi =
+            (await apiService.checkExistence(uid: user.uid)).body["data"];
         if (userFromApi == null) {
           //if said user is not registered in db
           yield ShowEulaScreen();
@@ -196,9 +204,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         User user = authService.currentUser();
         CSUser userData;
         if (user == null) {
-          user = await authService.signInWithEmail(event.payload.email, event.payload.password);
+          user = await authService.signInWithEmail(
+              event.payload.email, event.payload.password);
         }
-        var userFromApi = (await apiService.checkExistence(uid: user.uid)).body["data"];
+        var userFromApi =
+            (await apiService.checkExistence(uid: user.uid)).body["data"];
         userData = CSUser.fromJson(userFromApi);
         yield checkUserDataForMissingInfo(user: userData);
       } else
@@ -227,10 +237,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } else {
       setPushTokenCache();
-      navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: user.uid));
-      navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: user.uid));
+      navService.navigatorKey.currentContext
+          .bloc<UserRepoBloc>()
+          .add(InitializeUserRepo(uid: user.uid));
+      navService.navigatorKey.currentContext
+          .bloc<VehicleRepoBloc>()
+          .add(InitializeVehicleRepo(uid: user.uid));
+      navService.navigatorKey.currentContext
+          .bloc<NotificationBloc>()
+          .add(InitializeNotificationRepo(uid: user.uid));
+      navService.navigatorKey.currentContext
+          .bloc<WalletBloc>()
+          .add(InitializeWallet(uid: user.uid));
       navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
@@ -239,7 +257,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   setPushTokenCache() async {
     String pushToken = locator<PushMessagingService>().token;
     User currentUser = locator<AuthService>().currentUser();
-    await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
+    await locator<ApiService>()
+        .registerDevice(uid: currentUser.uid, token: pushToken);
   }
 
   showCodeGenerationErrorDialog() {
@@ -272,7 +291,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               FlatButton(
                   onPressed: () {
                     navService.goBack();
-                    navService.navigatorKey.currentContext.bloc<LoginBloc>().add(LoginStartEvent());
+                    navService.navigatorKey.currentContext
+                        .bloc<LoginBloc>()
+                        .add(LoginStartEvent());
                   },
                   child: Text("Close"))
             ],

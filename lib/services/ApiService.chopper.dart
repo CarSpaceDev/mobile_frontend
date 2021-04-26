@@ -152,8 +152,9 @@ class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> reserveLot(dynamic uid, Map<String, dynamic> body) {
-    final $url = '/user/reserve/$uid';
+  Future<Response<dynamic>> reserveLot(
+      dynamic type, Map<String, dynamic> body) {
+    final $url = '/user/reserve/$type';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
