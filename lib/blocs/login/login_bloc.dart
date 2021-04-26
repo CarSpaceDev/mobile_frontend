@@ -23,6 +23,7 @@ import '../../serviceLocator.dart';
 part 'login_event.dart';
 part 'login_state.dart';
 
+
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitialState());
   final AuthService authService = locator<AuthService>();
@@ -36,23 +37,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async* {
     //V2 Update
     if (event is LoginStartEvent) {
-      //Start of login flow
-      //1. Check for a logged in user.
-      //2. If none exists, show login screen
-      //3. Else, get data from server
-      //4. Evaluate data, if there are issues with the data switch screens.
-      //checking for a cached user
       User user = authService.currentUser();
       if (user != null) {
-        //case where a user is in the google auth cache
         try {
           var userFromApi =
               (await apiService.checkExistence(uid: user.uid)).body["data"];
           if (userFromApi == null) {
-            //if said user is not registered in db
             yield ShowEulaScreen();
           } else {
-            //case where the user exists
             CSUser userData = CSUser.fromJson(userFromApi);
             yield checkUserDataForMissingInfo(user: userData);
           }
@@ -65,9 +57,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     } else if (event is EulaResponseEvent) {
       if (event.value) {
-        //true
-        //It is implied that when the EulaResponseEvent is triggered, the user does not exist in database
-        //the register screen automatically populates data if it is a login via google event
         yield NavToRegister();
       } else {
         await authService.logOut();
@@ -136,8 +125,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
       await apiService.unregisterDevice(
-          uid: authService.currentUser().uid,
-          token: locator<PushMessagingService>().token);
+          uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
+      navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
+      navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
+      navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
+      navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
       await authService.logOut();
       cache.put("user", null);
       yield LoggedOut();

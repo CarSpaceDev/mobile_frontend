@@ -15,7 +15,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../serviceLocator.dart';
-import '../widgets/NavigationDrawer.dart';
 import 'ParkNowWidget.dart';
 
 class HomeDashboard extends StatefulWidget {
@@ -39,6 +38,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).secondaryHeaderColor,
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
@@ -52,50 +52,53 @@ class _HomeDashboardState extends State<HomeDashboard> {
       body: SafeArea(
         child: BackgroundImage(
           padding: EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                CSTile(
-                  borderRadius: 8,
-                  child: CSText("Current Reservation ETC"),
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                ),
-                VehicleSelectorWidget(),
-                BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
-                  if (userState is UserRepoReady && userState.user.currentVehicle != null)
-                    return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                        builder: (BuildContext context, VehicleRepoState vehicleState) {
-                      if (vehicleState is VehicleRepoReady) {
-                        return BlocBuilder<GeolocationBloc, GeolocationState>(
-                            builder: (BuildContext context, GeolocationState state) {
-                          Vehicle vehicle;
-                          try {
-                            vehicle =
-                                vehicleState.vehicles.firstWhere((v) => v.plateNumber == userState.user.currentVehicle);
-                          } catch (e) {}
-                          if (state is GeolocatorReady &&
-                              vehicle != null &&
-                              vehicle?.status == VehicleStatus.Available) {
-                            return ParkNowWidget(
-                              enabled: true,
-                              selectedVehicle: vehicle,
-                            );
-                          } else
-                            return ParkNowWidget(
-                              enabled: false,
-                            );
-                        });
-                      } else
-                        return ParkNowWidget(
-                          enabled: false,
-                        );
-                    });
-                  else
-                    return ParkNowWidget(
-                      enabled: false,
-                    );
-                }),
-              ],
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  CSTile(
+                    borderRadius: 8,
+                    child: CSText("Current Reservation ETC"),
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  VehicleSelectorWidget(),
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.currentVehicle != null)
+                      return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
+                          builder: (BuildContext context, VehicleRepoState vehicleState) {
+                        if (vehicleState is VehicleRepoReady) {
+                          return BlocBuilder<GeolocationBloc, GeolocationState>(
+                              builder: (BuildContext context, GeolocationState state) {
+                            Vehicle vehicle;
+                            try {
+                              vehicle = vehicleState.vehicles
+                                  .firstWhere((v) => v.plateNumber == userState.user.currentVehicle);
+                            } catch (e) {}
+                            if (state is GeolocatorReady &&
+                                vehicle != null &&
+                                vehicle?.status == VehicleStatus.Available) {
+                              return ParkNowWidget(
+                                enabled: true,
+                                selectedVehicle: vehicle,
+                              );
+                            } else
+                              return ParkNowWidget(
+                                enabled: false,
+                              );
+                          });
+                        } else
+                          return ParkNowWidget(
+                            enabled: false,
+                          );
+                      });
+                    else
+                      return ParkNowWidget(
+                        enabled: false,
+                      );
+                  }),
+                ],
+              ),
             ),
           ),
         ),

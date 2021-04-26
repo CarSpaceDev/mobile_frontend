@@ -1,12 +1,13 @@
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/reusable/CSText.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ErrorScreen extends StatelessWidget {
   final String prompt;
-  final bool showButtons;
-  ErrorScreen({this.prompt, this.showButtons});
+  final Widget action;
+  ErrorScreen({this.prompt, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -16,37 +17,31 @@ class ErrorScreen extends StatelessWidget {
         brightness: Brightness.dark,
         elevation: 0,
       ),
-      bottomNavigationBar: showButtons == null || showButtons == false ? null : _nextButton(context),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                height: 20 * SizeConfig.heightMultiplier,
-                child: Image.asset('assets/logo/splash_icon.png'),
-              ),
-              Align(
-                alignment: FractionalOffset.bottomCenter,
+        child: Column(
+          children: <Widget>[
+            Flexible(
+              flex: 1,
+              child: Center(
                 child: Container(
-                  height: 100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Text(
-                          prompt != null ? prompt : "General Error",
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    ],
-                  ),
+                  height: 20 * SizeConfig.heightMultiplier,
+                  child: Image.asset('assets/logo/splash_icon.png'),
                 ),
               ),
-            ],
-          ),
+            ),
+            Flexible(
+              flex: 1,
+              child: Center(
+                child: CSText(
+                  prompt != null ? prompt : "General Error",
+                  textType: TextType.H5,
+                  textColor: TextColor.White,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            if (action != null) action
+          ],
         ),
       ),
     );

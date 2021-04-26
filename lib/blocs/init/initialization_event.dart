@@ -8,7 +8,7 @@ abstract class InitializationEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class BeginInitEvent extends InitializationEvent {
+class InitializeAppAssets extends InitializationEvent {
   @override
   List<Object> get props => [];
 }
