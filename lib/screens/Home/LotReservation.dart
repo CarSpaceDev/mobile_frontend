@@ -456,7 +456,7 @@ class _LotReservationState extends State<LotReservation> {
         noVehicles = true;
       } else {
         vehiclesFromApi.forEach((data) {
-          vehicles.add(Vehicle.fromJson(data));
+          vehicles.add(Vehicle.fromDoc(data));
         });
         setState(() {
           noVehicles = false;

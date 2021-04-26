@@ -18,7 +18,7 @@ class CSTheme {
   Color csGreyDark = Color(0xFF646464);
   Color csGreyDivider = Color(0xFFDDDDDD);
   Color csGreyBackground = Color(0xFFF8F8F8);
-  Color csRed = Color(0xFFD5391D);
+  Color csRed = Color(0xFFDA2C43);
   Color csYellow = Color(0xFFD5B11D);
 
   TextStyle appBarTextDark;

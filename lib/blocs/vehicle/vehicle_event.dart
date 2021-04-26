@@ -10,3 +10,53 @@ class SetSelectedVehicle extends VehicleEvent {
   @override
   List<Object> get props => [vehicle];
 }
+
+class UpdateVehicleDetails extends VehicleEvent {
+  final Vehicle vehicle;
+  UpdateVehicleDetails({this.vehicle});
+  @override
+  List<Object> get props => [vehicle];
+}
+
+class RevokeVehiclePermission extends VehicleEvent {
+  final String uid;
+  RevokeVehiclePermission({this.uid});
+  @override
+  List<Object> get props => [uid];
+}
+
+class RemoveVehicle extends VehicleEvent {
+  final String uid;
+  RemoveVehicle({this.uid});
+  @override
+  List<Object> get props => [uid];
+}
+
+class AddVehicleEvent extends VehicleEvent {
+  final String plateNumber;
+  final int type;
+  final String color;
+  // ignore: non_constant_identifier_names
+  final String OR;
+  // ignore: non_constant_identifier_names
+  final String CR;
+  final String vehicleImage;
+  final String make;
+  final String model;
+  final bool fromHomeScreen;
+  // ignore: non_constant_identifier_names
+  AddVehicleEvent(
+      {this.plateNumber,
+      this.type,
+      this.color,
+      // ignore: non_constant_identifier_names
+      this.OR,
+      // ignore: non_constant_identifier_names
+      this.CR,
+      this.vehicleImage,
+      this.make,
+      this.model,
+      this.fromHomeScreen});
+  @override
+  List<Object> get props => [plateNumber, type, color, OR, CR, make, model];
+}

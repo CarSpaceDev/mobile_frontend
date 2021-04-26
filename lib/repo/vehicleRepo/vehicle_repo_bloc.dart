@@ -11,30 +11,24 @@ part 'vehicle_repo_state.dart';
 class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
   VehicleRepoBloc() : super(VehicleRepoInitial());
   StreamSubscription<QuerySnapshot> vehicles;
-  String uid;
 
   @override
   Stream<VehicleRepoState> mapEventToState(
     VehicleRepoEvent event,
   ) async* {
     if (event is InitializeVehicleRepo) {
-      if (vehicles != null && uid != event.uid) {
-        vehicles.cancel();
-      }
-      if (uid != event.uid) {
-        uid = event.uid;
+      yield VehicleRepoInitial();
         vehicles = FirebaseFirestore.instance
             .collection("vehicles")
-            .where("currentUsers", arrayContains: uid)
+            .where("currentUsers", arrayContains: event.uid)
             .snapshots()
             .listen((result) {
           List<Vehicle> vehicles = [];
-          for (var doc in result.docs) {
-            vehicles.add(Vehicle.fromJson(doc.data()));
+          for (DocumentSnapshot doc in result.docs) {
+            vehicles.add(Vehicle.fromDoc(doc));
           }
           add(UpdateVehicleRepo(vehicles: vehicles));
         });
-      }
     }
     if (event is UpdateVehicleRepo) {
       print("New update to vehicles repo");
@@ -43,6 +37,7 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
     if (event is DisposeVehicleRepo) {
       print("VehicleRepoCalledDispose");
       await vehicles.cancel();
+      yield VehicleRepoInitial();
     }
   }
 }

@@ -40,33 +40,6 @@ class SkipVehicleAddEvent extends LoginEvent {
   List<Object> get props => [];
 }
 
-//used by v2
-class AddVehicleEvent extends LoginEvent {
-  final String plateNumber;
-  final int type;
-  final String color;
-  // ignore: non_constant_identifier_names
-  final String OR;
-  // ignore: non_constant_identifier_names
-  final String CR;
-  final String vehicleImage;
-  final String make;
-  final String model;
-  final bool fromHomeScreen;
-  // ignore: non_constant_identifier_names
-  AddVehicleEvent(
-      {this.plateNumber,
-      this.type,
-      this.color,
-      this.OR,
-      this.CR,
-      this.vehicleImage,
-      this.make,
-      this.model,
-      this.fromHomeScreen});
-  @override
-  List<Object> get props => [plateNumber, type, color, OR, CR, make, model];
-}
 
 class LoginStartEvent extends LoginEvent {
   LoginStartEvent();
