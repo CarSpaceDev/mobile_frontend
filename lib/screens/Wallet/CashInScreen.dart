@@ -4,6 +4,7 @@ import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,7 +76,7 @@ class _CashInScreenState extends State<CashInScreen> {
                           body:
                           "Your wallet will be updated. Please press the refresh icon if it is not automatically updated",
                           onAcknowledge: () {
-                            locator<NavigationService>().navigatorKey.currentContext.bloc<WalletBloc>().add(RefreshWallet());
+                            locator<NavigationService>().navigatorKey.currentContext.bloc<WalletBloc>().add(RefreshWallet(uid: locator<AuthService>().currentUser().uid));
                           });
                     });
               } else

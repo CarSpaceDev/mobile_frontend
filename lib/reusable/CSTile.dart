@@ -213,7 +213,7 @@ class CSTile extends StatelessWidget {
         return csStyle.csGreyBackground;
         break;
       case TileColor.DarkGrey:
-        return csStyle.csGrey;
+        return Colors.grey[300];
         break;
       case TileColor.Primary:
         return csStyle.primary;

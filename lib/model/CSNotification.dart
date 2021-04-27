@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-enum NotificationType { Info, Action }
+enum NotificationType { Info, VerificationRequest }
 
 class CSNotification extends Equatable {
   final String uid;

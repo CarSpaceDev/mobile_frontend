@@ -15,6 +15,7 @@ import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:chopper/chopper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -674,8 +675,10 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
   void initState() {
     locator<ApiService>().getVehicleAddDetails(code).then((Response value) {
       if (value.statusCode == 200) {
-        setState(() {
-          vehicleDetails = Vehicle.fromDoc(value.body);
+        FirebaseFirestore.instance.collection("vehicles").doc(value.body["plateNumber"]).get().then((doc){
+          setState(() {
+            vehicleDetails = Vehicle.fromDoc(doc);
+          });
         });
       } else {
         Navigator.of(context).pop();

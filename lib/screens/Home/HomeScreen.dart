@@ -9,7 +9,7 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
-import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
+import 'package:carspace/screens/DriverScreens/Notifications/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/screens/widgets/NavigationDrawer.dart';
@@ -25,7 +25,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../serviceLocator.dart';
 import 'LotReservation.dart';
-import 'NotificationList.dart';
+import '../DriverScreens/Notifications/NotificationList.dart';
 import 'SuggestedLocationCard.dart';
 
 class HomeScreen extends StatefulWidget {
