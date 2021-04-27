@@ -213,7 +213,7 @@ class TransactionRecordDetailWidget extends StatelessWidget {
     return CSSegmentedTile(
       padding: EdgeInsets.all(16),
       title: CSText(
-        transaction.fromId!=locator<AuthService>().currentUser().uid? transaction.fromName: "YOU",
+        transaction.fromId != locator<AuthService>().currentUser().uid ? transaction.fromName : "YOU",
         textType: TextType.Button,
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -233,7 +233,7 @@ class TransactionRecordDetailWidget extends StatelessWidget {
       trailing: CSTile(
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         margin: EdgeInsets.zero,
-        color: TileColor.Primary,
+        color: TileColor.Grey,
         shadow: true,
         borderRadius: 5,
         child: ConstrainedBox(
@@ -264,7 +264,9 @@ class TransactionListTile extends StatelessWidget {
       shadow: true,
       borderRadius: 20,
       title: CSText(
-        transaction.fromId!=locator<AuthService>().currentUser().uid? transaction.fromName: "${transaction.fromName} (you)",
+        transaction.fromId != locator<AuthService>().currentUser().uid
+            ? transaction.fromName
+            : "${transaction.fromName} (you)",
         textColor: TextColor.Primary,
         textType: TextType.Button,
       ),
@@ -276,13 +278,13 @@ class TransactionListTile extends StatelessWidget {
       trailing: CSTile(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         margin: EdgeInsets.zero,
-        color: TileColor.Primary,
+        color: transaction.amount.isNegative ? TileColor.Red : TileColor.Green,
         shadow: true,
-        borderRadius: 25,
+        borderRadius: 8,
         child: ConstrainedBox(
           constraints: BoxConstraints(minWidth: 60, maxWidth: 60),
           child: CSText(
-            "${transaction.amount}",
+            transaction.amount.isNegative ? "(${transaction.amount})".replaceAll("-", "") : "${transaction.amount}",
             textColor: TextColor.White,
             textType: TextType.H5Bold,
             textAlign: TextAlign.center,

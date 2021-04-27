@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
@@ -134,20 +133,28 @@ class VehicleOverview extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      PopUp.showOption(
+                      if (vehicle.status == VehicleStatus.Unavailable) {
+                        PopUp.showError(
                           context: context,
-                          title: "Edit ${vehicle.plateNumber}?",
-                          body: "After saving, the vehicle will need to be reverified. Proceed?",
-                          onAccept: () {
-                            locator<NavigationService>().pushNavigateToWidget(
-                              getPageRoute(
-                                VehicleEditScreen(
-                                  vehicle: vehicle,
+                          title: "Vehicle ${vehicle.plateNumber} is currently in use.",
+                          body: "You can edit when the vehicle has no active bookings/reservations",
+                        );
+                      } else {
+                        PopUp.showOption(
+                            context: context,
+                            title: "Edit ${vehicle.plateNumber}?",
+                            body: "After saving, the vehicle will need to be reverified. Proceed?",
+                            onAccept: () {
+                              locator<NavigationService>().pushNavigateToWidget(
+                                getPageRoute(
+                                  VehicleEditScreen(
+                                    vehicle: vehicle,
+                                  ),
+                                  RouteSettings(name: "EDIT-VEHICLE"),
                                 ),
-                                RouteSettings(name: "EDIT-VEHICLE"),
-                              ),
-                            );
-                          });
+                              );
+                            });
+                      }
                     },
                     icon: Icon(
                       Icons.edit,
@@ -161,18 +168,26 @@ class VehicleOverview extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      PopUp.showOption(
+                      if (vehicle.status == VehicleStatus.Unavailable) {
+                        PopUp.showError(
                           context: context,
-                          title: "Delete vehicle ${vehicle.plateNumber}?",
-                          body:
-                              "You will no longer be able to use this vehicle until you add it again, and it is verified",
-                          onAccept: () {
-                            locator<NavigationService>()
-                                .navigatorKey
-                                .currentContext
-                                .bloc<VehicleBloc>()
-                                .add(DeleteVehicle(vehicle: vehicle));
-                          });
+                          title: "Vehicle ${vehicle.plateNumber} is currently in use.",
+                          body: "You can only delete when the vehicle has no active bookings/reservations",
+                        );
+                      } else {
+                        PopUp.showOption(
+                            context: context,
+                            title: "Delete vehicle ${vehicle.plateNumber}?",
+                            body:
+                                "You will no longer be able to use this vehicle until you add it again, and it is verified",
+                            onAccept: () {
+                              locator<NavigationService>()
+                                  .navigatorKey
+                                  .currentContext
+                                  .bloc<VehicleBloc>()
+                                  .add(DeleteVehicle(vehicle: vehicle));
+                            });
+                      }
                     },
                     icon: Icon(
                       Icons.delete,
@@ -186,17 +201,25 @@ class VehicleOverview extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      PopUp.showOption(
+                      if (vehicle.status == VehicleStatus.Unavailable) {
+                        PopUp.showError(
                           context: context,
-                          title: "Remove vehicle ${vehicle.plateNumber}?",
-                          body: "You will no longer be able to use this vehicle until you add it again.",
-                          onAccept: () {
-                            locator<NavigationService>()
-                                .navigatorKey
-                                .currentContext
-                                .bloc<VehicleBloc>()
-                                .add(RemoveVehicle(vehicle: vehicle));
-                          });
+                          title: "Vehicle ${vehicle.plateNumber} is currently in use.",
+                          body: "You can only revoke permission when the vehicle has no active bookings/reservations",
+                        );
+                      } else {
+                        PopUp.showOption(
+                            context: context,
+                            title: "Remove vehicle ${vehicle.plateNumber}?",
+                            body: "You will no longer be able to use this vehicle until you add it again.",
+                            onAccept: () {
+                              locator<NavigationService>()
+                                  .navigatorKey
+                                  .currentContext
+                                  .bloc<VehicleBloc>()
+                                  .add(RemoveVehicle(vehicle: vehicle));
+                            });
+                      }
                     },
                     icon: Icon(
                       Icons.delete,
@@ -263,18 +286,26 @@ class OtherVehicleUsers extends StatelessWidget {
                   trailing: IconButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      PopUp.showOption(
+                      if (vehicle.status == VehicleStatus.Unavailable) {
+                        PopUp.showError(
                           context: context,
-                          title: "Revoke access for vehicle ${vehicle.plateNumber}?",
-                          body:
-                              "The selected user will no longer be able to use this vehicle until you authorize again.",
-                          onAccept: () {
-                            locator<NavigationService>()
-                                .navigatorKey
-                                .currentContext
-                                .bloc<VehicleBloc>()
-                                .add(RevokeVehiclePermission(vehicle: vehicle, uid: vehicle.currentUsers[index]));
-                          });
+                          title: "Vehicle ${vehicle.plateNumber} is currently in use.",
+                          body: "You can only revoke permission when the vehicle has no active bookings/reservations",
+                        );
+                      } else {
+                        PopUp.showOption(
+                            context: context,
+                            title: "Revoke access for vehicle ${vehicle.plateNumber}?",
+                            body:
+                                "The selected user will no longer be able to use this vehicle until you authorize again.",
+                            onAccept: () {
+                              locator<NavigationService>()
+                                  .navigatorKey
+                                  .currentContext
+                                  .bloc<VehicleBloc>()
+                                  .add(RevokeVehiclePermission(vehicle: vehicle, uid: vehicle.currentUsers[index]));
+                            });
+                      }
                     },
                     icon: Icon(
                       CupertinoIcons.xmark,
@@ -593,7 +624,8 @@ void generateQR({@required Vehicle vehicle}) {
           });
     } else {
       locator<NavigationService>().goBack();
-      showError(locator<NavigationService>().navigatorKey.currentContext, error: "Server error, please try again later");
+      showError(locator<NavigationService>().navigatorKey.currentContext,
+          error: "Server error, please try again later");
     }
   }).catchError((error) {
     locator<NavigationService>().goBack();
@@ -675,7 +707,7 @@ class _VehicleAddDetailsState extends State<VehicleAddDetails> {
   void initState() {
     locator<ApiService>().getVehicleAddDetails(code).then((Response value) {
       if (value.statusCode == 200) {
-        FirebaseFirestore.instance.collection("vehicles").doc(value.body["plateNumber"]).get().then((doc){
+        FirebaseFirestore.instance.collection("vehicles").doc(value.body["plateNumber"]).get().then((doc) {
           setState(() {
             vehicleDetails = Vehicle.fromDoc(doc);
           });

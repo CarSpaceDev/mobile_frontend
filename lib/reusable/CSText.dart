@@ -24,6 +24,7 @@ enum TextColor {
   DarkGrey,
   White,
   Red,
+  Green,
   Yellow,
   Blue,
 }
@@ -68,7 +69,10 @@ class CSText extends StatelessWidget {
         _color = csStyle.csGreyDark;
         break;
       case TextColor.Red:
-        _color = csStyle.csRed;
+        _color = Colors.redAccent;
+        break;
+      case TextColor.Green:
+        _color = Colors.green;
         break;
       case TextColor.Yellow:
         _color = csStyle.csYellow;
