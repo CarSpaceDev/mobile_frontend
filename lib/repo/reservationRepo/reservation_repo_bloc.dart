@@ -18,6 +18,7 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
     ReservationRepoEvent event,
   ) async* {
     if (event is InitializeReservationRepo) {
+      print("Initializing Reservations Repo - Partner: ${event.isPartner}");
       var repoReference;
       if (event.isPartner) {
         repoReference = FirebaseFirestore.instance
@@ -28,15 +29,17 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
             .collection("reservations")
             .where("userId", isEqualTo: locator<AuthService>().currentUser().uid);
       }
-      reservations = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
+      reservations = repoReference.snapshots().listen((result) {
         List<Reservation> temp = [];
         for (QueryDocumentSnapshot doc in result.docs) {
           temp.add(Reservation.fromDoc(doc));
         }
+        temp.sort((a,b) => a.dateCreated.isBefore(b.dateCreated) ? -1 : a.dateCreated.isAfter(b.dateCreated) ? 1 : 0);
         add(ReservationsUpdated(reservations: temp));
       });
     }
     if (event is ReservationsUpdated) {
+      print("ReservationRepoUpdated");
       yield ReservationRepoReady(reservations: event.reservations);
     }
     if (event is DisposeReservationRepo) {

@@ -1,14 +1,18 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
+import 'package:carspace/screens/DriverScreens/Reservations/DriverReservationScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
+import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,20 +69,19 @@ class _HomeDashboardState extends State<HomeDashboard> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
-                  //   if (userState is UserRepoReady && userState.user.currentReservation != null) {
-                  //     return FutureBuilder(
-                  //         future:
-                  //             locator<ApiService>().getReservation(reservationId: userState.user.currentReservation),
-                  //         builder: (BuildContext context, result) {
-                  //           if (result.hasData) {
-                  //             return Text("${result.data.body}");
-                  //           } else
-                  //             return Container();
-                  //         });
-                  //   } else
-                  //     return Container();
-                  // }),
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.currentReservation != null) {
+                      return FutureBuilder(
+                          future: FirebaseFirestore.instance.collection("reservations").doc(userState.user.currentReservation).get(),
+                          builder: (BuildContext context, result) {
+                            if (result.hasData && result.data.exists) {
+                              return ReservationTileWidget(reservation: Reservation.fromDoc(result.data));
+                            } else
+                              return Container();
+                          });
+                    } else
+                      return Container();
+                  }),
                   BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
                     if (userState is UserRepoReady && userState.user.currentReservation != null) return Container();
                     return VehicleSelectorWidget();

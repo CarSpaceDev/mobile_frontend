@@ -9,6 +9,7 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
+import 'package:carspace/reusable/UserDisplayNameWidget.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -283,7 +284,7 @@ class OtherVehicleUsers extends StatelessWidget {
                 return CSSegmentedTile(
                   margin: EdgeInsets.symmetric(vertical: 4),
                   padding: EdgeInsets.zero,
-                  title: UserName(uid: vehicle.currentUsers[index]),
+                  title: UserDisplayNameWidget(uid: vehicle.currentUsers[index]),
                   trailing: IconButton(
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -322,25 +323,6 @@ class OtherVehicleUsers extends StatelessWidget {
   }
 }
 
-class UserName extends StatelessWidget {
-  final String uid;
-  UserName({@required this.uid});
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: locator<ApiService>().getUserData(uid: uid),
-        builder: (context, result) {
-          if (result.hasData) {
-            return CSText(
-              "${result.data.body["displayName"]}".toUpperCase(),
-              textType: TextType.Button,
-              textColor: TextColor.Primary,
-            );
-          }
-          return CSText(". . .");
-        });
-  }
-}
 
 class VehicleDetail extends StatelessWidget {
   final Vehicle vehicle;

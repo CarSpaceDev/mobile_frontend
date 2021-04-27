@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:carspace/reusable/CSText.dart';
-import 'package:carspace/screens/widgets/svg_icon.dart';
+import 'package:carspace/reusable/svg_icon.dart';
 import 'package:flutter/material.dart';
 
 const Map<CardType, SvgFile> CardTypeIconAsset = {

@@ -99,11 +99,11 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             color: Color(0xff6200EE),
             onPressed: () {
               if (this.widget.reservation.status ==
-                  ReservationStatus.BOOKED) if (this
+                  ReservationStatus.Active) if (this
                       .widget
                       .reservation
                       .type ==
-                  ReservationType.BOOKING)
+                  ReservationType.Booking)
                 markAsComplete(
                     widget.reservation.driverId,
                     widget.reservation.lotId,
@@ -137,7 +137,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 height: MediaQuery.of(context).size.height * 0.1,
                 child: Center(
                     child: this.widget.reservation.status ==
-                            ReservationStatus.BOOKED
+                            ReservationStatus.Active
                         ? Text("Mark as complete",
                             style: TextStyle(
                                 color: Colors.white,

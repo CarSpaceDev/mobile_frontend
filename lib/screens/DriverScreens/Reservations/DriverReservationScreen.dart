@@ -18,19 +18,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class PartnerReservationScreen extends StatefulWidget {
+class DriverReservationScreen extends StatefulWidget {
   @override
-  _PartnerReservationScreenState createState() => _PartnerReservationScreenState();
+  _DriverReservationScreenState createState() => _DriverReservationScreenState();
 }
 
-class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
+class _DriverReservationScreenState extends State<DriverReservationScreen> {
   @override
   void initState() {
     locator<NavigationService>()
         .navigatorKey
         .currentContext
         .bloc<ReservationRepoBloc>()
-        .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid, isPartner: true));
+        .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid));
     super.initState();
   }
 
@@ -55,7 +55,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
       body: BlocBuilder<ReservationRepoBloc, ReservationRepoState>(
         builder: (BuildContext context, state) {
           if (state is ReservationRepoReady) {
-            if(state.reservations.isEmpty){
+            if (state.reservations.isEmpty) {
               return Center(
                 child: CSText("No reservations at the moment"),
               );

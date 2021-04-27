@@ -131,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
+              if (MediaQuery.of(context).viewInsets.bottom > 0.0 == false)
+                Flexible(
                 child: Center(child: LoginIcon()),
               ),
               Expanded(

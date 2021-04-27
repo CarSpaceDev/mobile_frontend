@@ -17,18 +17,18 @@ class Reservation extends Equatable {
   final bool recurring;
   final String uid;
   final ReservationStatus reservationStatus;
-  final VehicleType reservationType;
+  final ReservationType reservationType;
   final String transactionId;
   final String userId;
   final bool userRating;
   final String vehicleId;
 
-  Reservation.fromDoc(QueryDocumentSnapshot doc)
+  Reservation.fromDoc(DocumentSnapshot doc)
       : dateCreated = doc.data()["dateCreated"].toDate(),
         dateUpdated = doc.data()["dateCreated"].toDate(),
         position = CSPosition.fromMap(
             {"latitude": doc.data()['g']['geopoint'].latitude, "longitude": doc.data()['g']['geopoint'].longitude}),
-        lotAddress = doc.data()["lotAddress"] as String,
+        lotAddress = doc.data()["lotAddress"].trimLeft() as String,
         lotId = doc.data()["lotId"] as String,
         lotPrice = doc.data()["lotPrice"] != null ? double.parse("${doc.data()["lotPrice"]}") : null,
         partnerId = doc.data()["partnerId"] as String,
@@ -36,7 +36,7 @@ class Reservation extends Equatable {
         recurring = doc.data()["recurring"] as bool,
         uid = doc.id,
         reservationStatus = ReservationStatus.values[doc.data()["reservationStatus"]],
-        reservationType = VehicleType.values[doc.data()["reservationType"]],
+        reservationType = ReservationType.values[doc.data()["reservationType"]],
         transactionId = doc.data()["transactionId"] as String,
         userId = doc.data()["userId"] as String,
         userRating = doc.data()["userRating"] as bool,

@@ -1,5 +1,5 @@
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
-import 'package:carspace/screens/DriverScreens/Reservations/ReservationScreen.dart';
+import 'package:carspace/screens/DriverScreens/Reservations/DriverReservationScreen.dart';
 import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
@@ -32,7 +32,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case VehicleManagement:
       return getPageRoute(VehicleManagementScreen(), settings);
     case Reservations:
-      return getPageRoute(ReservationScreen(), settings);
+      return getPageRoute(DriverReservationScreen(), settings);
     case PartnerReservations:
       return getPageRoute(PartnerReservationScreen(), settings);
     case WalletRoute:

@@ -1,7 +1,7 @@
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
-import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
+import 'package:carspace/screens/DriverScreens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
