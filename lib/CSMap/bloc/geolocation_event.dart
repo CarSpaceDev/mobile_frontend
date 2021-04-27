@@ -15,6 +15,13 @@ class StartGeolocation extends GeolocationEvent {
   List<Object> get props => [];
 }
 
+class StartGeolocationBroadcast extends GeolocationEvent {
+  final Reservation reservation;
+  StartGeolocationBroadcast({@required this.reservation});
+  @override
+  List<Object> get props => [reservation];
+}
+
 class GeolocationErrorDetected extends GeolocationEvent {
   final GeolocationError status;
   GeolocationErrorDetected({@required this.status});

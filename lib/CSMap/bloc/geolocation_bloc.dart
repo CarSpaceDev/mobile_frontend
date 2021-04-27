@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -17,7 +18,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   StreamSubscription<Position> positionStream;
   CSPosition lastKnownPosition;
   bool ready = false;
-  bool startRequest = false;
   GeolocationBloc() : super(GeolocationInitial());
   @override
   Stream<GeolocationState> mapEventToState(
@@ -37,21 +37,13 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           currentPermission == null) {
         add(RequestPermission());
       } else {
-        // print("StartRequest $startRequest");
-        // print("Ready $ready");
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
-        if (startRequest)
-          add(StartGeolocation());
-        else {
-          print("Geolocator is ready");
-          ready = true;
-          yield GeolocatorReady();
-        }
+        print("Geolocator is ready");
+        yield GeolocatorReady();
       }
     }
     if (event is StartGeolocation) {
-      startRequest = true;
       if (ready)
         positionStream = Geolocator.getPositionStream(
                 desiredAccuracy: LocationAccuracy.bestForNavigation,
@@ -61,12 +53,24 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           lastKnownPosition = CSPosition.fromMap(v.toJson());
           add(UpdatePosition(position: lastKnownPosition));
         });
-      else
-        add(InitializeGeolocator());
+    }
+    if (event is StartGeolocationBroadcast) {
+      if (ready)
+        positionStream = Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 1,
+            intervalDuration: Duration(seconds: 5))
+            .listen((Position v) {
+          lastKnownPosition = CSPosition.fromMap(v.toJson());
+          //insert mqtt broadcast
+          //insert session broadcast
+
+
+          add(UpdatePosition(position: lastKnownPosition));
+        });
     }
     if (event is RequestPermission) {
       LocationPermission currentPermission = await Geolocator.requestPermission();
-      // print("Permission after it is shown $currentPermission");
       if (currentPermission == LocationPermission.denied ||
           currentPermission == LocationPermission.deniedForever ||
           currentPermission == null) {
@@ -109,8 +113,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     }
     if (event is CloseGeolocationStream) {
       print("Closing Geolocation Stream");
-      startRequest = false;
-      ready= false;
+      ready = false;
       positionStream?.cancel();
       add(InitializeGeolocator());
     }

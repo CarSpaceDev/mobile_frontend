@@ -3,8 +3,11 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:carspace/model/Enums.dart';
-import 'package:carspace/model/PartnerReservation.dart';
+import 'package:carspace/model/Reservation.dart';
+import 'package:carspace/reusable/CSText.dart';
+import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
+import 'package:carspace/reusable/UserDisplayNameWidget.dart';
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/MqttService.dart';
@@ -17,24 +20,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 class NavigationScreenPartner extends StatefulWidget {
-  final LatLng partnerLoc;
-  final String reservationId;
-  final PartnerReservation reservation;
-  NavigationScreenPartner(
-      {@required this.partnerLoc,
-      @required this.reservationId,
-      @required this.reservation});
+  final Reservation reservation;
+  NavigationScreenPartner({@required this.reservation});
   @override
-  _NavigationScreenPartnerState createState() => _NavigationScreenPartnerState(
-      this.partnerLoc, this.reservationId, this.reservation);
+  _NavigationScreenPartnerState createState() => _NavigationScreenPartnerState();
 }
 
 class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
-  final LatLng partnerLoc;
-  final String reservationId;
-  final PartnerReservation reservationData;
   LatLng driverLoc;
   String _mapStyle;
   double distanceRemaining;
@@ -46,16 +39,13 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   BitmapDescriptor _driverIcon;
   GoogleMapController mapController;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> mqttUpdates;
-  _NavigationScreenPartnerState(
-      this.partnerLoc, this.reservationId, this.reservationData);
-
   @override
   void initState() {
     _setMarkerIcon();
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
     });
-    locator<MqttService>().subscribe(reservationId);
+    locator<MqttService>().subscribe(widget.reservation.uid);
     mqttUpdates = locator<MqttService>().client.updates.listen(handleMessage);
     super.initState();
   }
@@ -65,27 +55,26 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     double swLng = 0;
     double neLat = 0;
     double neLng = 0;
-    if (partnerLoc.latitude <= driverLoc.latitude) {
-      swLat = partnerLoc.latitude;
+    if (widget.reservation.position.latitude <= driverLoc.latitude) {
+      swLat = widget.reservation.position.latitude;
       neLat = driverLoc.latitude;
     } else {
       swLat = driverLoc.latitude;
-      neLat = partnerLoc.latitude;
+      neLat = widget.reservation.position.latitude;
     }
-    if (partnerLoc.longitude <= driverLoc.longitude) {
-      swLng = partnerLoc.longitude;
+    if (widget.reservation.position.longitude <= driverLoc.longitude) {
+      swLng = widget.reservation.position.longitude;
       neLng = driverLoc.longitude;
     } else {
       swLng = driverLoc.longitude;
-      neLng = partnerLoc.longitude;
+      neLng = widget.reservation.position.longitude;
     }
-    return LatLngBounds(
-        southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
+    return LatLngBounds(southwest: LatLng(swLat, swLng), northeast: LatLng(neLat, neLng));
   }
 
   @override
   void dispose() {
-    locator<MqttService>().unSubscribe(reservationId);
+    locator<MqttService>().unSubscribe(widget.reservation.uid);
     mqttUpdates.cancel();
     super.dispose();
   }
@@ -93,150 +82,85 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        bottomNavigationBar: BottomAppBar(
-          child: FlatButton(
-            color: Color(0xff6200EE),
-            onPressed: () {
-              if (this.widget.reservation.status ==
-                  ReservationStatus.Active) if (this
-                      .widget
-                      .reservation
-                      .type ==
-                  ReservationType.Booking)
-                markAsComplete(
-                    widget.reservation.driverId,
-                    widget.reservation.lotId,
-                    widget.reservation.vehicleId,
-                    widget.reservation.reservationId,
-                    widget.reservation.lotAddress,
-                    widget.reservation.partnerId);
-              else {
-                markAsCompleteV2(
-                    widget.reservation.driverId,
-                    widget.reservation.lotId,
-                    widget.reservation.vehicleId,
-                    widget.reservation.reservationId,
-                    widget.reservation.lotAddress,
-                    widget.reservation.partnerId);
-              }
-              else {
-                if (!this.widget.reservation.partnerRating) {
-                  rating(this.widget.reservation);
-                } else {
-                  showMessage("Rating already provided");
-                }
-              }
-            },
-            child: Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: Colors.green,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: Center(
-                    child: this.widget.reservation.status ==
-                            ReservationStatus.Active
-                        ? Text("Mark as complete",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold))
-                        : Text("Rate Driver",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold))),
+        brightness: Brightness.dark,
+        title: Text("Reservation"),
+        centerTitle: true,
+      ),
+      body: Column(mainAxisSize: MainAxisSize.min, children: [
+        CSTile(
+          margin: EdgeInsets.zero,
+          color: TileColor.Secondary,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CSText(
+                "${widget.reservation.lotAddress}",
+                textAlign: TextAlign.center,
               ),
-            ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  UserDisplayNameWidget(uid: widget.reservation.userId),
+                  CSText(
+                    "Vehicle: ${widget.reservation.vehicleId} ",
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        appBar: AppBar(
-            backgroundColor: Theme.of(context).primaryColor,
-            brightness: Brightness.dark,
-            title: Text("Reservation"),
-            centerTitle: true,
-            actions: null,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                locator<NavigationService>().pushNavigateToWidget(
-                  getPageRoute(
-                    HomeDashboard(),
-                    RouteSettings(name: "HomeDashboard"),
-                  ),
-                );
-              },
+        Expanded(
+          child: GoogleMap(
+            scrollGesturesEnabled: false,
+            zoomGesturesEnabled: false,
+            zoomControlsEnabled: true,
+            myLocationEnabled: false,
+            myLocationButtonEnabled: false,
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: widget.reservation.position.toLatLng(),
+              zoom: 15.0,
             ),
-            bottom: null),
-        body: Container(
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Expanded(
-            child: Container(
-                color: Theme.of(context).secondaryHeaderColor,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text("${widget.reservation.lotAddress}",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                )),
-                          ),
-                        ]),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child:
-                              Text("Driver: ${widget.reservation.displayName}",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                  )),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child:
-                              Text("Vehicle: ${widget.reservation.vehicleId} ",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                  )),
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
+            markers: _markers,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.73,
-            child: GoogleMap(
-              scrollGesturesEnabled: false,
-              zoomGesturesEnabled: false,
-              zoomControlsEnabled: true,
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: partnerLoc,
-                zoom: 15.0,
-              ),
-              markers: _markers,
-            ),
+        ),
+        CSTile(
+          color: TileColor.Secondary,
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(vertical: 24),
+          onTap: () {
+            if (widget.reservation.reservationStatus ==
+                ReservationStatus.Active) if (this.widget.reservation.reservationType == ReservationType.Booking)
+              markAsComplete(widget.reservation.userId, widget.reservation.lotId, widget.reservation.vehicleId,
+                  widget.reservation.uid, widget.reservation.lotAddress, widget.reservation.partnerId);
+            else {
+              markAsCompleteV2(widget.reservation.userId, widget.reservation.lotId, widget.reservation.vehicleId,
+                  widget.reservation.uid, widget.reservation.lotAddress, widget.reservation.partnerId);
+            }
+            else {
+              if (!this.widget.reservation.partnerRating) {
+                rating(this.widget.reservation);
+              } else {
+                showMessage("Rating already provided");
+              }
+            }
+          },
+          child: Shimmer.fromColors(
+            baseColor: Colors.white,
+            highlightColor: Colors.green,
+            child: this.widget.reservation.reservationStatus == ReservationStatus.Active
+                ? Text("Mark as complete",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))
+                : Text("Rate Driver", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
           ),
-        ])));
+        )
+      ]),
+    );
   }
 
   rating(reservationData) async {
@@ -244,27 +168,23 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         barrierDismissible: true,
         context: context,
         builder: (_) => Dialog(
-              insetPadding: EdgeInsets.symmetric(
-                  vertical: MediaQuery.of(context).size.height * .1,
-                  horizontal: 32),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+              insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * .1, horizontal: 32),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
               child: new SizedBox(
                 height: 250,
                 width: 350,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-                    child: RatingAndFeedback(
-                        reservationData, reservationData.driverId, 1),
+                    child: RatingAndFeedback(reservationData, reservationData.driverId, 1),
                   ),
                 ),
               ),
             ));
   }
 
-  markAsComplete(String userId, String lotId, String vehicleId,
-      String reservationId, String lotAddress, String partnerId) async {
+  markAsComplete(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -278,8 +198,8 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     });
   }
 
-  markAsCompleteV2(String userId, String lotId, String vehicleId,
-      String reservationId, String lotAddress, String partnerId) async {
+  markAsCompleteV2(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -322,8 +242,7 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    locator<NavigationService>()
-                        .pushReplaceNavigateTo(PartnerReservations);
+                    locator<NavigationService>().pushReplaceNavigateTo(PartnerReservations);
                   },
                   child: Text("Close"))
             ],
@@ -335,54 +254,36 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
     if (driverLoc == null)
       return "unknown";
     else
-      return (Geolocator.distanceBetween(
-                  driverLoc.latitude,
-                  driverLoc.longitude,
-                  partnerLoc.latitude,
-                  partnerLoc.longitude) /
+      return (Geolocator.distanceBetween(driverLoc.latitude, driverLoc.longitude, widget.reservation.position.latitude,
+                  widget.reservation.position.longitude) /
               1000)
           .toStringAsFixed(10);
   }
 
   handleMessage(List<MqttReceivedMessage<MqttMessage>> v) {
     MqttPublishMessage recMess = v[0].payload;
-    String pt =
-        MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+    String pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
     var payload = jsonDecode(pt);
     setState(() {
-      distanceRemaining = payload["distanceRemaining"] != null
-          ? payload["distanceRemaining"]
-          : null;
-      durationRemaining = payload["durationRemaining"] != null
-          ? payload["durationRemaining"]
-          : null;
+      distanceRemaining = payload["distanceRemaining"] != null ? payload["distanceRemaining"] : null;
+      durationRemaining = payload["durationRemaining"] != null ? payload["durationRemaining"] : null;
       driverLoc = LatLng(payload["latitude"], payload["longitude"]);
-      driverMarker = Marker(
-          markerId: MarkerId("Driver"),
-          onTap: () {},
-          icon: _driverIcon,
-          position: driverLoc);
+      driverMarker = Marker(markerId: MarkerId("Driver"), onTap: () {}, icon: _driverIcon, position: driverLoc);
       _markers = Set.from([lotMarker, driverMarker]);
-      mapController
-          .moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
+      mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
     });
   }
 
   void _setMarkerIcon() async {
     List<BitmapDescriptor> markerFiles = [];
     markerFiles = await Future.wait([
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
-          'assets/launcher_icon/pushpin.png'),
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)),
-          'assets/launcher_icon/driver.png'),
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
+      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png'),
     ]);
     _lotIcon = markerFiles[0];
     _driverIcon = markerFiles[1];
     lotMarker = Marker(
-        markerId: MarkerId("Lot"),
-        onTap: () {},
-        icon: _lotIcon,
-        position: partnerLoc);
+        markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: widget.reservation.position.toLatLng());
     _markers.add(lotMarker);
   }
 

@@ -2,7 +2,7 @@ import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/screens/DriverScreens/Reservations/DriverReservationScreen.dart';
 import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
-import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
+import 'package:carspace/screens/DriverScreens/Reservations/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Login/LoginScreen.dart';
 import 'package:carspace/screens/Wallet/WalletScreen.dart';
 import 'package:flutter/material.dart';

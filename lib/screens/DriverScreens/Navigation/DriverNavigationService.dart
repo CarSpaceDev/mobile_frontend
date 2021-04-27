@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:android_intent/android_intent.dart';
 import 'package:carspace/services/MqttService.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mapbox_navigation/library.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 
 class DriverNavigationService {
   MapBoxNavigation _directions;
@@ -38,17 +36,10 @@ class DriverNavigationService {
         initialLatitude: currentPosition.latitude,
         initialLongitude: currentPosition.longitude,
         enableRefresh: true);
-    List<WayPoint> wayPoints = List<WayPoint>();
-    wayPoints.add(WayPoint(
-        name: "Start",
-        latitude: currentPosition.latitude,
-        longitude: currentPosition.longitude));
-    wayPoints.add(WayPoint(
-        name: "Destination",
-        latitude: destination.latitude,
-        longitude: destination.longitude));
-    var result = await _directions.startNavigation(
-        wayPoints: wayPoints, options: _mapBoxOptions);
+    List<WayPoint> wayPoints = [];
+    wayPoints.add(WayPoint(name: "Start", latitude: currentPosition.latitude, longitude: currentPosition.longitude));
+    wayPoints.add(WayPoint(name: "Destination", latitude: destination.latitude, longitude: destination.longitude));
+    var result = await _directions.startNavigation(wayPoints: wayPoints, options: _mapBoxOptions);
   }
 
   _openPositionStream() {
@@ -80,8 +71,7 @@ class DriverNavigationService {
   }
 
   _sendEndNavigationMessage() {
-    String payload = json.encode(
-        {"reservationId": this.reservationId, "message": "Navigation Ended"});
+    String payload = json.encode({"reservationId": this.reservationId, "message": "Navigation Ended"});
 
     locator<MqttService>().send(this.reservationId, payload);
   }
@@ -94,15 +84,6 @@ class DriverNavigationService {
       "latitude": p.latitude,
     });
     locator<MqttService>().send(this.reservationId, payload);
-  }
-
-  navigateViaGoogleMaps(LatLng destination) {
-    final AndroidIntent intent = AndroidIntent(
-        action: 'action_view',
-        data: Uri.encodeFull(
-            'google.navigation:q=${destination.latitude},${destination.longitude}'),
-        package: 'com.google.android.apps.maps');
-    intent.launch();
   }
 
   routeEventHandler(RouteEvent e) async {
@@ -134,16 +115,13 @@ class DriverNavigationService {
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
     }
 
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        return Future.error(
-            'Location permissions are denied (actual value: $permission).');
+      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+        return Future.error('Location permissions are denied (actual value: $permission).');
       }
     }
 

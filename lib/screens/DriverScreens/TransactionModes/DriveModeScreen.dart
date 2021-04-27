@@ -8,6 +8,7 @@ import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -168,7 +169,7 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
               ),
               CSTile(
                 onTap: () {
-                  callToAction();
+                  callToAction(context);
                 },
                 color: lotsAvailable > 0
                     ? TileColor.Secondary
@@ -194,28 +195,9 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
     );
   }
 
-  callToAction() async {
+  callToAction(BuildContext context) {
     var userId = locator<AuthService>().currentUser().uid;
-    return showDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (_) => Dialog(
-              insetPadding: EdgeInsets.symmetric(
-                  vertical: MediaQuery.of(context).size.height * .1,
-                  horizontal: 32),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              child: new SizedBox(
-                height: 700,
-                width: 300,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: LotFound(lots[0], userId, 0),
-                  ),
-                ),
-              ),
-            ));
+    return PopupNotifications.showNotificationDialog(context, barrierDismissible: true, child: LotFound(lots[0], userId, 0));
   }
 
   showRadiusOptions(BuildContext context, LotGeoRepoBloc bloc) {

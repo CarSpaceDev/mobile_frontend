@@ -18,6 +18,7 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
     ReservationRepoEvent event,
   ) async* {
     if (event is InitializeReservationRepo) {
+      yield ReservationRepoInitial();
       print("Initializing Reservations Repo - Partner: ${event.isPartner}");
       var repoReference;
       if (event.isPartner) {
@@ -34,7 +35,7 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
         for (QueryDocumentSnapshot doc in result.docs) {
           temp.add(Reservation.fromDoc(doc));
         }
-        temp.sort((a,b) => a.dateCreated.isBefore(b.dateCreated) ? -1 : a.dateCreated.isAfter(b.dateCreated) ? 1 : 0);
+        temp.sort((a,b) => a.dateCreated.isBefore(b.dateCreated) ? 1 : a.dateCreated.isAfter(b.dateCreated) ? -1 : 0);
         add(ReservationsUpdated(reservations: temp));
       });
     }

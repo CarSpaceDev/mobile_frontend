@@ -7,7 +7,7 @@ import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
-import 'package:carspace/screens/DriverScreens/Navigation/DriverNavigationService.dart';
+import 'package:carspace/screens/DriverScreens/Navigation/NavigationScreenPartner.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
@@ -16,7 +16,6 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PartnerReservationScreen extends StatefulWidget {
   @override
@@ -39,7 +38,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
-        title: Text('Reservations'),
+        title: Text('Partner Reservations'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -47,7 +46,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
             onPressed: () {
               context
                   .bloc<ReservationRepoBloc>()
-                  .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid));
+                  .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid, isPartner: true));
             },
           )
         ],
@@ -55,7 +54,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
       body: BlocBuilder<ReservationRepoBloc, ReservationRepoState>(
         builder: (BuildContext context, state) {
           if (state is ReservationRepoReady) {
-            if(state.reservations.isEmpty){
+            if (state.reservations.isEmpty) {
               return Center(
                 child: CSText("No reservations at the moment"),
               );
@@ -64,7 +63,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               itemCount: state.reservations.length,
               itemBuilder: (BuildContext context, index) {
-                return ReservationTileWidget(reservation: state.reservations[index]);
+                return PartnerReservationTileWidget(reservation: state.reservations[index]);
               },
             );
           }
@@ -75,9 +74,9 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
   }
 }
 
-class ReservationTileWidget extends StatelessWidget {
+class PartnerReservationTileWidget extends StatelessWidget {
   final Reservation reservation;
-  ReservationTileWidget({@required this.reservation});
+  PartnerReservationTileWidget({@required this.reservation});
   @override
   Widget build(BuildContext context) {
     return CSTile(
@@ -196,122 +195,45 @@ class ReservationTileWidget extends StatelessWidget {
   }
 
   _showActionsDialog(BuildContext context, {@required Reservation reservation}) {
-    PopupNotifications.showNotificationDialog(
-      context,
-      barrierDismissible: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (reservation.reservationStatus == ReservationStatus.Active)
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      locator<NavigationService>().goBack();
-                      DriverNavigationService(reservationId: reservation.uid)
-                          .navigateViaMapBox(LatLng(reservation.position.latitude, reservation.position.longitude));
-                    },
-                    icon: Icon(
-                      Icons.map_outlined,
-                      color: Colors.blueAccent,
-                    ),
-                    label: Text('Navigate to Lot', style: TextStyle(color: Colors.blueAccent)),
+    if (reservation.reservationStatus == ReservationStatus.Active)
+      locator<NavigationService>().pushNavigateToWidget(
+        getPageRoute(
+          NavigationScreenPartner(reservation: reservation),
+          RouteSettings(name: "PARTNER-NAVIGATION"),
+        ),
+      );
+    else
+      PopupNotifications.showNotificationDialog(
+        context,
+        barrierDismissible: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (reservation.partnerRating == false)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextButton.icon(
+                  onPressed: () {
+                    rating(context, reservation, locator<AuthService>().currentUser().uid);
+                  },
+                  icon: Icon(
+                    Icons.car_repair,
+                    color: Colors.blueAccent,
+                  ),
+                  label: Text(
+                    'Give rating and feedback',
+                    style: TextStyle(color: Colors.blueAccent),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      onTheWay(
-                          locator<AuthService>().currentUser().uid,
-                          locator<AuthService>().currentUser().displayName,
-                          reservation.vehicleId,
-                          reservation.lotAddress,
-                          reservation.partnerId);
-                    },
-                    icon: Icon(
-                      Icons.chat,
-                      color: Colors.blueAccent,
-                    ),
-                    label: Text(
-                      'Notify on the way',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      arrived(
-                          locator<AuthService>().currentUser().uid,
-                          locator<AuthService>().currentUser().displayName,
-                          reservation.vehicleId,
-                          reservation.lotAddress,
-                          reservation.partnerId);
-                    },
-                    icon: Icon(
-                      Icons.car_repair,
-                      color: Colors.blueAccent,
-                    ),
-                    label: Text(
-                      'Notify arrived',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      if (reservation.reservationType == ReservationType.Booking)
-                        markAsComplete(locator<AuthService>().currentUser().uid, reservation.lotId,
-                            reservation.vehicleId, reservation.uid, reservation.lotAddress, reservation.partnerId);
-                      else
-                        markAsCompleteV2(locator<AuthService>().currentUser().uid, reservation.lotId,
-                            reservation.vehicleId, reservation.uid, reservation.lotAddress, reservation.partnerId);
-                    },
-                    icon: Icon(Icons.check, color: Colors.redAccent),
-                    label: Text(
-                      'Mark as Complete',
-                      style: TextStyle(color: Colors.redAccent),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          if (reservation.reservationStatus != ReservationStatus.Active)
-            Column(
-              children: [
-                if (reservation.userRating == false)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextButton.icon(
-                      onPressed: () {
-                        rating(context, reservation, locator<AuthService>().currentUser().uid);
-                      },
-                      icon: Icon(
-                        Icons.car_repair,
-                        color: Colors.blueAccent,
-                      ),
-                      label: Text(
-                        'Give rating and feedback',
-                        style: TextStyle(color: Colors.blueAccent),
-                      ),
-                    ),
-                  ),
-                if (reservation.userRating)
-                  CSTile(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('You have already rated this transaction', style: TextStyle(color: Colors.blueAccent)),
-                  ),
-              ],
-            ),
-        ],
-      ),
-    );
+              ),
+            if (reservation.partnerRating)
+              CSTile(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text('You have already rated this transaction', style: TextStyle(color: Colors.blueAccent)),
+              ),
+          ],
+        ),
+      );
   }
 
   markAsComplete(

@@ -1,12 +1,12 @@
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
+import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/screens/DriverScreens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/material.dart';
-
 
 class LotFound extends StatefulWidget {
   final Lot lot;
@@ -42,13 +42,11 @@ class _LotFoundState extends State<LotFound> {
                   child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        top: 25, bottom: 8, right: 8, left: 8),
+                    padding: const EdgeInsets.only(top: 25, bottom: 8, right: 8, left: 8),
                     child: Text(
                       widget.lot.address.toString(),
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ClipRRect(
@@ -62,15 +60,12 @@ class _LotFoundState extends State<LotFound> {
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: widget.type == 0
-                        ? Text("Price :\n${widget.lot.pricing}Php / Hour",
-                            textAlign: TextAlign.center)
-                        : Text("Price :\n${widget.lot.pricePerDay}Php / Hour",
-                            textAlign: TextAlign.center),
+                        ? Text("Price :\n${widget.lot.pricing}Php / Hour", textAlign: TextAlign.center)
+                        : Text("Price :\n${widget.lot.pricePerDay}Php / Hour", textAlign: TextAlign.center),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                        "Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
+                    child: Text("Available from: \n${widget.lot.availableFrom}H to ${widget.lot.availableTo}H",
                         textAlign: TextAlign.center),
                   ),
                   if (widget.type == 1)
@@ -96,8 +91,7 @@ class _LotFoundState extends State<LotFound> {
                               Navigator.of(context).pop(1);
                             },
                             color: Theme.of(context).secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
                               child: Center(
@@ -106,10 +100,7 @@ class _LotFoundState extends State<LotFound> {
                                   child: Text(
                                     'Cancel',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize:
-                                            SizeConfig.textMultiplier * 2.5),
+                                    style: TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
                                   ),
                                 ),
                               ),
@@ -126,8 +117,7 @@ class _LotFoundState extends State<LotFound> {
                                 reserve();
                             },
                             color: Theme.of(context).secondaryHeaderColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Container(
                               width: SizeConfig.widthMultiplier * 50,
                               child: Center(
@@ -137,20 +127,14 @@ class _LotFoundState extends State<LotFound> {
                                       ? Text(
                                           'Book',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize:
-                                                  SizeConfig.textMultiplier *
-                                                      2.5),
+                                          style:
+                                              TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
                                         )
                                       : Text(
                                           'Reserve',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize:
-                                                  SizeConfig.textMultiplier *
-                                                      2.5),
+                                          style:
+                                              TextStyle(color: Colors.white, fontSize: SizeConfig.textMultiplier * 2.5),
                                         ),
                                 ),
                               ),
@@ -163,8 +147,7 @@ class _LotFoundState extends State<LotFound> {
           ),
           Positioned(
               child: Padding(
-            padding:
-                const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
+            padding: const EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -228,8 +211,7 @@ class _LotFoundState extends State<LotFound> {
       Navigator.of(context).pop();
       if (value.body["code"] == 200) {
         locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
-        successfulBooking(
-            DriverReservation.fromJson(value.body["reservationData"]));
+        successfulBooking(DriverReservation.fromJson(value.body["reservationData"]));
       } else {
         showMessage(value.body["message"]);
       }
@@ -239,11 +221,11 @@ class _LotFoundState extends State<LotFound> {
   }
 
   reserve() async {
-    var reserve_type;
+    var reserveType;
     if (recurring == false) {
-      reserve_type = 0;
+      reserveType = 0;
     } else {
-      reserve_type = 1;
+      reserveType = 1;
     }
     print(widget.lot.pricePerDay);
     var body = ({
@@ -257,7 +239,7 @@ class _LotFoundState extends State<LotFound> {
     setState(() {
       working = true;
     });
-    await locator<ApiService>().reserveLot(reserve_type, body).then((value) {
+    await locator<ApiService>().reserveLot(reserveType, body).then((value) {
       print(value.body);
       print(value.statusCode);
       setState(() {
@@ -266,8 +248,7 @@ class _LotFoundState extends State<LotFound> {
       // Navigator.of(context).pop();
       if (value.body["code"] == 200) {
         locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
-        successfulBooking(
-            DriverReservation.fromJson(value.body["reservationData"]));
+        successfulBooking(DriverReservation.fromJson(value.body["reservationData"]));
       } else {
         showMessage(value.body["message"]);
       }
@@ -282,48 +263,36 @@ class _LotFoundState extends State<LotFound> {
         context: context,
         builder: (_) {
           return AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.info_outline,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
-                    ),
-                    Text(
-                      "Lot booked",
-                      textAlign: TextAlign.center,
-                    ),
-                    FlatButton(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Icon(
+                    Icons.info_outline,
+                    color: Colors.grey,
+                    size: 50,
+                  ),
+                ),
+                Text(
+                  "Lot booked",
+                  textAlign: TextAlign.center,
+                ),
+                CSTile(
+                  child: TextButton.icon(
                       onPressed: () {
-                        Navigator.of(locator<NavigationService>()
-                                .navigatorKey
-                                .currentContext)
-                            .pop(null);
+                        Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop(null);
                         locator<ApiService>().notifyOnTheWay({
                           "userId": widget.user,
                           "lotAddress": widget.lot.address.toString(),
                           "partnerId": widget.lot.partnerId
                         });
-                        DriverNavigationService(reservationId: v.reservationId)
-                            .navigateViaMapBox(v.coordinates);
+                        DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
                       },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.map_outlined),
-                          Text("Navigate To Lot")
-                        ],
-                      ),
-                    ),
-                  ],
+                      icon: Icon(Icons.map_outlined),
+                      label: Text("Navigate To Lot")),
                 ),
-              ),
+              ],
             ),
           );
         });
@@ -355,10 +324,7 @@ class _LotFoundState extends State<LotFound> {
                 ),
               ),
             ),
-            actions: [
-              FlatButton(
-                  onPressed: Navigator.of(context).pop, child: Text("Close"))
-            ],
+            actions: [FlatButton(onPressed: Navigator.of(context).pop, child: Text("Close"))],
           );
         });
   }

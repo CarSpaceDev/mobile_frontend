@@ -147,6 +147,7 @@ class CSPosition extends Equatable {
     );
   }
 
+  LatLng toLatLng() => LatLng(latitude,longitude);
   /// Converts the [Position] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
