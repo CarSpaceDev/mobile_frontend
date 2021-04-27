@@ -4,7 +4,7 @@ import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/Home/NotificationList.dart';
+import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
 import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

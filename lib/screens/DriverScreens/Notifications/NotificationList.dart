@@ -32,7 +32,6 @@ class _NotificationListState extends State<NotificationList> {
             child: BlocBuilder<NotificationBloc, NotificationState>(
               builder: (BuildContext context, state) {
                 if (state is NotificationsReady) {
-                  print(state.notifications[0].toJson());
                   if (state.notifications.isEmpty)
                     return Text("No notifications at the moment");
                   else

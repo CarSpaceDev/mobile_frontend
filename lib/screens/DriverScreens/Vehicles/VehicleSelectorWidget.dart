@@ -8,6 +8,7 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
+import 'package:carspace/screens/Home/PopupNotifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../../navigation.dart';
 import '../../../serviceLocator.dart';
+import 'VehicleRegistrationScreen.dart';
 
 class VehicleSelectorWidget extends StatefulWidget {
   @override
@@ -296,8 +298,44 @@ class ActionVehicleIcon extends StatelessWidget {
       onTap: selectVehicle
           ? null
           : () {
-              locator<NavigationService>().pushNavigateTo(LoginRoute);
-              context.read<LoginBloc>().add(NavigateToVehicleAddEvent());
+        PopupNotifications.showNotificationDialog(context,
+            barrierDismissible: true,
+            child: CSTile(
+              borderRadius: 25,
+              margin: EdgeInsets.zero,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton.icon(
+                    onPressed: scanQR,
+                    icon: Icon(
+                      Icons.qr_code,
+                      color: Colors.blueAccent,
+                    ),
+                    label: Text('Add from code', style: TextStyle(color: Colors.blueAccent)),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          VehicleRegistrationScreen(
+                            fromHomeScreen: true,
+                          ),
+                          RouteSettings(name: "ADD-VEHICLE"),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      color: Colors.blueAccent,
+                    ),
+                    label: Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent)),
+                  ),
+                ],
+              ),
+            ));
             },
       child: Column(
         mainAxisSize: MainAxisSize.min,

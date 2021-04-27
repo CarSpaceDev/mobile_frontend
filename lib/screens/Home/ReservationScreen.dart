@@ -78,19 +78,9 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          brightness: Brightness.dark,
           title: Text('Reservations'),
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              locator<NavigationService>().pushNavigateToWidget(
-                getPageRoute(
-                  HomeDashboard(),
-                  RouteSettings(name: "HomeDashboard"),
-                ),
-              );
-            },
-          ),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),

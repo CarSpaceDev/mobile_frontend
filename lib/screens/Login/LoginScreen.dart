@@ -1,4 +1,5 @@
 import 'package:carspace/constants/SizeConfig.dart';
+import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../blocs/login/login_bloc.dart';
+import '../../serviceLocator.dart';
 import '../widgets/NavigationDrawer.dart';
 import 'PhoneCodeConfirmScreen.dart';
 
@@ -66,6 +68,16 @@ class LoginBlocHandler extends StatelessWidget {
           else if (state is LoginError) {
             return ErrorScreen(
               prompt: state.message,
+              action: CSTile(
+                onTap: (){
+                  locator<NavigationService>().navigatorKey.currentContext.bloc<LoginBloc>().add(RestartLoginEvent());
+                },
+                borderRadius: 16,
+                margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                child: CSText(
+                  "OK", textType: TextType.Button,
+                ),
+              ),
             );
           }
           //V2 Update

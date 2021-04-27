@@ -81,11 +81,14 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     } else
                       return Container();
                   }),
-                  VehicleSelectorWidget(),
-                  BlocBuilder<UserRepoBloc, UserRepoState>(
-                      builder: (BuildContext context, UserRepoState userState) {
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.currentReservation != null) return Container();
+                    return VehicleSelectorWidget();
+                  }),
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
                     if (userState is UserRepoReady &&
-                        userState.user.currentVehicle != null)
+                        userState.user.currentVehicle != null &&
+                        userState.user.currentReservation == null)
                       return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
                           builder: (BuildContext context,
                               VehicleRepoState vehicleState) {
@@ -111,10 +114,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                 enabled: false,
                               );
                           });
-                        } else
-                          return ParkNowWidget(
-                            enabled: false,
-                          );
+                        }
+                        return ParkNowWidget(
+                          enabled: false,
+                        );
                       });
                     else
                       return ParkNowWidget(

@@ -9,7 +9,7 @@ import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
-import 'package:carspace/screens/Home/NotificationLinkWidget.dart';
+import 'package:carspace/screens/DriverScreens/Notifications/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/screens/widgets/NavigationDrawer.dart';
@@ -25,7 +25,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../serviceLocator.dart';
 import 'LotReservation.dart';
-import 'NotificationList.dart';
+import '../DriverScreens/Notifications/NotificationList.dart';
 import 'SuggestedLocationCard.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.wait([
       _populateVehicles(),
       _getBalance(),
-      _initAccess(),
+      // _initAccess(),
       _initMapAssets()
     ]).then((data) {
       if (userData != null) {
@@ -465,18 +465,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-  Future<bool> _initAccess() async {
-    bool result;
-    await locator<ApiService>()
-        .getUserData(uid: locator<AuthService>().currentUser().uid)
-        .then((data) {
-      if (data.statusCode == 200) {
-        userData = CSUser.fromJson(data.body);
-        result = true;
-      } else
-        result = false;
-    });
-    return result;
+  _initAccess() async {
+    // bool result;
+    // await locator<ApiService>()
+    //     .getUserData(uid: locator<AuthService>().currentUser().uid)
+    //     .then((data) {
+    //   if (data.statusCode == 200) {
+    //     userData = CSUser.fromJson(data.body);
+    //     result = true;
+    //   } else
+    //     result = false;
+    // });
+    // return result;
   }
 
   showNotificationDialog() {

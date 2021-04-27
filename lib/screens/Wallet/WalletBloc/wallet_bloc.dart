@@ -21,7 +21,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletEvent event,
   ) async* {
     if (event is InitializeWallet) {
-      locator<ApiService>().getWalletStatus(uid: event.uid);
+      await locator<ApiService>().getWalletStatus(uid: event.uid);
       wallet = FirebaseFirestore.instance.collection("wallets").doc(event.uid).snapshots().listen((result) {
         add(UpdateWallet(wallet: Wallet.fromDoc(result)));
       });
