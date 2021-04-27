@@ -58,7 +58,7 @@ class AuthService {
       final UserCredential result =
           await _auth.signInWithCredential(credential);
       final token = await _getJWT(result.user);
-      print(token);
+      // print(token);
       final User currentUser = result.user;
       return currentUser;
     } catch (e) {

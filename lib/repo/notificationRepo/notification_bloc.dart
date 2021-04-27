@@ -81,7 +81,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       yield NotificationsReady(notifications: event.notifications);
     }
     if (event is DisposeNotificationRepo) {
-      print("VehicleRepoCalledDispose");
+      print("NotificationRepoCalledDispose");
       await notifications.cancel();
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
@@ -253,6 +254,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
     _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(uid: uid));
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(InitializeMqtt());
   }
 
   stopRepos() {
@@ -261,5 +263,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
     _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(DisposeReservationRepo());
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
+    _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(DisposeMqtt());
   }
 }

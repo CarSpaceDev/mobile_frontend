@@ -1,4 +1,5 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
@@ -68,6 +69,9 @@ class CarSpaceApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (BuildContext context) => WalletBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => MqttBloc(),
             ),
           ],
           child: MaterialApp(

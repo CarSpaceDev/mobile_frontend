@@ -20,14 +20,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:shimmer/shimmer.dart';
 
-class NavigationScreenPartner extends StatefulWidget {
+class PartnerNavigationScreen extends StatefulWidget {
   final Reservation reservation;
-  NavigationScreenPartner({@required this.reservation});
+  PartnerNavigationScreen({@required this.reservation});
   @override
-  _NavigationScreenPartnerState createState() => _NavigationScreenPartnerState();
+  _PartnerNavigationScreenState createState() => _PartnerNavigationScreenState();
 }
 
-class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
+class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
   LatLng driverLoc;
   String _mapStyle;
   double distanceRemaining;
