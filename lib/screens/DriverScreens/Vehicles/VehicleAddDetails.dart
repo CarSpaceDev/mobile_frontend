@@ -4,10 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 
-import '../../../serviceLocator.dart';
 
 class VehicleAddDetails extends StatefulWidget {
   final String code;

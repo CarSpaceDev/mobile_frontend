@@ -11,6 +11,7 @@ import 'package:carspace/reusable/LocationSearchWidget.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../serviceLocator.dart';
 
 enum ParkingType { Booking, Reservation, Both }
 

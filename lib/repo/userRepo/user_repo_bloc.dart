@@ -18,7 +18,6 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
   ) async* {
     if (event is InitializeUserRepo) {
       user = FirebaseFirestore.instance.collection("users").doc(event.uid).snapshots().listen((result) {
-        print(result.data());
         if (result.exists)
           add(UpdateUserRepo(user: CSUser.fromDoc(result)));
         else
@@ -26,8 +25,7 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
       });
     }
     if (event is UpdateUserRepo) {
-      print("New update");
-      // print(event.user.toJson());
+      print("User Updated");
       yield UserRepoReady(user: event.user);
     }
     if (event is DisposeUserRepo) {

@@ -3,13 +3,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/PartnerReservation.dart';
 import 'package:carspace/screens/Navigation/NavigationScreenPartner.dart';
-import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../navigation.dart';
+import '../../services/navigation.dart';
 
 class PartnerReservationScreen extends StatefulWidget {
   @override

@@ -1,16 +1,16 @@
+import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-import '../../../blocs/login/login_bloc.dart';
-import '../../../serviceLocator.dart';
 
 class VehicleRegistrationScreen extends StatefulWidget {
   final bool fromHomeScreen;

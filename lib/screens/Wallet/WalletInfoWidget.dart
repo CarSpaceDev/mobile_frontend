@@ -1,11 +1,11 @@
-import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../serviceLocator.dart';
 
 class WalletInfoWidget extends StatefulWidget {
   final TextColor textColor;

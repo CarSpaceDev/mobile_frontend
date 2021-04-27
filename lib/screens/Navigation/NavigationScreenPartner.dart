@@ -7,8 +7,9 @@ import 'package:carspace/model/PartnerReservation.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/MqttService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
@@ -16,8 +17,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
 
 class NavigationScreenPartner extends StatefulWidget {
   final LatLng partnerLoc;

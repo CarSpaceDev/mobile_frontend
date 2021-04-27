@@ -2,20 +2,20 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Wallet.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/Wallet/CashInScreen.dart';
 import 'package:carspace/screens/Wallet/CashOutScreen.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
+import '../../services/navigation.dart';
 
 class WalletScreen extends StatefulWidget {
   @override

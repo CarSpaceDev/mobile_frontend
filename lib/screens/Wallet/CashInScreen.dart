@@ -1,15 +1,15 @@
-import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../serviceLocator.dart';
 
 class CashInScreen extends StatefulWidget {
   @override

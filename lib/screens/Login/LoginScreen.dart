@@ -1,23 +1,23 @@
+import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/constants/SizeConfig.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/ErrorScreen.dart';
+import 'package:carspace/reusable/LoadingScreen.dart';
+import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Login/EulaScreen.dart';
 import 'package:carspace/screens/Login/PhoneNumberInputScreen.dart';
 import 'package:carspace/screens/Login/RegistrationScreen.dart';
 import 'package:carspace/screens/Login/ReturnScreen.dart';
-import 'package:carspace/screens/prompts/ErrorScreen.dart';
-import 'package:carspace/screens/prompts/LoadingScreen.dart';
-import 'package:carspace/screens/widgets/NavigationDrawer.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../blocs/login/login_bloc.dart';
-import '../../serviceLocator.dart';
-import '../widgets/NavigationDrawer.dart';
+
 import 'PhoneCodeConfirmScreen.dart';
 
 class LoginBlocHandler extends StatelessWidget {

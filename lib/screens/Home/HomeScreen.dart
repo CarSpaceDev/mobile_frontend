@@ -8,13 +8,15 @@ import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/User.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
-import 'package:carspace/screens/Home/LotFound.dart';
+import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/DriverScreens/Notifications/NotificationLinkWidget.dart';
+import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
+import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
-import 'package:carspace/screens/widgets/NavigationDrawer.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -23,9 +25,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../serviceLocator.dart';
 import 'LotReservation.dart';
-import '../DriverScreens/Notifications/NotificationList.dart';
 import 'SuggestedLocationCard.dart';
 
 class HomeScreen extends StatefulWidget {

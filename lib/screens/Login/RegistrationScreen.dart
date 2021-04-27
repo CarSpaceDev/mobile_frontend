@@ -1,12 +1,12 @@
 import 'package:carspace/reusable/AppBarLayout.dart';
 import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../blocs/login/login_bloc.dart';
-import '../../serviceLocator.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override

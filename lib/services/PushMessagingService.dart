@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:carspace/services/AuthService.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
-import '../serviceLocator.dart';
+import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class PushMessagingService {
   FirebaseMessaging firebaseMessaging;

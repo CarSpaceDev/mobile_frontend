@@ -4,16 +4,16 @@ import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
+import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
-import '../Wallet/WalletInfoWidget.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
   @override

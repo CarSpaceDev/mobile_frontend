@@ -3,12 +3,12 @@ import 'dart:convert';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:carspace/services/MqttService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mapbox_navigation/library.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../serviceLocator.dart';
 
 class DriverNavigationService {
   MapBoxNavigation _directions;

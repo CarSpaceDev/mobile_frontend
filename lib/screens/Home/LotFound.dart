@@ -1,12 +1,12 @@
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/material.dart';
 
-import '../../serviceLocator.dart';
 
 class LotFound extends StatefulWidget {
   final Lot lot;

@@ -4,10 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:carspace/model/Wallet.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../serviceLocator.dart';
 
 part 'wallet_event.dart';
 part 'wallet_state.dart';

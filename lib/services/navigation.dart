@@ -1,12 +1,13 @@
-import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
-import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
-import 'package:carspace/screens/Home/ReservationScreen.dart';
+import 'package:carspace/screens/DriverScreens/Reservations/ReservationScreen.dart';
+import 'package:carspace/screens/DriverScreens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
+import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Login/LoginScreen.dart';
 import 'package:carspace/screens/Wallet/WalletScreen.dart';
 import 'package:flutter/material.dart';
-import 'blocs/init/InitializationScreen.dart';
+
+import '../blocs/init/InitializationScreen.dart';
 
 const String LoginRoute = '/login';
 const String InitializationRoute = '/init';
@@ -20,7 +21,6 @@ const String PartnerReservations = '/partner-reservations';
 const String WalletRoute = '/wallet';
 const String DriveModeRoute = '/drive';
 // ignore: missing_return
-
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case InitializationRoute:

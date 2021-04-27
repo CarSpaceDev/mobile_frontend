@@ -2,16 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
-import 'package:carspace/navigation.dart';
-import 'package:carspace/reusable/CSText.dart';
-import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationWidget.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
-import 'package:carspace/serviceLocator.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+
 part 'notification_event.dart';
 part 'notification_state.dart';
 

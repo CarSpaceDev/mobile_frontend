@@ -1,13 +1,11 @@
+import 'package:carspace/screens/DriverScreens/Reservations/ReservationScreen.dart';
 import 'package:carspace/screens/Home/PartnerReservationScreen.dart';
-import 'package:carspace/screens/Home/ReservationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/AuthService.dart';
-import 'package:chopper/chopper.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-import '../navigation.dart';
-import '../serviceLocator.dart';
 
 class RatingAndFeedback extends StatefulWidget {
   final String user;

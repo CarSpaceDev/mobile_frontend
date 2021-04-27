@@ -1,5 +1,5 @@
 import 'package:carspace/reusable/AppBarLayout.dart';
-import 'package:carspace/screens/registration/code_confirmation_screen.dart';
+import 'package:carspace/screens/Login/code_confirmation_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

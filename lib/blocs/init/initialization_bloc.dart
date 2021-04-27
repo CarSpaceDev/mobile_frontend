@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
-
-import '../../serviceLocator.dart';
 
 part 'initialization_event.dart';
 part 'initialization_state.dart';

@@ -1,9 +1,10 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
+import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
-import 'package:carspace/serviceLocator.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ import 'blocs/login/login_bloc.dart';
 import 'blocs/vehicle/vehicle_bloc.dart';
 import 'constants/GlobalConstants.dart';
 import 'constants/SizeConfig.dart';
-import 'navigation.dart';
+import 'services/navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,9 @@ class CarSpaceApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (BuildContext context) => VehicleRepoBloc(),
+            ),
+            BlocProvider(
+              create: (BuildContext context) => ReservationRepoBloc(),
             ),
             BlocProvider(
               create: (BuildContext context) => VehicleBloc(),

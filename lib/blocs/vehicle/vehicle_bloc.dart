@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/Vehicle.dart';
-import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
-import 'package:carspace/services/UploadService.dart';
-import 'package:chopper/chopper.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
 
 part 'vehicle_event.dart';
 part 'vehicle_state.dart';

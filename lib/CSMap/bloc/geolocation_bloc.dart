@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
-import 'package:carspace/navigation.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-
-import '../../serviceLocator.dart';
 
 part 'geolocation_event.dart';
 part 'geolocation_state.dart';

@@ -8,11 +8,12 @@ import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
-import 'package:carspace/screens/Home/PopupNotifications.dart';
-import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:chopper/chopper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -20,7 +21,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../navigation.dart';
+
 import 'VehicleEditScreen.dart';
 import 'VehicleQRCodeGeneration.dart';
 

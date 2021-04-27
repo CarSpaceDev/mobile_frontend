@@ -5,13 +5,13 @@ import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/UploadService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:fdottedline/fdottedline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../serviceLocator.dart';
 
 class ImageUploadWidget extends StatefulWidget {
   final String prompt;

@@ -5,12 +5,12 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
 import 'DestinationPicker.dart';
 import 'TransactionModes/DriveModeScreen.dart';
 

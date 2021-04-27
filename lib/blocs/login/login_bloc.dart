@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carspace/model/User.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
+import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
@@ -10,15 +11,14 @@ import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/PushMessagingService.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-
-import '../../navigation.dart';
-import '../../serviceLocator.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -97,10 +97,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield WaitingLogin(message: "Please wait");
       await _apiService.unregisterDevice(
           uid: _authService.currentUser().uid, token: locator<PushMessagingService>().token);
-      _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
-      _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
-      _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
-      _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
+      stopRepos();
       await _authService.logOut();
       cache.put("user", null);
       yield LoggedOut();
@@ -254,6 +251,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: uid));
     _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: uid));
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(uid: uid));
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
   }
 
@@ -261,6 +259,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
     _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
+    _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(DisposeReservationRepo());
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
   }
 }

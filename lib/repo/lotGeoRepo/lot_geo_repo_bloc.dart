@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/Vehicle.dart';
-import 'package:carspace/serviceLocator.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 

@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:carspace/services/AuthService.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-import '../serviceLocator.dart';
 
 class MqttService {
   final String identifier = "zdg_${DateTime.now().millisecondsSinceEpoch}";
@@ -94,7 +92,7 @@ class MqttService {
 
   /// The successful connect callback
   void onConnected() {
-    print('Client connection was sucessful');
+    print('Client connection was successful');
   }
 
   /// Pong callback

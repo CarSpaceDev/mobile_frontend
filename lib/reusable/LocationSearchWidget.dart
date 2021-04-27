@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/services/ApiMapService.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:uuid/uuid.dart';
-
-import '../serviceLocator.dart';
 
 class LocationSearchService {
   static Future<LocationSearchResult> findLocation(BuildContext context) async {

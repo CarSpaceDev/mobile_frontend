@@ -1,7 +1,7 @@
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/prompts/ErrorScreen.dart';
-import 'package:carspace/screens/prompts/LoadingScreen.dart';
+import 'package:carspace/reusable/ErrorScreen.dart';
+import 'package:carspace/reusable/LoadingScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
