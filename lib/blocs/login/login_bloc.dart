@@ -10,6 +10,7 @@ import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/PushMessagingService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +25,10 @@ part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitialState());
-  final AuthService authService = locator<AuthService>();
-  final ApiService apiService = locator<ApiService>();
-  final NavigationService navService = locator<NavigationService>();
+  final AuthService _authService = locator<AuthService>();
+  final ApiService _apiService = locator<ApiService>();
+  final NavigationService _navService = locator<NavigationService>();
+  final FirebaseFirestore _firebase = FirebaseFirestore.instance;
   final cache = Hive.box("localCache");
   @override
   Stream<LoginState> mapEventToState(
@@ -34,16 +36,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async* {
     //V2 Update
     if (event is LoginStartEvent) {
-      User user = authService.currentUser();
+      User user = _authService.currentUser();
       if (user != null) {
         try {
-          var userFromApi =
-              (await apiService.checkExistence(uid: user.uid)).body["data"];
-          if (userFromApi == null) {
-            yield ShowEulaScreen();
+          DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+          if (userFromApi.exists) {
+            yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
           } else {
-            CSUser userData = CSUser.fromJson(userFromApi);
-            yield checkUserDataForMissingInfo(user: userData);
+            yield ShowEulaScreen();
           }
         } catch (e) {
           yield LoginError(message: "Error retrieving user data, please login");
@@ -56,7 +56,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (event.value) {
         yield NavToRegister();
       } else {
-        await authService.logOut();
+        await _authService.logOut();
         yield LoggedOut();
       }
     } else if (event is NavigateToEulaEvent) {
@@ -64,11 +64,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
     //V2 Update
     else if (event is GeneratePhoneCodeEvent) {
-      User user = authService.currentUser();
+      User user = _authService.currentUser();
       yield WaitingLogin(message: "Generating code");
       try {
-        var result = await apiService.generateCode(
-            uid: user.uid, phoneNumber: event.phoneNumber);
+        var result = await _apiService.generateCode(uid: user.uid, phoneNumber: event.phoneNumber);
         if (result.statusCode == 200) {
           yield ShowPhoneCodeConfirmScreen();
         } else {
@@ -81,42 +80,41 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //V2 Update
     else if (event is RestartLoginEvent) {
       yield WaitingLogin(message: "Please wait");
-      await authService.logOut();
+      await _authService.logOut();
       cache.put("user", null);
       yield LoggedOut();
     }
     //V2 Update
     else if (event is SkipVehicleAddEvent) {
-      User user = authService.currentUser();
+      User user = _authService.currentUser();
       cache.put(user.uid, {"skipVehicle": true});
       setPushTokenCache();
       startRepos(uid: user.uid);
-      navService.pushReplaceNavigateTo(DashboardRoute);
+      _navService.pushReplaceNavigateTo(DashboardRoute);
     }
     //V2 Update
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
-      await apiService.unregisterDevice(
-          uid: authService.currentUser().uid, token: locator<PushMessagingService>().token);
-      navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
-      navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
-      navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
-      navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
-      await authService.logOut();
+      await _apiService.unregisterDevice(
+          uid: _authService.currentUser().uid, token: locator<PushMessagingService>().token);
+      _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
+      _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
+      _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
+      _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
+      await _authService.logOut();
       cache.put("user", null);
       yield LoggedOut();
     }
     //V2 Update
     else if (event is ConfirmPhoneCodeEvent) {
-      User user = authService.currentUser();
+      User user = _authService.currentUser();
       yield WaitingLogin(message: "Confirming code");
-      var result =
-          await apiService.confirmCode(uid: user.uid, code: event.code);
+      var result = await _apiService.confirmCode(uid: user.uid, code: event.code);
       if (result.statusCode == 200) {
-        User currentUser = authService.currentUser();
-        var userResult = await apiService.checkExistence(uid: currentUser.uid);
-        CSUser user = CSUser.fromJson(userResult.body["data"]);
-        yield checkUserDataForMissingInfo(user: user);
+        DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+        if (userFromApi.exists) {
+          yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
+        }
       } else {
         yield LoginError(message: result.error.toString());
       }
@@ -135,53 +133,44 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     //V2 Update
     else if (event is LoginGoogleEvent) {
       yield LoginInProgress();
-      User user = await authService.loginGoogle();
+      print("Logging in via google");
+      User user = await _authService.loginGoogle();
+      print("User");
       if (user != null) {
-        //case where a user is in the google auth cache
-        var userFromApi =
-            (await apiService.checkExistence(uid: user.uid)).body["data"];
-        if (userFromApi == null) {
-          //if said user is not registered in db
-          yield ShowEulaScreen();
+        DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+        if (userFromApi.exists) {
+          yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
         } else {
-          //case where the user exists
-          CSUser userData = CSUser.fromJson(userFromApi);
-          yield checkUserDataForMissingInfo(user: userData);
+          yield ShowEulaScreen();
         }
-      } else
+      } else {
         yield LoggedOut();
+      }
     } else if (event is LogInEmailEvent) {
       yield LoginInProgress();
-      User user =
-          await authService.signInWithEmail(event.email, event.password);
+      User user = await _authService.signInWithEmail(event.email, event.password);
       if (user != null) {
-        var userFromApi =
-            (await apiService.checkExistence(uid: user.uid)).body["data"];
-        if (userFromApi == null) {
-          //if said user is not registered in db
-          yield ShowEulaScreen();
+        DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+        if (userFromApi.exists) {
+          yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
         } else {
-          //case where the user exists
-          CSUser userData = CSUser.fromJson(userFromApi);
-          yield checkUserDataForMissingInfo(user: userData);
+          yield ShowEulaScreen();
         }
       } else
         yield LoggedOut();
     } else if (event is SubmitRegistrationEvent) {
       yield WaitingLogin(message: "Creating your account");
-      var result = await apiService.registerUser(event.payload.toJson());
+      var result = await _apiService.registerUser(event.payload.toJson());
       if (result.statusCode == 201) {
         yield LoginInProgress();
-        User user = authService.currentUser();
-        CSUser userData;
+        User user = _authService.currentUser();
         if (user == null) {
-          user = await authService.signInWithEmail(
-              event.payload.email, event.payload.password);
+          user = await _authService.signInWithEmail(event.payload.email, event.payload.password);
         }
-        var userFromApi =
-            (await apiService.checkExistence(uid: user.uid)).body["data"];
-        userData = CSUser.fromJson(userFromApi);
-        yield checkUserDataForMissingInfo(user: userData);
+        DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+        if (userFromApi.exists) {
+          yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
+        }
       } else
         print(result.statusCode);
     }
@@ -212,7 +201,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else {
       setPushTokenCache();
       startRepos(uid: user.uid);
-      navService.pushReplaceNavigateTo(DashboardRoute);
+      _navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
   }
@@ -220,13 +209,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   setPushTokenCache() async {
     String pushToken = locator<PushMessagingService>().token;
     User currentUser = locator<AuthService>().currentUser();
-    await locator<ApiService>()
-        .registerDevice(uid: currentUser.uid, token: pushToken);
+    await locator<ApiService>().registerDevice(uid: currentUser.uid, token: pushToken);
   }
 
   showCodeGenerationErrorDialog() {
     showDialog(
-        context: navService.navigatorKey.currentContext,
+        context: _navService.navigatorKey.currentContext,
         builder: (_) {
           return AlertDialog(
             content: SingleChildScrollView(
@@ -253,10 +241,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    navService.goBack();
-                    navService.navigatorKey.currentContext
-                        .bloc<LoginBloc>()
-                        .add(LoginStartEvent());
+                    _navService.goBack();
+                    _navService.navigatorKey.currentContext.bloc<LoginBloc>().add(LoginStartEvent());
                   },
                   child: Text("Close"))
             ],
@@ -265,16 +251,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   startRepos({@required String uid}) {
-    navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: uid));
-    navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: uid));
-    navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
-    navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
+    _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
   }
 
   stopRepos() {
-    navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
-    navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
-    navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
-    navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
+    _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(DisposeUserRepo());
+    _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(DisposeVehicleRepo());
+    _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
+    _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
   }
 }

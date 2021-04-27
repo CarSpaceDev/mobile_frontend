@@ -9,7 +9,6 @@ class CSUser extends Equatable {
   final String emailAddress;
   final String firstName;
   final String lastName;
-  final int credits;
   final String phoneNumber;
   final String photoUrl;
   final String currentReservation;
@@ -32,7 +31,6 @@ class CSUser extends Equatable {
         emailAddress,
         firstName,
         lastName,
-        credits,
         phoneNumber,
         photoUrl,
         currentReservation,
@@ -52,7 +50,6 @@ class CSUser extends Equatable {
       this.emailAddress,
       this.firstName,
       this.lastName,
-      this.credits,
       this.phoneNumber,
       this.photoUrl,
       this.partnerAccess,
@@ -69,11 +66,10 @@ class CSUser extends Equatable {
       : uid = json['uid'] as String,
         displayName = json['displayName'] as String,
         emailAddress = json['emailAddress'] as String,
-        currentReservation = json['currentReservation'] ==null ? json['currentReservation'] : null,
+        currentReservation = json['currentReservation'] ==null ?  null : json['currentReservation'],
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
-        credits = json['credits'] as int,
-        phoneNumber = json['phoneNumber'] != null ? json['phoneNumber'].toString() : null,
+        phoneNumber = json['phoneNumber'] == null ? null : json['phoneNumber'].toString(),
         photoUrl = json['photoUrl'] as String,
         partnerAccess = json['partnerAccess'] as int,
         userAccess = json['userAccess'] as int,
@@ -81,27 +77,26 @@ class CSUser extends Equatable {
         reservations = json['reservations'] as List<dynamic>,
         vehicles = json['vehicles'] as List<dynamic>,
         currentVehicle = json['currentVehicle'] as String,
-        dateUpdated =  Timestamp(json['dateCreated']["_seconds"], json['dateCreated']["_nanoseconds"]).toDate(),
-        dateCreated = Timestamp(json['dateUpdated']["_seconds"], json['dateUpdated']["_nanoseconds"]).toDate();
+        dateUpdated =  DateTime.fromMillisecondsSinceEpoch(json["dateCreated"]["seconds"]),
+        dateCreated = DateTime.fromMillisecondsSinceEpoch(json["dateUpdated"]["seconds"]);
 
-  CSUser.fromDoc(DocumentSnapshot json)
-      : uid = json.data()['uid'] as String,
-        displayName = json.data()['displayName'] as String,
-        emailAddress = json.data()['emailAddress'] as String,
-        currentReservation = json.data()['currentReservation'] as String,
-        firstName = json.data()['firstName'] as String,
-        lastName = json.data()['lastName'] as String,
-        credits = json.data()['credits'] as int,
-        phoneNumber = json.data()['phoneNumber'] != null ? json.data()['phoneNumber'].toString() : null,
-        photoUrl = json.data()['photoUrl'] as String,
-        partnerAccess = json.data()['partnerAccess'] as int,
-        userAccess = json.data()['userAccess'] as int,
-        subscriptionType = json.data()['subscriptionType'] as String,
-        reservations = json.data()['reservations'] as List<dynamic>,
-        vehicles = json.data()['vehicles'] as List<dynamic>,
-        currentVehicle = json.data()['currentVehicle'] as String,
-        dateUpdated =  json.data()['dateCreated'].toDate(),
-        dateCreated = json.data()['dateUpdated'].toDate();
+  CSUser.fromDoc(DocumentSnapshot doc)
+      : uid = doc.data()['uid'] as String,
+        displayName = doc.data()['displayName'] as String,
+        emailAddress = doc.data()['emailAddress'] as String,
+        currentReservation = doc.data()['currentReservation'] as String,
+        firstName = doc.data()['firstName'] as String,
+        lastName = doc.data()['lastName'] as String,
+        phoneNumber = doc.data()['phoneNumber'] != null ? doc.data()['phoneNumber'].toString() : null,
+        photoUrl = doc.data()['photoUrl'] as String,
+        partnerAccess = doc.data()['partnerAccess'] as int,
+        userAccess = doc.data()['userAccess'] as int,
+        subscriptionType = doc.data()['subscriptionType'] as String,
+        reservations = doc.data()['reservations'] as List<dynamic>,
+        vehicles = doc.data()['vehicles'] as List<dynamic>,
+        currentVehicle = doc.data()['currentVehicle'] as String,
+        dateUpdated =  doc.data()['dateCreated'].toDate(),
+        dateCreated = doc.data()['dateUpdated'].toDate();
 
   Map<String, dynamic> toJson() {
     return {
@@ -110,7 +105,6 @@ class CSUser extends Equatable {
       "emailAddress": this.emailAddress,
       "firstName": this.firstName,
       "lastName": this.lastName,
-      "credits": this.credits,
       "phoneNumber": this.phoneNumber,
       "photoUrl": this.photoUrl,
       "partnerAccess": this.partnerAccess,

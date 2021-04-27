@@ -25,27 +25,43 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
   Stream<VehicleState> mapEventToState(
     VehicleEvent event,
   ) async* {
-    if (event is SetSelectedVehicle){
+    if (event is SetSelectedVehicle) {
+      print("Updating selected user: ${_authService.currentUser().uid}");
       print("Updating selected vehicle: ${event.vehicle.plateNumber}");
-      await _db.collection("users").doc(_authService.currentUser().uid).update({"currentVehicle": event.vehicle.plateNumber});
+      try {
+        await _db
+            .collection("users")
+            .doc(_authService.currentUser().uid)
+            .update({"currentVehicle": event.vehicle.plateNumber});
+      } catch (e) {
+        print(e);
+      }
     }
-    if (event is RevokeVehiclePermission){
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({"currentUsers": FieldValue.arrayRemove([event.uid])});
+    if (event is RevokeVehiclePermission) {
+      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
+        "currentUsers": FieldValue.arrayRemove([event.uid])
+      });
     }
-    if (event is RemoveVehicle){
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({"currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])});
-      await _db.collection("users").doc(_authService.currentUser().uid).update({"vehicles": FieldValue.arrayRemove([event.vehicle.plateNumber])});
+    if (event is RemoveVehicle) {
+      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
+        "currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])
+      });
+      await _db.collection("users").doc(_authService.currentUser().uid).update({
+        "vehicles": FieldValue.arrayRemove([event.vehicle.plateNumber])
+      });
     }
-    if (event is UpdateVehicleDetails){
+    if (event is UpdateVehicleDetails) {
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).update(event.vehicle.toJson());
       _navService.goBack();
     }
-    if (event is DeleteVehicle){
+    if (event is DeleteVehicle) {
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).delete();
     }
     if (event is AddVehicle) {
       await _db.collection("vehicles").doc(event.vehicle.plateNumber).set(event.vehicle.toJson());
-      await _db.collection("users").doc(_authService.currentUser().uid).update({"vehicles": FieldValue.arrayUnion([event.vehicle.plateNumber])});
+      await _db.collection("users").doc(_authService.currentUser().uid).update({
+        "vehicles": FieldValue.arrayUnion([event.vehicle.plateNumber])
+      });
       _navService.goBack();
     }
   }

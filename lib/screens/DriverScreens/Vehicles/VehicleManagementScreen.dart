@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
@@ -19,7 +20,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import '../../../navigation.dart';
 import 'VehicleEditScreen.dart';
 import 'VehicleQRCodeGeneration.dart';
@@ -48,7 +48,44 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            showAddVehicleChoices(context);
+            PopupNotifications.showNotificationDialog(context,
+                barrierDismissible: true,
+                child: CSTile(
+                  borderRadius: 25,
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton.icon(
+                        onPressed: scanQR,
+                        icon: Icon(
+                          Icons.qr_code,
+                          color: Colors.blueAccent,
+                        ),
+                        label: Text('Add from code', style: TextStyle(color: Colors.blueAccent)),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          locator<NavigationService>().pushNavigateToWidget(
+                            getPageRoute(
+                              VehicleRegistrationScreen(
+                                fromHomeScreen: true,
+                              ),
+                              RouteSettings(name: "ADD-VEHICLE"),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.add_circle_outline,
+                          color: Colors.blueAccent,
+                        ),
+                        label: Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent)),
+                      ),
+                    ],
+                  ),
+                ));
           },
           child: Icon(Icons.add)),
       body: BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, state) {
@@ -94,19 +131,23 @@ class VehicleOverview extends StatelessWidget {
               if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () { Navigator.of(context).pop();
-                    PopUp.showOption(
-                        context: context,
-                        title: "Edit ${vehicle.plateNumber}?",
-                        body: "After saving, the vehicle will need to be reverified. Proceed?",
-                        onAccept: () {
-                          locator<NavigationService>().pushNavigateToWidget(
-                            getPageRoute(
-                              VehicleEditScreen(vehicle: vehicle,),
-                              RouteSettings(name: "EDIT-VEHICLE"),
-                            ),
-                          );
-                        });},
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      PopUp.showOption(
+                          context: context,
+                          title: "Edit ${vehicle.plateNumber}?",
+                          body: "After saving, the vehicle will need to be reverified. Proceed?",
+                          onAccept: () {
+                            locator<NavigationService>().pushNavigateToWidget(
+                              getPageRoute(
+                                VehicleEditScreen(
+                                  vehicle: vehicle,
+                                ),
+                                RouteSettings(name: "EDIT-VEHICLE"),
+                              ),
+                            );
+                          });
+                    },
                     icon: Icon(
                       Icons.edit,
                       color: Colors.blueAccent,
@@ -119,17 +160,19 @@ class VehicleOverview extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                    PopUp.showOption(
-                        context: context,
-                        title: "Delete vehicle ${vehicle.plateNumber}?",
-                        body: "You will no longer be able to use this vehicle until you add it again, and it is verified",
-                        onAccept: () {
-                          locator<NavigationService>()
-                              .navigatorKey
-                              .currentContext
-                              .bloc<VehicleBloc>()
-                              .add(DeleteVehicle(vehicle: vehicle));
-                        });},
+                      PopUp.showOption(
+                          context: context,
+                          title: "Delete vehicle ${vehicle.plateNumber}?",
+                          body:
+                              "You will no longer be able to use this vehicle until you add it again, and it is verified",
+                          onAccept: () {
+                            locator<NavigationService>()
+                                .navigatorKey
+                                .currentContext
+                                .bloc<VehicleBloc>()
+                                .add(DeleteVehicle(vehicle: vehicle));
+                          });
+                    },
                     icon: Icon(
                       Icons.delete,
                       color: Colors.redAccent,
@@ -166,13 +209,13 @@ class VehicleOverview extends StatelessWidget {
           if (vehicle.ownerId == locator<AuthService>().currentUser().uid)
             TextButton.icon(
               onPressed: () {
-                if (vehicle.status == VehicleStatus.Unverified && vehicle.status == VehicleStatus.Blocked) {
-                  generateQR(context, vehicle: vehicle);
-                } else {
+                if (vehicle.status == VehicleStatus.Unverified || vehicle.status == VehicleStatus.Blocked) {
                   PopUp.showError(
                       context: context,
                       title: "Vehicle has invalid status",
                       body: "Only verified and unblocked vehicles can be used");
+                } else {
+                  generateQR(vehicle: vehicle);
                 }
               },
               icon: Icon(
@@ -222,7 +265,8 @@ class OtherVehicleUsers extends StatelessWidget {
                       PopUp.showOption(
                           context: context,
                           title: "Revoke access for vehicle ${vehicle.plateNumber}?",
-                          body: "The selected user will no longer be able to use this vehicle until you authorize again.",
+                          body:
+                              "The selected user will no longer be able to use this vehicle until you authorize again.",
                           onAccept: () {
                             locator<NavigationService>()
                                 .navigatorKey
@@ -487,78 +531,73 @@ void scanQR() {
   });
 }
 
-void generateQR(BuildContext context, {@required Vehicle vehicle}) {
-  if (locator<AuthService>().currentUser().uid != vehicle.ownerId) {
-    Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop();
-    showError(context, error: "You do not own this vehicle, please contact the original owner");
-  } else {
-    Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop();
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) {
-          return Dialog(
-            child: Container(
-              height: 100,
+void generateQR({@required Vehicle vehicle}) {
+  locator<NavigationService>().goBack();
+  showDialog(
+      barrierDismissible: false,
+      context: locator<NavigationService>().navigatorKey.currentContext,
+      builder: (_) {
+        return Dialog(
+          child: Container(
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  backgroundColor: csStyle.primary,
+                ),
+                Text(
+                  "Generating QR Code",
+                  style: TextStyle(color: csStyle.primary),
+                )
+              ],
+            ),
+          ),
+        );
+      });
+  locator<ApiService>().generateShareCode(vehicle.plateNumber, vehicle.ownerId).then((Response data) {
+    if (data.statusCode == 200) {
+      locator<NavigationService>().goBack();
+      showDialog(
+          context: locator<NavigationService>().navigatorKey.currentContext,
+          builder: (_) {
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    backgroundColor: Theme.of(context).primaryColor,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Text(
+                      "Share Code for ${vehicle.plateNumber}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  Text(
-                    "Generating QR Code",
-                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  VehicleTransferCodeScreen(
+                      payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: FlatButton(
+                        color: Colors.grey,
+                        onPressed: () {
+                          locator<NavigationService>().goBack();
+                        },
+                        child: Text("Close")),
                   )
                 ],
               ),
-            ),
-          );
-        });
-    locator<ApiService>().generateShareCode(vehicle.plateNumber, vehicle.ownerId).then((Response data) {
-      if (data.statusCode == 200) {
-        Navigator.of(context).pop();
-        showDialog(
-            context: context,
-            builder: (_) {
-              return Dialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(
-                        "Share Code for ${vehicle.plateNumber}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    VehicleTransferCodeScreen(
-                        payload: VehicleTransferQrPayLoad(code: data.body["code"], expiry: data.body["expiry"])),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: FlatButton(
-                          color: Colors.grey,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("Close")),
-                    )
-                  ],
-                ),
-              );
-            });
-      } else {
-        Navigator.of(context).pop();
-        showError(context, error: "Server error, please try again later");
-      }
-    }).catchError((error) {
-      Navigator.of(context).pop();
-      showError(context, error: "Server error, please try again later");
-    });
-  }
+            );
+          });
+    } else {
+      locator<NavigationService>().goBack();
+      showError(locator<NavigationService>().navigatorKey.currentContext, error: "Server error, please try again later");
+    }
+  }).catchError((error) {
+    locator<NavigationService>().goBack();
+    showError(locator<NavigationService>().navigatorKey.currentContext, error: "Server error, please try again later");
+  });
 }
 
 void showError(BuildContext context, {@required String error}) {
@@ -584,66 +623,6 @@ void showError(BuildContext context, {@required String error}) {
                     textAlign: TextAlign.center,
                   )
                 ],
-              ),
-            ),
-          ),
-        );
-      });
-}
-
-void showAddVehicleChoices(BuildContext context) {
-  showDialog(
-      context: context,
-      builder: (_) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: GestureDetector(
-                        onTap: scanQR,
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.qr_code,
-                              color: Colors.blueAccent,
-                            ),
-                            Text('Add from code', style: TextStyle(color: Colors.blueAccent))
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          locator<NavigationService>().pushNavigateToWidget(
-                            getPageRoute(
-                              VehicleRegistrationScreen(fromHomeScreen: true,),
-                              RouteSettings(name: "ADD-VEHICLE"),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              color: Colors.blueAccent,
-                            ),
-                            Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent))
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),

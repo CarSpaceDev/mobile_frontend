@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.wait([
       _populateVehicles(),
       _getBalance(),
-      _initAccess(),
+      // _initAccess(),
       _initMapAssets()
     ]).then((data) {
       if (userData != null) {
@@ -465,18 +465,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-  Future<bool> _initAccess() async {
-    bool result;
-    await locator<ApiService>()
-        .getUserData(uid: locator<AuthService>().currentUser().uid)
-        .then((data) {
-      if (data.statusCode == 200) {
-        userData = CSUser.fromJson(data.body);
-        result = true;
-      } else
-        result = false;
-    });
-    return result;
+  _initAccess() async {
+    // bool result;
+    // await locator<ApiService>()
+    //     .getUserData(uid: locator<AuthService>().currentUser().uid)
+    //     .then((data) {
+    //   if (data.statusCode == 200) {
+    //     userData = CSUser.fromJson(data.body);
+    //     result = true;
+    //   } else
+    //     result = false;
+    // });
+    // return result;
   }
 
   showNotificationDialog() {
