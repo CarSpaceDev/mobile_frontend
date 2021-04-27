@@ -411,6 +411,42 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
                                   ),
                                 ),
                               ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (_reservationData[index].type ==
+                                        ReservationType.BOOKING)
+                                      markAsComplete(
+                                          _uid,
+                                          _reservationData[index].lotId,
+                                          _reservationData[index].vehicleId,
+                                          _reservationData[index].reservationId,
+                                          _reservationData[index].lotAddress,
+                                          _reservationData[index].partnerId);
+                                    else
+                                      markAsCompleteV2(
+                                          _uid,
+                                          _reservationData[index].lotId,
+                                          _reservationData[index].vehicleId,
+                                          _reservationData[index].reservationId,
+                                          _reservationData[index].lotAddress,
+                                          _reservationData[index].partnerId);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(Icons.check,
+                                          color: Colors.redAccent),
+                                      Text(
+                                        'Mark as Complete',
+                                        style:
+                                            TextStyle(color: Colors.redAccent),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           )
                         : Column(
@@ -478,6 +514,36 @@ class _ReservationScreenScreenState extends State<ReservationScreen> {
           ),
         ),
       );
+  }
+
+  markAsComplete(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().markAsComplete(body).then((data) {
+      showMessage(data.body);
+    });
+  }
+
+  markAsCompleteV2(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().markAsCompleteV2(body).then((data) {
+      showMessage(data.body);
+    });
   }
 
   onTheWay(String userId, String driverName, String vehicleId,
