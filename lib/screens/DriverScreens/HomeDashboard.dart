@@ -26,13 +26,21 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
-    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<GeolocationBloc>()
+        .add(InitializeGeolocator());
     super.initState();
   }
 
   @override
   void dispose() {
-    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<GeolocationBloc>()
+        .add(CloseGeolocationStream());
     super.dispose();
   }
 
@@ -43,7 +51,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
-        title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
+        title: CSText("Dashboard",
+            textType: TextType.H4, textColor: TextColor.White),
         actions: [
           WalletInfoWidget(),
         ],
@@ -81,14 +90,17 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         userState.user.currentVehicle != null &&
                         userState.user.currentReservation == null)
                       return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                          builder: (BuildContext context, VehicleRepoState vehicleState) {
+                          builder: (BuildContext context,
+                              VehicleRepoState vehicleState) {
                         if (vehicleState is VehicleRepoReady) {
                           return BlocBuilder<GeolocationBloc, GeolocationState>(
-                              builder: (BuildContext context, GeolocationState state) {
+                              builder: (BuildContext context,
+                                  GeolocationState state) {
                             Vehicle vehicle;
                             try {
-                              vehicle = vehicleState.vehicles
-                                  .firstWhere((v) => v.plateNumber == userState.user.currentVehicle);
+                              vehicle = vehicleState.vehicles.firstWhere((v) =>
+                                  v.plateNumber ==
+                                  userState.user.currentVehicle);
                             } catch (e) {}
                             if (state is GeolocatorReady &&
                                 vehicle != null &&

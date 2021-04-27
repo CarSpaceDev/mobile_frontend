@@ -26,8 +26,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     NotificationEvent event,
   ) async* {
     if (event is InitializeNotificationRepo) {
-      repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
-      notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
+      repoReference = FirebaseFirestore.instance
+          .collection("archive")
+          .doc(event.uid)
+          .collection("notifications");
+      notifications = repoReference
+          .orderBy("dateCreated", descending: true)
+          .snapshots()
+          .listen((result) {
         List<CSNotification> temp = [];
         for (QueryDocumentSnapshot r in result.docs) {
           temp.add(CSNotification.fromDoc(r));

@@ -18,6 +18,8 @@ class PartnerReservation {
   String timeUpdated;
   String lotImage;
   String lotAddress;
+  bool userRating;
+  bool partnerRating;
   ReservationStatus status;
   ReservationType type;
   LatLng coordinates;
@@ -40,10 +42,12 @@ class PartnerReservation {
         timeUpdated = json["timeUpdated"] as String,
         lotImage = json["lotImage"] as String,
         lotAddress = json["lotAddress"] as String,
+        userRating = json["userRating"] as bool,
+        partnerRating = json["partnerRating"] as bool,
         status = ReservationStatus.values[json['reservationStatus'] as int],
         type = ReservationType.values[json['reservationType'] as int],
-        coordinates =
-            LatLng(json["g"]["geopoint"]["_latitude"] as double, json["g"]["geopoint"]["_longitude"] as double);
+        coordinates = LatLng(json["g"]["geopoint"]["_latitude"] as double,
+            json["g"]["geopoint"]["_longitude"] as double);
 
   toJson() {
     return {
@@ -64,6 +68,8 @@ class PartnerReservation {
       "lotAddress": lotAddress,
       "status": status,
       "type": type,
+      "userRating": userRating,
+      "partnerRating": partnerRating,
       "coordinates": coordinates.toString(),
     };
   }

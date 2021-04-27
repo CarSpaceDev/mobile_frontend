@@ -360,60 +360,110 @@ class _PartnerReservationScreenScreenState
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          markAsComplete(
-                              _reservationData[index].driverId,
-                              _reservationData[index].lotId,
-                              _reservationData[index].vehicleId,
-                              _reservationData[index].reservationId,
-                              _reservationData[index].lotAddress,
-                              _reservationData[index].partnerId);
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.check, color: Colors.redAccent),
-                            Text(
-                              'Mark as Completed',
-                              style: TextStyle(color: Colors.redAccent),
-                            )
-                          ],
-                        ),
+                child: _reservationData[index].status ==
+                        ReservationStatus.BOOKED
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                markAsComplete(
+                                    _reservationData[index].driverId,
+                                    _reservationData[index].lotId,
+                                    _reservationData[index].vehicleId,
+                                    _reservationData[index].reservationId,
+                                    _reservationData[index].lotAddress,
+                                    _reservationData[index].partnerId);
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(Icons.check, color: Colors.redAccent),
+                                  Text(
+                                    'Mark as Completed',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    locator<NavigationService>()
+                                        .navigatorKey
+                                        .currentContext,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NavigationScreenPartner(
+                                                partnerLoc:
+                                                    _reservationData[index]
+                                                        .coordinates,
+                                                reservationId:
+                                                    _reservationData[index]
+                                                        .reservationId)));
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(Icons.map_outlined,
+                                      color: Colors.redAccent),
+                                  Text(
+                                    'Track Progress',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          _reservationData[index].userRating == false
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      print('tapped');
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.car_repair,
+                                          color: Colors.blueAccent,
+                                        ),
+                                        Text('Give rating and feedback',
+                                            style: TextStyle(
+                                                color: Colors.blueAccent))
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.car_repair,
+                                          color: Colors.blueAccent,
+                                        ),
+                                        Text(
+                                            'You have already rated and sent your feedback',
+                                            style: TextStyle(
+                                                color: Colors.blueAccent))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                        ],
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              locator<NavigationService>()
-                                  .navigatorKey
-                                  .currentContext,
-                              MaterialPageRoute(
-                                  builder: (context) => NavigationScreenPartner(
-                                      partnerLoc:
-                                          _reservationData[index].coordinates,
-                                      reservationId: _reservationData[index]
-                                          .reservationId)));
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.map_outlined, color: Colors.redAccent),
-                            Text(
-                              'Track Progress',
-                              style: TextStyle(color: Colors.redAccent),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),

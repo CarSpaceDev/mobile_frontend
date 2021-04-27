@@ -215,7 +215,7 @@ class _LotFoundState extends State<LotFound> {
       "userId": widget.user,
       "lotId": widget.lot.lotId,
       "partnerId": widget.lot.partnerId,
-      "reservationType": 1,
+      "reservationType": 0,
       "lotAddress": widget.lot.address.toString(),
       "lotPrice": widget.lot.pricing
     });

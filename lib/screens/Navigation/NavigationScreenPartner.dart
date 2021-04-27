@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/PartnerReservation.dart';
+import 'package:carspace/reusable/RatingAndFeedback.dart';
+import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/services/ApiService.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/MqttService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -95,13 +99,35 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
           child: FlatButton(
             color: Color(0xff6200EE),
             onPressed: () {
-              markAsComplete(
-                  widget.reservation.driverId,
-                  widget.reservation.lotId,
-                  widget.reservation.vehicleId,
-                  widget.reservation.reservationId,
-                  widget.reservation.lotAddress,
-                  widget.reservation.partnerId);
+              if (this.widget.reservation.status ==
+                  ReservationStatus.BOOKED) if (this
+                      .widget
+                      .reservation
+                      .type ==
+                  ReservationType.BOOKING)
+                markAsComplete(
+                    widget.reservation.driverId,
+                    widget.reservation.lotId,
+                    widget.reservation.vehicleId,
+                    widget.reservation.reservationId,
+                    widget.reservation.lotAddress,
+                    widget.reservation.partnerId);
+              else {
+                markAsCompleteV2(
+                    widget.reservation.driverId,
+                    widget.reservation.lotId,
+                    widget.reservation.vehicleId,
+                    widget.reservation.reservationId,
+                    widget.reservation.lotAddress,
+                    widget.reservation.partnerId);
+              }
+              else {
+                if (!this.widget.reservation.partnerRating) {
+                  rating(this.widget.reservation);
+                } else {
+                  showMessage("Rating already provided");
+                }
+              }
             },
             child: Shimmer.fromColors(
               baseColor: Colors.white,
@@ -111,11 +137,18 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.1,
                 child: Center(
-                    child: Text("Mark as complete",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold))),
+                    child: this.widget.reservation.status ==
+                            ReservationStatus.BOOKED
+                        ? Text("Mark as complete",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold))
+                        : Text("Rate Driver",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold))),
               ),
             ),
           ),
@@ -129,7 +162,12 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
-                Navigator.of(context).pop();
+                locator<NavigationService>().pushNavigateToWidget(
+                  getPageRoute(
+                    HomeDashboard(),
+                    RouteSettings(name: "HomeDashboard"),
+                  ),
+                );
               },
             ),
             bottom: null),
@@ -202,6 +240,30 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
         ])));
   }
 
+  rating(reservationData) async {
+    return showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (_) => Dialog(
+              insetPadding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * .1,
+                  horizontal: 32),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: new SizedBox(
+                height: 250,
+                width: 350,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: RatingAndFeedback(
+                        reservationData, reservationData.driverId, 1),
+                  ),
+                ),
+              ),
+            ));
+  }
+
   markAsComplete(String userId, String lotId, String vehicleId,
       String reservationId, String lotAddress, String partnerId) async {
     var body = ({
@@ -213,6 +275,21 @@ class _NavigationScreenPartnerState extends State<NavigationScreenPartner> {
       "partnerId": partnerId
     });
     await locator<ApiService>().markAsComplete(body).then((data) {
+      showMessage(data.body);
+    });
+  }
+
+  markAsCompleteV2(String userId, String lotId, String vehicleId,
+      String reservationId, String lotAddress, String partnerId) async {
+    var body = ({
+      "userId": userId,
+      "lotId": lotId,
+      "vehicleId": vehicleId,
+      "reservationId": reservationId,
+      "lotAddress": lotAddress,
+      "partnerId": partnerId
+    });
+    await locator<ApiService>().markAsCompleteV2(body).then((data) {
       showMessage(data.body);
     });
   }
