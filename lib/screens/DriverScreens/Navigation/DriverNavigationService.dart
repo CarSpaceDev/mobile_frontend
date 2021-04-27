@@ -58,14 +58,10 @@ class DriverNavigationService {
   }
 
   _positionChangeHandler(Position p) async {
-    double _distanceRemaining = await _directions.distanceRemaining;
-    double _durationRemaining = await _directions.durationRemaining;
     String payload = json.encode({
       "reservationId": this.reservationId,
       "longitude": p.longitude,
       "latitude": p.latitude,
-      "distanceRemaining": _distanceRemaining,
-      "durationRemaining": _durationRemaining
     });
     locator<MqttService>().send(this.reservationId, payload);
   }

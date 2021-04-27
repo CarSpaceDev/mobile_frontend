@@ -1,11 +1,13 @@
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
@@ -57,15 +59,30 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     if (event is StartGeolocationBroadcast) {
       if (ready)
         positionStream = Geolocator.getPositionStream(
-            desiredAccuracy: LocationAccuracy.bestForNavigation,
-            distanceFilter: 1,
-            intervalDuration: Duration(seconds: 5))
-            .listen((Position v) {
-          lastKnownPosition = CSPosition.fromMap(v.toJson());
-          //insert mqtt broadcast
-          //insert session broadcast
-
-
+                desiredAccuracy: LocationAccuracy.bestForNavigation,
+                distanceFilter: 1,
+                intervalDuration: Duration(seconds: 5))
+            .listen((Position p) {
+          lastKnownPosition = CSPosition.fromMap(p.toJson());
+          String payload = json.encode({
+            "reservationId": event.reservation.uid,
+            "longitude": p.longitude,
+            "latitude": p.latitude,
+          });
+          //mqtt broadcast
+          locator<NavigationService>()
+              .navigatorKey
+              .currentContext
+              .read<MqttBloc>()
+              .add(SendMessageToTopic(topic: event.reservation.uid, message: payload));
+          //insert firestore session broadcast
+          try {
+            FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.uid).set({
+              "reservationId": event.reservation.uid,
+              "longitude": p.longitude,
+              "latitude": p.latitude,
+            });
+          } catch (e) {}
           add(UpdatePosition(position: lastKnownPosition));
         });
     }
