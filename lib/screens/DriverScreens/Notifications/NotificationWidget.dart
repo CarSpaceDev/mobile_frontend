@@ -3,6 +3,9 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
+import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +30,11 @@ class NotificationWidget extends StatelessWidget {
         );
       case NotificationType.ExpiringLicense:
         return ExpiringLicenseWidget(
+          notification: notification,
+          onTap: onTap,
+        );
+      case NotificationType.ExpiringVehicle:
+        return ExpiringVehicleWidget(
           notification: notification,
           onTap: onTap,
         );
@@ -150,6 +158,49 @@ class ExpiringLicenseWidget extends StatelessWidget {
           context,
           barrierDismissible: true,
           child: UploadLicensePopup(),
+        );
+      },
+      margin: EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.all(10),
+      borderRadius: 5,
+      shadow: true,
+      color: notification.opened ? TileColor.DarkGrey : TileColor.Secondary,
+      title: CSText(
+        notification.title,
+        textAlign: TextAlign.center,
+        textType: TextType.H5Bold,
+      ),
+      body: Column(children: [
+        CSText(
+          notification.data["message"],
+          textType: TextType.Caption,
+          padding: EdgeInsets.only(top: 8, bottom: 16),
+        ),
+        CSText(
+          "${formatDate(notification.dateCreated, [MM, " ", dd, ", ", yyyy, " ", HH, ":", mm])}",
+          textType: TextType.Caption,
+        )
+      ]),
+    );
+  }
+}
+
+class ExpiringVehicleWidget extends StatelessWidget {
+  final CSNotification notification;
+  final Function onTap;
+  ExpiringVehicleWidget({@required this.notification, this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return CSSegmentedTile(
+      onTap: () {
+        if (!notification.opened) {
+          onTap();
+        }
+        locator<NavigationService>().pushNavigateToWidget(
+          getPageRoute(
+            VehicleManagementScreen(),
+            RouteSettings(name: "MANAGE-VEHICLE"),
+          ),
         );
       },
       margin: EdgeInsets.symmetric(vertical: 4),

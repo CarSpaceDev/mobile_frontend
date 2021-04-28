@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
+import 'package:carspace/screens/DriverScreens/Notifications/NotificationWidget.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/src/widgets/basic.dart';
+import 'package:provider/provider.dart';
 
 part 'notification_event.dart';
 part 'notification_state.dart';
@@ -23,14 +27,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     NotificationEvent event,
   ) async* {
     if (event is InitializeNotificationRepo) {
-      repoReference = FirebaseFirestore.instance
-          .collection("archive")
-          .doc(event.uid)
-          .collection("notifications");
-      notifications = repoReference
-          .orderBy("dateCreated", descending: true)
-          .snapshots()
-          .listen((result) {
+      repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
+      notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
         List<CSNotification> temp = [];
         for (QueryDocumentSnapshot r in result.docs) {
           temp.add(CSNotification.fromDoc(r));
@@ -46,28 +44,31 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
     if (event is NewNotificationReceived) {
       print("New notification added to the collection");
-      if(nRepo.first.type == NotificationType.VerificationRequest){
-        PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
-                child: VehicleAddAuthDetails(code: nRepo.first.data["code"]));
+      switch (nRepo.first.type) {
+        case NotificationType.VerificationRequest:
+          PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+              barrierDismissible: true, child: VehicleAddAuthDetails(code: nRepo.first.data["code"]));
+          break;
+        case NotificationType.Info:
+        case NotificationType.ExpiringVehicle:
+        case NotificationType.ExpiringLicense:
+          PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+              barrierDismissible: true,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: NotificationWidget(
+                    notification: nRepo.first,
+                    onTap: () {
+                      if (!nRepo.first.opened)
+                        locator<NavigationService>()
+                            .navigatorKey
+                            .currentContext
+                            .read<NotificationBloc>()
+                            .add(NotificationOpened(uid: nRepo.first.uid));
+                    }),
+              ));
+          break;
       }
-      // PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
-      //     child: Column(
-      //       mainAxisSize: MainAxisSize.min,
-      //       children: [
-      //         NotificationWidget(notification: nRepo[0]),
-      //         CSTile(
-      //           onTap: () {
-      //             print("some actions");
-      //           },
-      //           color: TileColor.Primary,
-      //           child: CSText(
-      //             "SOME ACTIONS HERE",
-      //             textType: TextType.Button,
-      //           ),
-      //         )
-      //       ],
-      //     ),
-      //     barrierDismissible: true);
 
       add(NotificationsUpdated(notifications: nRepo));
     }
