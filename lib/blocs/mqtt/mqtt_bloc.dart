@@ -77,15 +77,18 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     }
     if (event is MessageReceivedEvent) {
       print("MQTT Message received from [${event.topic}] : ${event.message}");
-      yield MqttMessageReceived(topic: event.topic,message: event.message);
+      yield MqttMessageReceived(topic: event.topic, message: event.message);
     }
-    if (event is SubscribeToTopic){
+    if (event is SubscribeToTopic) {
+      print("SUBSCRIBING TO ${event.topic}");
       client.subscribe(event.topic, MqttQos.atMostOnce);
     }
-    if (event is UnsubscribeTopic){
+    if (event is UnsubscribeTopic) {
+      print("UNSUBSCRIBING FROM ${event.topic}");
       client.unsubscribe(event.topic);
     }
-    if(event is SendMessageToTopic){
+    if (event is SendMessageToTopic) {
+      print("SENDING TO ${event.topic} : ${event.message}");
       final builder = MqttClientPayloadBuilder();
       builder.addString(event.message);
       client.publishMessage(event.topic, MqttQos.atLeastOnce, builder.payload);
@@ -106,6 +109,6 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
         .navigatorKey
         .currentContext
         .read<MqttBloc>()
-        .add(MessageReceivedEvent(topic: v.first.topic,message: payload));
+        .add(MessageReceivedEvent(topic: v.first.topic, message: payload));
   }
 }

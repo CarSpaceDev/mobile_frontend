@@ -72,8 +72,6 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                 if (vehicleState is VehicleRepoReady) {
                   return BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, state) {
                     if (state is UserRepoReady) {
-                      print("Updated user Repo");
-                      print(state.user.currentVehicle);
                       Vehicle selectedVehicle;
                       bool vehiclesAvailable = vehicleState.vehicles.isNotEmpty;
                       try {

@@ -670,9 +670,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 "lotAddress": currentReservation.lotAddress,
                 "partnerId": currentReservation.partnerId
               });
-              DriverNavigationService(
-                      reservationId: currentReservation.reservationId)
-                  .navigateViaMapBox(currentReservation.coordinates);
+              // DriverNavigationService(
+              //         reservationId: currentReservation.reservationId)
+              //     .navigateViaMapBox(currentReservation.coordinates);
             } else {
               checkBeforeReserve(lotsInRadius);
             }

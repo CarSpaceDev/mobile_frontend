@@ -210,8 +210,7 @@ class ReservationTileWidget extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       locator<NavigationService>().goBack();
-                      DriverNavigationService(reservationId: reservation.uid)
-                          .navigateViaMapBox(LatLng(reservation.position.latitude, reservation.position.longitude));
+                      DriverNavigationService(reservation: reservation).navigateViaMapBox();
                     },
                     icon: Icon(
                       Icons.map_outlined,

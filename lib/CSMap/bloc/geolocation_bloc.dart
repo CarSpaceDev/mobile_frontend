@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
@@ -42,10 +43,12 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
         print("Geolocator is ready");
+        ready = true;
         yield GeolocatorReady();
       }
     }
     if (event is StartGeolocation) {
+      print("StartingGeolocationStream");
       if (ready)
         positionStream = Geolocator.getPositionStream(
                 desiredAccuracy: LocationAccuracy.bestForNavigation,
@@ -57,6 +60,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         });
     }
     if (event is StartGeolocationBroadcast) {
+      print("StartingGeolocationBroadcast");
       if (ready)
         positionStream = Geolocator.getPositionStream(
                 desiredAccuracy: LocationAccuracy.bestForNavigation,
@@ -77,12 +81,16 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
               .add(SendMessageToTopic(topic: event.reservation.uid, message: payload));
           //insert firestore session broadcast
           try {
+            print("Saving position data to session FirestoreDocument");
             FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.uid).set({
               "reservationId": event.reservation.uid,
               "longitude": p.longitude,
               "latitude": p.latitude,
             });
-          } catch (e) {}
+          } catch (e) {
+            print("GeolocationBloc Firestore Save Error");
+            print(e);
+          }
           add(UpdatePosition(position: lastKnownPosition));
         });
     }

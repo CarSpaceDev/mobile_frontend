@@ -287,7 +287,7 @@ class _LotFoundState extends State<LotFound> {
                           "lotAddress": widget.lot.address.toString(),
                           "partnerId": widget.lot.partnerId
                         });
-                        DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
+                        // DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
                       },
                       icon: Icon(Icons.map_outlined),
                       label: Text("Navigate To Lot")),
