@@ -6,6 +6,7 @@ import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
 import 'package:carspace/reusable/UserDisplayNameWidget.dart';
 import 'package:carspace/services/ApiService.dart';
@@ -58,8 +59,8 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
           _markers = Set.from([lotMarker, driverMarker]);
         });
         mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
-      }
-      else print("GEOSESSION doc doesn't exist");
+      } else
+        print("GEOSESSION doc doesn't exist");
     });
     locator<NavigationService>()
         .navigatorKey
@@ -103,7 +104,6 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
           centerTitle: true,
         ),
         body: Column(mainAxisSize: MainAxisSize.min, children: [
-
           CSTile(
             margin: EdgeInsets.zero,
             color: TileColor.Secondary,
@@ -125,9 +125,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
                     ),
                   ],
                 ),
-                if(distance!=null)
-                  CSText("${(distance/1000).toStringAsFixed(2)} km")
-
+                if (distance != null) CSText("${(distance / 1000).toStringAsFixed(2)} km")
               ],
             ),
           ),
@@ -153,16 +151,30 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
             color: TileColor.Secondary,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.symmetric(vertical: 24),
-            onTap: () {
-              if (widget.reservation.reservationStatus ==
-                  ReservationStatus.Active) if (this.widget.reservation.reservationType == ReservationType.Booking)
-                markAsComplete(widget.reservation.userId, widget.reservation.lotId, widget.reservation.vehicleId,
-                    widget.reservation.uid, widget.reservation.lotAddress, widget.reservation.partnerId);
-              else {
-                markAsCompleteV2(widget.reservation.userId, widget.reservation.lotId, widget.reservation.vehicleId,
-                    widget.reservation.uid, widget.reservation.lotAddress, widget.reservation.partnerId);
-              }
-              else {
+            onTap: () async {
+              if (widget.reservation.reservationStatus == ReservationStatus.Active) {
+                locator<NavigationService>().goBack();
+                showDialog(
+                    context: context,
+                    builder: (context) => Material(color: Colors.transparent, child: LoadingFullScreenWidget()));
+                if (this.widget.reservation.reservationType == ReservationType.Booking) {
+                  await markAsComplete(
+                      widget.reservation.userId,
+                      widget.reservation.lotId,
+                      widget.reservation.vehicleId,
+                      widget.reservation.uid,
+                      widget.reservation.lotAddress,
+                      widget.reservation.partnerId);
+                } else {
+                  await markAsCompleteV2(
+                      widget.reservation.userId,
+                      widget.reservation.lotId,
+                      widget.reservation.vehicleId,
+                      widget.reservation.uid,
+                      widget.reservation.lotAddress,
+                      widget.reservation.partnerId);
+                }
+              } else {
                 if (!this.widget.reservation.partnerRating) {
                   rating(this.widget.reservation);
                 } else {
@@ -238,6 +250,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
       "partnerId": partnerId
     });
     await locator<ApiService>().markAsComplete(body).then((data) {
+      locator<NavigationService>().goBack();
       showMessage(data.body);
     });
   }
@@ -253,6 +266,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
       "partnerId": partnerId
     });
     await locator<ApiService>().markAsCompleteV2(body).then((data) {
+      locator<NavigationService>().goBack();
       showMessage(data.body);
     });
   }
@@ -286,7 +300,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    locator<NavigationService>().pushReplaceNavigateTo(PartnerReservations);
+                    locator<NavigationService>().goBack();
                   },
                   child: Text("Close"))
             ],

@@ -11,7 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'DestinationPicker.dart';
+import 'TransactionModes/DestinationPicker.dart';
 import 'TransactionModes/DriveModeScreen.dart';
 
 class ParkNowWidget extends StatefulWidget {

@@ -15,9 +15,3 @@ class UserRepoReady extends UserRepoState {
   @override
   List<Object> get props => [user];
 }
-
-class UserRepoError extends UserRepoState {
-  UserRepoError();
-  @override
-  List<Object> get props => [];
-}

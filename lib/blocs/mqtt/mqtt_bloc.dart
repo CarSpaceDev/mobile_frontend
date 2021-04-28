@@ -23,6 +23,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     MqttEvent event,
   ) async* {
     if (event is InitializeMqtt) {
+      print("Initializing MQTT");
       clientIdentifier = "zdg_${DateTime.now().millisecondsSinceEpoch}";
       print("MQTT ID: $clientIdentifier");
       client = MqttServerClient('mqtt.zdgph.tech', clientIdentifier);

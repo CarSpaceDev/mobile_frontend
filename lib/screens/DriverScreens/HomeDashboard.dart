@@ -2,6 +2,7 @@ import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/model/Vehicle.dart';
+import 'package:carspace/repo/currentReservationRepo/current_reservation_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
@@ -28,21 +29,13 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
-    locator<NavigationService>()
-        .navigatorKey
-        .currentContext
-        .read<GeolocationBloc>()
-        .add(InitializeGeolocator());
+    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
     super.initState();
   }
 
   @override
   void dispose() {
-    locator<NavigationService>()
-        .navigatorKey
-        .currentContext
-        .read<GeolocationBloc>()
-        .add(CloseGeolocationStream());
+    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
     super.dispose();
   }
 
@@ -53,8 +46,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
-        title: CSText("Dashboard",
-            textType: TextType.H4, textColor: TextColor.White),
+        title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
         actions: [
           WalletInfoWidget(),
         ],
@@ -71,14 +63,16 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 children: [
                   BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
                     if (userState is UserRepoReady && userState.user.currentReservation != null) {
-                      return FutureBuilder(
-                          future: FirebaseFirestore.instance.collection("reservations").doc(userState.user.currentReservation).get(),
-                          builder: (BuildContext context, result) {
-                            if (result.hasData && result.data.exists) {
-                              return ReservationTileWidget(reservation: Reservation.fromDoc(result.data));
-                            } else
-                              return Container();
-                          });
+                      context
+                          .bloc<CurrentReservationBloc>()
+                          .add(InitCurrentReservationRepo(uid: userState.user.currentReservation));
+                      return BlocBuilder<CurrentReservationBloc, CurrentReservationState>(
+                          builder: (BuildContext context, CurrentReservationState state) {
+                        if (state is UpdatedCurrentReservation) {
+                          return ReservationTileWidget(reservation: state.reservation);
+                        }
+                        return Container();
+                      });
                     } else
                       return Container();
                   }),
@@ -91,17 +85,14 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         userState.user.currentVehicle != null &&
                         userState.user.currentReservation == null)
                       return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                          builder: (BuildContext context,
-                              VehicleRepoState vehicleState) {
+                          builder: (BuildContext context, VehicleRepoState vehicleState) {
                         if (vehicleState is VehicleRepoReady) {
                           return BlocBuilder<GeolocationBloc, GeolocationState>(
-                              builder: (BuildContext context,
-                                  GeolocationState state) {
+                              builder: (BuildContext context, GeolocationState state) {
                             Vehicle vehicle;
                             try {
-                              vehicle = vehicleState.vehicles.firstWhere((v) =>
-                                  v.plateNumber ==
-                                  userState.user.currentVehicle);
+                              vehicle = vehicleState.vehicles
+                                  .firstWhere((v) => v.plateNumber == userState.user.currentVehicle);
                             } catch (e) {}
                             if (state is GeolocatorReady &&
                                 vehicle != null &&

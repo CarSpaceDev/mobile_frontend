@@ -5,7 +5,7 @@ import 'package:android_intent/android_intent.dart';
 import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
-import 'package:carspace/model/User.dart';
+import 'package:carspace/model/CSUser.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';

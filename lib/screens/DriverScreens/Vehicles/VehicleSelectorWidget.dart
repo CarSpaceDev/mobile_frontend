@@ -13,7 +13,6 @@ import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 import 'VehicleRegistrationScreen.dart';
 
@@ -23,7 +22,6 @@ class VehicleSelectorWidget extends StatefulWidget {
 }
 
 class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with TickerProviderStateMixin {
-  UserRepoBloc userRepoBloc;
   int actualIndex = 0;
   PageController controller;
   bool noVehicles;
@@ -37,17 +35,12 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
 
   @override
   void dispose() {
-    userRepoBloc.close();
     controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (userRepoBloc == null) {
-      userRepoBloc = context.read<UserRepoBloc>();
-    }
-
     return AnimatedSize(
       vsync: this,
       duration: Duration(milliseconds: 200),
@@ -295,44 +288,44 @@ class ActionVehicleIcon extends StatelessWidget {
       onTap: selectVehicle
           ? null
           : () {
-        PopupNotifications.showNotificationDialog(context,
-            barrierDismissible: true,
-            child: CSTile(
-              borderRadius: 25,
-              margin: EdgeInsets.zero,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton.icon(
-                    onPressed: scanQR,
-                    icon: Icon(
-                      Icons.qr_code,
-                      color: Colors.blueAccent,
-                    ),
-                    label: Text('Add from code', style: TextStyle(color: Colors.blueAccent)),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      locator<NavigationService>().pushNavigateToWidget(
-                        getPageRoute(
-                          VehicleRegistrationScreen(
-                            fromHomeScreen: true,
+              PopupNotifications.showNotificationDialog(context,
+                  barrierDismissible: true,
+                  child: CSTile(
+                    borderRadius: 25,
+                    margin: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton.icon(
+                          onPressed: scanQR,
+                          icon: Icon(
+                            Icons.qr_code,
+                            color: Colors.blueAccent,
                           ),
-                          RouteSettings(name: "ADD-VEHICLE"),
+                          label: Text('Add from code', style: TextStyle(color: Colors.blueAccent)),
                         ),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.add_circle_outline,
-                      color: Colors.blueAccent,
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            locator<NavigationService>().pushNavigateToWidget(
+                              getPageRoute(
+                                VehicleRegistrationScreen(
+                                  fromHomeScreen: true,
+                                ),
+                                RouteSettings(name: "ADD-VEHICLE"),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.blueAccent,
+                          ),
+                          label: Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent)),
+                        ),
+                      ],
                     ),
-                    label: Text('Add new vehicle', style: TextStyle(color: Colors.blueAccent)),
-                  ),
-                ],
-              ),
-            ));
+                  ));
             },
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -1,5 +1,5 @@
 import 'package:carspace/CSMap/bloc/classes.dart';
-import 'package:carspace/screens/DriverScreens/DestinationPicker.dart';
+import 'package:carspace/screens/DriverScreens/TransactionModes/DestinationPicker.dart';
 import 'package:equatable/equatable.dart';
 
 import 'Vehicle.dart';

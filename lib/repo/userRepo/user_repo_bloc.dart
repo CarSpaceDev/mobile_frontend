@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:carspace/model/User.dart';
+import 'package:carspace/model/CSUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
@@ -17,12 +17,14 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
     UserRepoEvent event,
   ) async* {
     if (event is InitializeUserRepo) {
-      user = FirebaseFirestore.instance.collection("users").doc(event.uid).snapshots().listen((result) {
-        if (result.exists)
-          add(UpdateUserRepo(user: CSUser.fromDoc(result)));
-        else
-          add(UserRepoErrorTrigger());
-      });
+      print("Initializing UserRepo");
+      try {
+        user = FirebaseFirestore.instance.collection("users").doc(event.uid).snapshots().listen((result) {
+          if (result.exists) add(UpdateUserRepo(user: CSUser.fromDoc(result)));
+        });
+      } catch (e) {
+        print(e);
+      }
     }
     if (event is UpdateUserRepo) {
       print("User Updated");
@@ -31,9 +33,6 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
     if (event is DisposeUserRepo) {
       print("UserRepoCalledDispose");
       await user.cancel();
-    }
-    if (event is UserRepoErrorTrigger) {
-      yield UserRepoError();
     }
   }
 }

@@ -1,24 +1,30 @@
 import 'dart:collection';
 
 import 'package:carspace/CSMap/CSMap.dart';
+import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Lot.dart';
+import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
+import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
-
 
 class DriveModeScreen extends StatefulWidget {
   @override
@@ -30,8 +36,9 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
   GeolocationBloc geoBloc;
   LotGeoRepoBloc lotBloc;
   Marker driver;
+  Vehicle vehicle;
   int lotsAvailable = 0;
-  List<Lot> lots = [];
+  CSPosition currentPosition;
   @override
   void initState() {
     super.initState();
@@ -50,12 +57,21 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
     if (mapBloc == null) {
       mapBloc = new MapBloc();
     }
-    if (context.bloc<GeolocationBloc>() == null) {
-      geoBloc = new GeolocationBloc();
-    } else
-      geoBloc = context.bloc<GeolocationBloc>();
+    geoBloc = context.bloc<GeolocationBloc>();
     if (lotBloc == null) {
       lotBloc = new LotGeoRepoBloc();
+    }
+    if (vehicle == null) {
+      FirebaseFirestore.instance.collection("users").doc(locator<AuthService>().currentUser().uid).get().then((rDoc) {
+        if (rDoc.exists) {
+          print(rDoc.data()["currentVehicle"]);
+          FirebaseFirestore.instance.collection("vehicles").doc(rDoc.data()["currentVehicle"]).get().then((vDoc) {
+            vehicle = Vehicle.fromDoc(vDoc);
+            print("DriveOnDemand - ${vehicle.type}");
+            lotBloc.add(UpdateSearchTerms(vehicleSearchType: vehicle.type));
+          });
+        }
+      });
     }
     return MultiBlocProvider(
       providers: [
@@ -67,6 +83,7 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
           BlocListener<GeolocationBloc, GeolocationState>(
             listener: (BuildContext context, state) {
               if (state is PositionUpdated) {
+                currentPosition = state.position;
                 lotBloc.add(UpdateLotRepoCenter(position: state.position));
               }
             },
@@ -80,16 +97,13 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
                 });
                 var markers = HashSet<Marker>();
                 for (Lot lot in state.lots) {
-                  lots.add(lot);
                   markers.add(Marker(
                       markerId: MarkerId(lot.lotId),
                       onTap: null,
                       icon: mapBloc.settings.lotIcon,
-                      position: LatLng(lot.coordinates.latitude,
-                          lot.coordinates.longitude)));
+                      position: LatLng(lot.coordinates.latitude, lot.coordinates.longitude)));
                 }
-                mapBloc.add(UpdateMap(
-                    settings: mapBloc.settings.copyWith(markers: markers)));
+                mapBloc.add(UpdateMap(settings: mapBloc.settings.copyWith(markers: markers)));
               }
             },
           ),
@@ -102,19 +116,15 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
             title: Text("Drive Mode"),
             centerTitle: true,
             actions: [
-              BlocBuilder<MapBloc, MapState>(
-                  builder: (BuildContext context, state) {
+              BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
                 if (state is MapSettingsReady) {
                   return Row(
                     children: [
-                      Icon(state.settings.showPOI
-                          ? CupertinoIcons.map_pin
-                          : CupertinoIcons.map_pin_slash),
+                      Icon(state.settings.showPOI ? CupertinoIcons.map_pin : CupertinoIcons.map_pin_slash),
                       Switch(
                         value: state.settings.showPOI,
                         onChanged: (bool v) {
-                          mapBloc.add(UpdateMap(
-                              settings: state.settings.copyWith(showPOI: v)));
+                          mapBloc.add(UpdateMap(settings: state.settings.copyWith(showPOI: v)));
                         },
                         inactiveTrackColor: csStyle.csWhite,
                         activeTrackColor: csStyle.csGrey,
@@ -144,8 +154,7 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
                       margin: EdgeInsets.all(8),
                       showBorder: true,
                       color: TileColor.White,
-                      child: CSText(
-                          "Searching for lots within ${lotBloc.searchRadius} km"),
+                      child: CSText("Searching for lots within ${lotBloc.searchRadius} km"),
                     )
                   ],
                 ),
@@ -155,8 +164,7 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
           body: Container(
             child: Column(children: [
               Flexible(
-                child: BlocBuilder<MapBloc, MapState>(
-                    builder: (BuildContext context, state) {
+                child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
                   if (state is MapInitial) {
                     print("Firing Initialize MapSettings Event");
                     context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -164,26 +172,22 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
                   if (state is MapSettingsReady) {
                     return CSMap();
                   } else
-                    return Container();
+                    return LoadingFullScreenWidget();
                 }),
               ),
               CSTile(
                 onTap: () {
                   callToAction(context);
                 },
-                color: lotsAvailable > 0
-                    ? TileColor.Secondary
-                    : TileColor.DarkGrey,
+                color: lotsAvailable > 0 ? TileColor.Green : TileColor.Secondary,
                 margin: EdgeInsets.zero,
                 padding: EdgeInsets.symmetric(vertical: 32),
                 child: Shimmer.fromColors(
                   baseColor: Colors.white,
-                  highlightColor:
-                      lotsAvailable > 0 ? Colors.white70 : Colors.white,
+                  highlightColor: lotsAvailable > 0 ? Colors.white70 : Colors.white,
                   child: CSText(
                     lotsAvailable > 0 ? "BOOK NOW" : "NO LOTS AVAILABLE",
-                    textColor:
-                        lotsAvailable > 0 ? TextColor.White : TextColor.Primary,
+                    textColor: lotsAvailable > 0 ? TextColor.White : TextColor.Primary,
                     textType: TextType.Button,
                   ),
                 ),
@@ -195,9 +199,41 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
     );
   }
 
-  callToAction(BuildContext context) {
+  callToAction(BuildContext context) async {
     var userId = locator<AuthService>().currentUser().uid;
-    return PopupNotifications.showNotificationDialog(context, barrierDismissible: true, child: LotFound(lots[0], userId, 0));
+    var body = ({
+      "lat": currentPosition.latitude,
+      "lng": currentPosition.longitude,
+      "radiusInKm": lotBloc.searchRadius,
+      "type": ReservationType.Booking.index,
+      "userId": userId
+    });
+    showDialog(
+        context: context, builder: (context) => Material(color: Colors.transparent, child: LoadingFullScreenWidget()));
+    var result = await locator<ApiService>().getLotFromAlgo(body);
+    Navigator.of(context).pop();
+    if (result.body['returnPayLoad'] == null) {
+      PopUp.showInfo(context: context, title: "Information", body: result.body['message']);
+    } else {
+      Lot lot = Lot.fromJson(result.body["returnPayLoad"][0]);
+      showDialog(
+          barrierDismissible: true,
+          context: context,
+          builder: (_) => Dialog(
+                insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * .1, horizontal: 32),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                child: new SizedBox(
+                  height: 700,
+                  width: 300,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: LotFound(lot, userId, ReservationType.Booking.index),
+                    ),
+                  ),
+                ),
+              ));
+    }
   }
 
   showRadiusOptions(BuildContext context, LotGeoRepoBloc bloc) {

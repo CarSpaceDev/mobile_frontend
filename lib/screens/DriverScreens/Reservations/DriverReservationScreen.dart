@@ -84,7 +84,7 @@ class ReservationTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       shadow: true,
-      borderRadius: 16,
+      borderRadius: 8,
       child: InkWell(
         onTap: () {
           _showActionsDialog(context, reservation: reservation);

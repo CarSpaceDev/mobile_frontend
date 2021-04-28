@@ -18,12 +18,6 @@ class UpdateUserRepo extends UserRepoEvent {
   List<Object> get props => [user];
 }
 
-class UserRepoErrorTrigger extends UserRepoEvent {
-  UserRepoErrorTrigger();
-  @override
-  List<Object> get props => [];
-}
-
 class DisposeUserRepo extends UserRepoEvent {
   @override
   List<Object> get props => [];

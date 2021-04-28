@@ -26,8 +26,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   Stream<GeolocationState> mapEventToState(
     GeolocationEvent event,
   ) async* {
-    print("Geolocator event");
-    print(event);
     if (event is InitializeGeolocator) {
       print("INITIALIZING GEOLOCATION");
       bool isEnabled = await Geolocator.isLocationServiceEnabled();

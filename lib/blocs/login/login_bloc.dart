@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
-import 'package:carspace/model/User.dart';
+import 'package:carspace/model/CSUser.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
