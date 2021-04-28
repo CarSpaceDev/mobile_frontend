@@ -1,5 +1,7 @@
 import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/screens/DriverScreens/TransactionModes/DestinationPicker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 import 'Vehicle.dart';
@@ -62,19 +64,60 @@ class Lot extends Equatable {
                 : LotStatus.Inactive,
         lotImage = List<String>.from(json["lotImage"]),
         address = LotAddress.fromJson(json["address"]),
-        pricing = json["pricing"] != null ? double.parse("${json['pricing']}") : null,
-        pricePerDay = json["pricePerDay"] != null ? double.parse("${json['pricePerDay']}") : null,
+        pricing =
+            json["pricing"] != null ? double.parse("${json['pricing']}") : null,
+        pricePerDay = json["pricePerDay"] != null
+            ? double.parse("${json['pricePerDay']}")
+            : null,
         parkingType = ParkingType.values[json["parkingType"]],
         vehicleTypeAccepted = VehicleType.values[json["vehicleTypeAccepted"]],
-        rating = json["rating"] != null ? double.parse("${json['rating']}") : null,
+        rating =
+            json["rating"] != null ? double.parse("${json['rating']}") : null,
         numberOfRatings = json["numberOfRatings"] as int,
         availableFrom = int.parse(json["availableFrom"]),
         availableTo = int.parse(json["availableTo"]),
         availableDays = List<int>.from(json["availableDays"]),
         availableSlots = json["availableSlots"] as int,
         capacity = json["capacity"] as int,
-        coordinates = CSPosition.fromMap({"latitude": json["coordinates"][0], "longitude": json["coordinates"][1]}),
+        coordinates = CSPosition.fromMap({
+          "latitude": json["coordinates"][0],
+          "longitude": json["coordinates"][1]
+        }),
         distance = json["distance"] as double;
+
+  Lot.fromDoc(DocumentSnapshot doc)
+      : lotId = doc.data()["lotId"] as String,
+        partnerId = doc.data()["partnerId"] as String,
+        status = doc.data()["isDisabled"]
+            ? LotStatus.Disabled
+            : doc.data()["isActive"]
+                ? LotStatus.Active
+                : LotStatus.Inactive,
+        lotImage = List<String>.from(doc.data()["lotImage"]),
+        address = LotAddress.fromJson(doc.data()["address"]),
+        pricing = doc.data()["pricing"] != null
+            ? double.parse("${doc.data()['pricing']}")
+            : null,
+        pricePerDay = doc.data()["pricePerDay"] != null
+            ? double.parse("${doc.data()['pricePerDay']}")
+            : null,
+        parkingType = ParkingType.values[doc.data()["parkingType"]],
+        vehicleTypeAccepted =
+            VehicleType.values[doc.data()["vehicleTypeAccepted"]],
+        rating = doc.data()["rating"] != null
+            ? double.parse("${doc.data()['rating']}")
+            : null,
+        numberOfRatings = doc.data()["numberOfRatings"] as int,
+        availableFrom = int.parse(doc.data()["availableFrom"]),
+        availableTo = int.parse(doc.data()["availableTo"]),
+        availableDays = List<int>.from(doc.data()["availableDays"]),
+        availableSlots = doc.data()["availableSlots"] as int,
+        capacity = doc.data()["capacity"] as int,
+        coordinates = CSPosition.fromMap({
+          "latitude": doc.data()["coordinates"][0],
+          "longitude": doc.data()["coordinates"][1]
+        }),
+        distance = doc.data()["distance"] as double;
 
   Map<String, dynamic> toJson() {
     return {
@@ -110,12 +153,17 @@ class LotAddress extends Equatable {
   final String zipCode;
 
   @override
-  List<Object> get props => [houseAndStreet, brgy, municipality, city, province, country, zipCode];
+  List<Object> get props =>
+      [houseAndStreet, brgy, municipality, city, province, country, zipCode];
 
   LotAddress.fromJson(Map<String, dynamic> json)
-      : houseAndStreet = json["houseAndStreet"].isEmpty ? null : json["houseAndStreet"] as String,
+      : houseAndStreet = json["houseAndStreet"].isEmpty
+            ? null
+            : json["houseAndStreet"] as String,
         brgy = json["brgy"].isEmpty ? null : json["brgy"] as String,
-        municipality = json["municipality"].isEmpty ? null : json["municipality"] as String,
+        municipality = json["municipality"].isEmpty
+            ? null
+            : json["municipality"] as String,
         city = json["city"].isEmpty ? null : json["city"] as String,
         province = json["province"].isEmpty ? null : json["province"] as String,
         country = json["country"].isEmpty ? null : json["country"] as String,

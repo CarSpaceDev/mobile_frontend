@@ -169,6 +169,14 @@ class _$ApiService extends ApiService {
   }
 
   @override
+  Future<Response<dynamic>> payCredit(Map<String, dynamic> body) {
+    final $url = '/user/payCredit/';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> rateLot(Map<String, dynamic> body) {
     final $url = '/user/rate-lot/';
     final $body = body;
