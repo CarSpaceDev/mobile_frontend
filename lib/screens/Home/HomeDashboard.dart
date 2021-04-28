@@ -1,6 +1,7 @@
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/screens/Partner/PartnerDashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +18,14 @@ class _HomeDashboardState extends State<HomeDashboard> {
         brightness: Brightness.dark,
         centerTitle: true,
         title: CSText("Dashboard", textType: TextType.H4, textColor: TextColor.White),
-        actions: [IconButton(icon: Icon(CupertinoIcons.profile_circled), onPressed: () {})],
+        actions: [IconButton(icon: Icon(CupertinoIcons.profile_circled), onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PartnerDashboard()),
+          );
+        })],
       ),
+
       body: SafeArea(
         child: Stack(
           children: [
@@ -54,6 +61,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       borderRadius: 8,
                       child: CSText("Current Selected Vehicle"),
                     ),
+
                     ParkNowWidget()
                   ],
                 ),

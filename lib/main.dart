@@ -11,6 +11,7 @@ import 'blocs/login/login_bloc.dart';
 import 'constants/GlobalConstants.dart';
 import 'constants/SizeConfig.dart';
 import 'navigation.dart';
+import 'screens/Home/HomeDashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,17 +43,17 @@ class CarSpaceApp extends StatelessWidget {
               create: (BuildContext context) => LoginBloc(),
             ),
           ],
-          child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: csStyle.theme(),
-              builder: (context, child) => child,
-              navigatorKey: locator<NavigationService>().navigatorKey,
-              onGenerateRoute: generateRoute,
-              initialRoute: InitializationRoute),
-          //     MaterialApp(
-          //   debugShowCheckedModeBanner: false,
-          //   home: HomeScreen(),
-          // ),
+          // child: MaterialApp(
+          //     debugShowCheckedModeBanner: false,
+          //     theme: csStyle.theme(),
+          //     builder: (context, child) => child,
+          //     navigatorKey: locator<NavigationService>().navigatorKey,
+          //     onGenerateRoute: generateRoute,
+          //     initialRoute: InitializationRoute),
+         child:      MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: HomeDashboard(),
+          ),
         );
       });
     });
