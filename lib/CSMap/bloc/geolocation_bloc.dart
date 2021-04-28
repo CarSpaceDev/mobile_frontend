@@ -69,9 +69,10 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
             .listen((Position p) {
           lastKnownPosition = CSPosition.fromMap(p.toJson());
           String payload = json.encode({
-            "reservationId": event.reservation.uid,
             "longitude": p.longitude,
             "latitude": p.latitude,
+            "distance": Geolocator.distanceBetween(
+                p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude)
           });
           //mqtt broadcast
           locator<NavigationService>()
@@ -83,9 +84,10 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           try {
             print("Saving position data to session FirestoreDocument");
             FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.uid).set({
-              "reservationId": event.reservation.uid,
               "longitude": p.longitude,
               "latitude": p.latitude,
+              "distance": Geolocator.distanceBetween(
+                  p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude)
             });
           } catch (e) {
             print("GeolocationBloc Firestore Save Error");

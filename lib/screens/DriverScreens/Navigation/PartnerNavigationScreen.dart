@@ -11,6 +11,7 @@ import 'package:carspace/reusable/UserDisplayNameWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
 class PartnerNavigationScreen extends StatefulWidget {
   final Reservation reservation;
   PartnerNavigationScreen({@required this.reservation});
@@ -34,31 +36,57 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
   Set<Marker> _markers = HashSet<Marker>();
   Marker lotMarker;
   Marker driverMarker;
+  double distance;
   BitmapDescriptor _lotIcon;
   BitmapDescriptor _driverIcon;
   GoogleMapController mapController;
+  StreamSubscription<DocumentSnapshot> geosession;
   @override
   void initState() {
     _setMarkerIcon();
     rootBundle.loadString('assets/mapStyle.txt').then((string) {
       _mapStyle = string;
     });
-    locator<NavigationService>().navigatorKey.currentContext.read<MqttBloc>().add(SubscribeToTopic(topic: widget.reservation.uid));
+    geosession =
+        FirebaseFirestore.instance.collection("geo-session").doc(widget.reservation.uid).snapshots().listen((doc) {
+      if (doc.exists) {
+        print("Update on GEOSESSION from FireStore");
+        setState(() {
+          distance = doc.data()["distance"];
+          driverLoc = LatLng(doc.data()["latitude"], doc.data()["longitude"]);
+          driverMarker = Marker(markerId: MarkerId("Driver"), onTap: null, icon: _driverIcon, position: driverLoc);
+          _markers = Set.from([lotMarker, driverMarker]);
+        });
+        mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
+      }
+      else print("GEOSESSION doc doesn't exist");
+    });
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<MqttBloc>()
+        .add(SubscribeToTopic(topic: widget.reservation.uid));
     super.initState();
   }
 
   @override
   void dispose() {
-    locator<NavigationService>().navigatorKey.currentContext.read<MqttBloc>().add(UnsubscribeTopic(topic: widget.reservation.uid));
+    geosession?.cancel();
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<MqttBloc>()
+        .add(UnsubscribeTopic(topic: widget.reservation.uid));
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<MqttBloc, MqttState>(
-      listener: (BuildContext context,MqttState state){
-        if (state is MqttMessageReceived && state.topic == widget.reservation.uid){
+      listener: (BuildContext context, MqttState state) {
+        if (state is MqttMessageReceived && state.topic == widget.reservation.uid) {
           setState(() {
+            distance = state.message["distance"];
             driverLoc = LatLng(state.message["latitude"], state.message["longitude"]);
             driverMarker = Marker(markerId: MarkerId("Driver"), onTap: null, icon: _driverIcon, position: driverLoc);
             _markers = Set.from([lotMarker, driverMarker]);
@@ -75,6 +103,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
           centerTitle: true,
         ),
         body: Column(mainAxisSize: MainAxisSize.min, children: [
+
           CSTile(
             margin: EdgeInsets.zero,
             color: TileColor.Secondary,
@@ -96,6 +125,9 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
                     ),
                   ],
                 ),
+                if(distance!=null)
+                  CSText("${(distance/1000).toStringAsFixed(2)} km")
+
               ],
             ),
           ),
@@ -144,7 +176,8 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
               child: this.widget.reservation.reservationStatus == ReservationStatus.Active
                   ? Text("Mark as complete",
                       style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))
-                  : Text("Rate Driver", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  : Text("Rate Driver",
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           )
         ]),
@@ -296,10 +329,6 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
     lotMarker = Marker(
         markerId: MarkerId("Lot"), onTap: () {}, icon: _lotIcon, position: widget.reservation.position.toLatLng());
     _markers.add(lotMarker);
-    setState(() {
-
-    });
+    setState(() {});
   }
-
-
 }
