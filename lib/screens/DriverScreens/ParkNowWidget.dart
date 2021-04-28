@@ -1,5 +1,6 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'DestinationPicker.dart';
+import 'TransactionModes/DestinationPicker.dart';
 import 'TransactionModes/DriveModeScreen.dart';
 
 class ParkNowWidget extends StatefulWidget {

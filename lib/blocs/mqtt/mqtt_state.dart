@@ -13,3 +13,11 @@ class MqttReady extends MqttState {
   @override
   List<Object> get props => [];
 }
+
+class MqttMessageReceived extends MqttState {
+  final String topic;
+  final dynamic message;
+  MqttMessageReceived({@required this.message, @required this.topic});
+  @override
+  List<Object> get props => [topic,message];
+}

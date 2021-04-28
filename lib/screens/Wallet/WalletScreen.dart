@@ -1,4 +1,5 @@
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/CSUser.dart';
 import 'package:carspace/model/Wallet.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
@@ -9,6 +10,7 @@ import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +26,13 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   ScrollController controller;
+  CSUser user;
   @override
   void initState() {
     controller = ScrollController();
+    FirebaseFirestore.instance.collection("users").doc(locator<AuthService>().currentUser().uid).get().then((doc){ setState(() {
+      user = CSUser.fromDoc(doc);
+    });});
     super.initState();
   }
 
@@ -115,9 +121,11 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                       ),
                     ),
+                    if((user!=null && user.partnerAccess > 110))
                     Container(
                       width: 16,
                     ),
+                    if((user!=null && user.partnerAccess > 110))
                     Flexible(
                       child: CSTile(
                         onTap: () {

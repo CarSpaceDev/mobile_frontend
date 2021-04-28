@@ -44,7 +44,7 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
       yield ReservationRepoReady(reservations: event.reservations);
     }
     if (event is DisposeReservationRepo) {
-      print("ReservationRepoDispose");
+      print("ReservationRepoCalledDispose");
       await reservations.cancel();
     }
   }

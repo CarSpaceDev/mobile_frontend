@@ -3,15 +3,20 @@ import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Lot.dart';
+import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LocationSearchWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,8 +25,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
-
-enum ParkingType { Booking, Reservation, Both }
 
 class DestinationPicker extends StatefulWidget {
   final ParkingType mode;
@@ -34,6 +37,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
   MapBloc mapBloc;
   GeolocationBloc geoBloc;
   LocationSearchResult destination;
+  Vehicle vehicle;
   @override
   void initState() {
     super.initState();
@@ -60,24 +64,18 @@ class _DestinationPickerState extends State<DestinationPicker> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Brightness.dark,
-          title: Text(widget.mode == ParkingType.Reservation
-              ? "Reserve a Lot"
-              : "Park at Destination"),
+          title: Text(widget.mode == ParkingType.Reservation ? "Reserve a Lot" : "Park at Destination"),
           centerTitle: true,
           actions: [
-            BlocBuilder<MapBloc, MapState>(
-                builder: (BuildContext context, state) {
+            BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
               if (state is MapSettingsReady) {
                 return Row(
                   children: [
-                    Icon(state.settings.showPOI
-                        ? CupertinoIcons.map_pin
-                        : CupertinoIcons.map_pin_slash),
+                    Icon(state.settings.showPOI ? CupertinoIcons.map_pin : CupertinoIcons.map_pin_slash),
                     Switch(
                       value: state.settings.showPOI,
                       onChanged: (bool v) {
-                        mapBloc.add(UpdateMap(
-                            settings: state.settings.copyWith(showPOI: v)));
+                        mapBloc.add(UpdateMap(settings: state.settings.copyWith(showPOI: v)));
                       },
                       inactiveTrackColor: csStyle.csWhite,
                       activeTrackColor: csStyle.csGrey,
@@ -106,39 +104,36 @@ class _DestinationPickerState extends State<DestinationPicker> {
                   textColor: TextColor.Primary,
                   textType: TextType.Button,
                 ),
-                body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  CSText(
+                    destination.locationDetails.toString(),
+                    textColor: TextColor.Primary,
+                    textType: TextType.Body,
+                    padding: EdgeInsets.only(top: 16, bottom: 8),
+                  ),
+                  Row(
                     children: [
+                      Icon(
+                        CupertinoIcons.map_pin_ellipse,
+                        size: 16,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       CSText(
-                        destination.locationDetails.toString(),
+                        "${(Geolocator.distanceBetween(
+                              destination.originalLocation.latitude,
+                              destination.originalLocation.longitude,
+                              destination.location.latitude,
+                              destination.location.longitude,
+                            ) / 1000).toStringAsFixed(2)} km from landmark",
                         textColor: TextColor.Primary,
-                        textType: TextType.Body,
-                        padding: EdgeInsets.only(top: 16, bottom: 8),
+                        padding: EdgeInsets.only(top: 4, left: 8),
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            CupertinoIcons.map_pin_ellipse,
-                            size: 16,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          CSText(
-                            "${(Geolocator.distanceBetween(
-                                  destination.originalLocation.latitude,
-                                  destination.originalLocation.longitude,
-                                  destination.location.latitude,
-                                  destination.location.longitude,
-                                ) / 1000).toStringAsFixed(2)} km from landmark",
-                            textColor: TextColor.Primary,
-                            padding: EdgeInsets.only(top: 4, left: 8),
-                          ),
-                        ],
-                      ),
-                    ]),
+                    ],
+                  ),
+                ]),
               ),
             Flexible(
-              child: BlocBuilder<MapBloc, MapState>(
-                  builder: (BuildContext context, state) {
+              child: BlocBuilder<MapBloc, MapState>(builder: (BuildContext context, state) {
                 if (state is MapInitial) {
                   print("Firing Initialize MapSettings Event");
                   context.bloc<MapBloc>().add(InitializeMapSettings());
@@ -146,26 +141,23 @@ class _DestinationPickerState extends State<DestinationPicker> {
                 if (state is MapSettingsReady) {
                   return CSMap();
                 } else
-                  return Container();
+                  return LoadingFullScreenWidget();
               }),
             ),
             CSTile(
               onTap: () {
                 destination != null ? callToAction() : getLocation();
               },
-              color: destination != null
-                  ? TileColor.Secondary
-                  : TileColor.DarkGrey,
+              color: destination != null ? TileColor.Green : TileColor.Secondary,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.symmetric(vertical: 32),
               child: Shimmer.fromColors(
                 baseColor: Colors.white,
-                highlightColor:
-                    destination != null ? Colors.white70 : Colors.white,
+                highlightColor: destination != null ? Colors.white70 : Colors.white,
                 child: CSText(
                   destination != null ? "RESERVE NOW" : "Select A Destination",
                   textColor: TextColor.White,
-                  textType: TextType.H3Bold,
+                  textType: TextType.Button,
                 ),
               ),
             ),
@@ -180,26 +172,25 @@ class _DestinationPickerState extends State<DestinationPicker> {
     var body = ({
       "lat": destination.location.latitude,
       "lng": destination.location.longitude,
-      "radiusInKm": 0.5,
+      "radiusInKm": 1,
       "type": widget.mode.index,
       "userId": userId
     });
 
+    showDialog(
+        context: context, builder: (context) => Material(color: Colors.transparent, child: LoadingFullScreenWidget()));
     var result = await locator<ApiService>().getLotFromAlgo(body);
-
+    Navigator.of(context).pop();
     if (result.body['returnPayLoad'] == null) {
-      return showMessage(result.body['message']);
+      PopUp.showInfo(context: context, title: "Information", body: result.body['message']);
     } else {
       Lot lot = Lot.fromJson(result.body["returnPayLoad"][0]);
-      return showDialog(
+      showDialog(
           barrierDismissible: true,
           context: context,
           builder: (_) => Dialog(
-                insetPadding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * .1,
-                    horizontal: 32),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
+                insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * .1, horizontal: 32),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                 child: new SizedBox(
                   height: 700,
                   width: 300,
@@ -254,10 +245,8 @@ class _DestinationPickerState extends State<DestinationPicker> {
   getLocation() async {
     destination = await LocationSearchService.findLocation(context);
     if (destination != null) {
-      CSPosition position = CSPosition.fromMap({
-        "longitude": destination.location.longitude,
-        "latitude": destination.location.latitude
-      });
+      CSPosition position =
+          CSPosition.fromMap({"longitude": destination.location.longitude, "latitude": destination.location.latitude});
       mapBloc.add(
         ShowDestinationMarker(
           marker: Marker(
@@ -267,10 +256,8 @@ class _DestinationPickerState extends State<DestinationPicker> {
               onDragEnd: (LatLng newPos) {
                 print("NewPosition: ${newPos.toJson()}");
                 setState(() {
-                  destination.location = CSPosition.fromMap({
-                    "latitude": newPos.latitude,
-                    "longitude": newPos.longitude
-                  });
+                  destination.location =
+                      CSPosition.fromMap({"latitude": newPos.latitude, "longitude": newPos.longitude});
                 });
               }),
         ),

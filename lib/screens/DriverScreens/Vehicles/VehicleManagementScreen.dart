@@ -323,7 +323,6 @@ class OtherVehicleUsers extends StatelessWidget {
   }
 }
 
-
 class VehicleDetail extends StatelessWidget {
   final Vehicle vehicle;
   VehicleDetail({@required this.vehicle});
@@ -503,6 +502,14 @@ class VehicleListTile extends StatelessWidget {
                         textColor: TextColor.Primary,
                         padding: EdgeInsets.only(top: 4),
                       ),
+                      if (vehicle.expireDate.isBefore(DateTime.now().add(Duration(days: 7))) &&
+                          vehicle.ownerId == locator<AuthService>().currentUser().uid)
+                        CSText(
+                          "Expiring by ${formatDate(vehicle.expireDate, [MM, " ", dd, ", ", yyyy])}",
+                          textColor: TextColor.Primary,
+                          textType: TextType.Caption,
+                          padding: EdgeInsets.only(top: 4),
+                        ),
                     ],
                   ),
                 ),

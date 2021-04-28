@@ -1,12 +1,15 @@
 import 'dart:async';
 
-import 'package:carspace/model/User.dart';
+import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
+import 'package:carspace/model/CSUser.dart';
+import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Login/RegistrationScreen.dart';
+import 'package:carspace/screens/PartnerScreens/PartnerDashboard.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -85,13 +88,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoggedOut();
     }
     //V2 Update
-    else if (event is SkipVehicleAddEvent) {
-      User user = _authService.currentUser();
-      cache.put(user.uid, {"skipVehicle": true});
-      setPushTokenCache();
-      startRepos(uid: user.uid);
-      _navService.pushReplaceNavigateTo(DashboardRoute);
-    }
+    // else if (event is SkipVehicleAddEvent) {
+    //   User user = _authService.currentUser();
+    //   cache.put(user.uid, {"skipVehicle": true});
+    //   setPushTokenCache();
+    //   startRepos(user:user);
+    //   _navService.pushReplaceNavigateTo(DashboardRoute);
+    // }
     //V2 Update
     else if (event is LogoutEvent) {
       yield WaitingLogin(message: "Please wait");
@@ -144,6 +147,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedOut();
       }
     } else if (event is LogInEmailEvent) {
+
       yield LoginInProgress();
       User user = await _authService.signInWithEmail(event.email, event.password);
       if (user != null) {
@@ -197,7 +201,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     // }
     else {
       setPushTokenCache();
-      startRepos(uid: user.uid);
+      startRepos(user:user);
+      if(user.partnerAccess > 110)
+        _navService.pushReplaceNavigateToWidget(
+          getPageRoute(
+            PartnerDashboard(),
+            RouteSettings(name: "PARTNER DASHBOARD"),
+          ),
+        );
+      else
       _navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
@@ -247,12 +259,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         });
   }
 
-  startRepos({@required String uid}) {
-    _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: uid));
-    _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: uid));
-    _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: uid));
-    _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(uid: uid));
-    _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: uid));
+  startRepos({@required CSUser user}) {
+    _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
+    _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: user.uid));
+    _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: user.uid));
+    _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(uid: user.uid, isPartner: user.partnerAccess>110));
+    _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: user.uid));
+    _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(InitializeMqtt());
+    if(user.partnerAccess>110)
+    _navService.navigatorKey.currentContext.bloc<LotRepoBloc>().add(InitializeLotRepo());
   }
 
   stopRepos() {
@@ -261,5 +276,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(DisposeNotificationRepo());
     _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(DisposeReservationRepo());
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(DisposeWallet());
+    _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(DisposeMqtt());
+    _navService.navigatorKey.currentContext.bloc<LotRepoBloc>()?.add(DisposeLotRepo());
   }
 }

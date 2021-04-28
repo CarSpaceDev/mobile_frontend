@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-enum NotificationType { Info, VerificationRequest }
+enum NotificationType { Info, VerificationRequest, ExpiringLicense, ExpiringVehicle }
 
 class CSNotification extends Equatable {
   final String uid;
@@ -24,10 +24,10 @@ class CSNotification extends Equatable {
         type = NotificationType.values[json.data()["type"]],
         data = json.data()["data"];
 
+
   toJson() {
     return {
-      "uid": this.uid,
-      "type": this.type,
+      "type": this.type.index,
       "title": this.title,
       "data": this.data,
       "opened": this.opened,

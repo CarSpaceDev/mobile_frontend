@@ -84,7 +84,7 @@ class ReservationTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       shadow: true,
-      borderRadius: 16,
+      borderRadius: 8,
       child: InkWell(
         onTap: () {
           _showActionsDialog(context, reservation: reservation);
@@ -210,8 +210,7 @@ class ReservationTileWidget extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       locator<NavigationService>().goBack();
-                      DriverNavigationService(reservationId: reservation.uid)
-                          .navigateViaMapBox(LatLng(reservation.position.latitude, reservation.position.longitude));
+                      DriverNavigationService(reservation: reservation).navigateViaMapBox();
                     },
                     icon: Icon(
                       Icons.map_outlined,
@@ -406,7 +405,6 @@ class ReservationTileWidget extends StatelessWidget {
               FlatButton(
                   onPressed: () {
                     locator<NavigationService>().goBack();
-                    locator<NavigationService>().pushNavigateTo(Reservations);
                   },
                   child: Text("Close"))
             ],

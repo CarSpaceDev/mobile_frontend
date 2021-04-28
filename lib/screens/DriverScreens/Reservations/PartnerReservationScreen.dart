@@ -7,7 +7,7 @@ import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
-import 'package:carspace/screens/DriverScreens/Navigation/NavigationScreenPartner.dart';
+import 'package:carspace/screens/DriverScreens/Navigation/PartnerNavigationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
@@ -198,7 +198,7 @@ class PartnerReservationTileWidget extends StatelessWidget {
     if (reservation.reservationStatus == ReservationStatus.Active)
       locator<NavigationService>().pushNavigateToWidget(
         getPageRoute(
-          NavigationScreenPartner(reservation: reservation),
+          PartnerNavigationScreen(reservation: reservation),
           RouteSettings(name: "PARTNER-NAVIGATION"),
         ),
       );

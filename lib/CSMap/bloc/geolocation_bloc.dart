@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
+import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,8 +27,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
   Stream<GeolocationState> mapEventToState(
     GeolocationEvent event,
   ) async* {
-    print("Geolocator event");
-    print(event);
     if (event is InitializeGeolocator) {
       print("INITIALIZING GEOLOCATION");
       bool isEnabled = await Geolocator.isLocationServiceEnabled();
@@ -40,10 +42,12 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
         print("Geolocator is ready");
+        ready = true;
         yield GeolocatorReady();
       }
     }
     if (event is StartGeolocation) {
+      print("StartingGeolocationStream");
       if (ready)
         positionStream = Geolocator.getPositionStream(
                 desiredAccuracy: LocationAccuracy.bestForNavigation,
@@ -55,17 +59,40 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         });
     }
     if (event is StartGeolocationBroadcast) {
+      print("StartingGeolocationBroadcast");
       if (ready)
         positionStream = Geolocator.getPositionStream(
-            desiredAccuracy: LocationAccuracy.bestForNavigation,
-            distanceFilter: 1,
-            intervalDuration: Duration(seconds: 5))
-            .listen((Position v) {
-          lastKnownPosition = CSPosition.fromMap(v.toJson());
-          //insert mqtt broadcast
-          //insert session broadcast
-
-
+                desiredAccuracy: LocationAccuracy.bestForNavigation,
+                distanceFilter: 1,
+                intervalDuration: Duration(seconds: 5))
+            .listen((Position p) {
+          lastKnownPosition = CSPosition.fromMap(p.toJson());
+          String payload = json.encode({
+            "longitude": p.longitude,
+            "latitude": p.latitude,
+            "distance": Geolocator.distanceBetween(
+                p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude),
+            "driverUid": locator<AuthService>().currentUser().uid
+          });
+          //mqtt broadcast
+          locator<NavigationService>()
+              .navigatorKey
+              .currentContext
+              .read<MqttBloc>()
+              .add(SendMessageToTopic(topic: event.reservation.uid, message: payload));
+          //insert firestore session broadcast
+          try {
+            print("Saving position data to session FirestoreDocument");
+            FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.uid).set({
+              "longitude": p.longitude,
+              "latitude": p.latitude,
+              "distance": Geolocator.distanceBetween(
+                  p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude)
+            });
+          } catch (e) {
+            print("GeolocationBloc Firestore Save Error");
+            print(e);
+          }
           add(UpdatePosition(position: lastKnownPosition));
         });
     }

@@ -17,6 +17,14 @@ class SubscribeToTopic extends MqttEvent {
   List<Object> get props => [topic];
 }
 
+class MessageReceivedEvent extends MqttEvent {
+  final String topic;
+  final dynamic message;
+  MessageReceivedEvent({@required this.message, @required this.topic});
+  @override
+  List<Object> get props => [message];
+}
+
 class UnsubscribeTopic extends MqttEvent {
   final String topic;
   UnsubscribeTopic({@required this.topic});
@@ -32,7 +40,7 @@ class SendMessageToTopic extends MqttEvent {
   List<Object> get props => [topic, message];
 }
 
-class MqttDispose extends MqttEvent {
+class DisposeMqtt extends MqttEvent {
   @override
   List<Object> get props => [];
 }

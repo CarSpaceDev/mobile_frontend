@@ -2,7 +2,6 @@ import 'package:carspace/constants/SizeConfig.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/screens/DriverScreens/Navigation/DriverNavigationService.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -287,7 +286,7 @@ class _LotFoundState extends State<LotFound> {
                           "lotAddress": widget.lot.address.toString(),
                           "partnerId": widget.lot.partnerId
                         });
-                        DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
+                        // DriverNavigationService(reservationId: v.reservationId).navigateViaMapBox(v.coordinates);
                       },
                       icon: Icon(Icons.map_outlined),
                       label: Text("Navigate To Lot")),

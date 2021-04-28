@@ -17,12 +17,15 @@ class CSUser extends Equatable {
   final int partnerAccess;
   final int userAccess;
   final String subscriptionType;
+  final bool isBlocked;
+  final bool isRejected;
   //List Items
   final List<dynamic> reservations;
   final List<dynamic> vehicles;
   //metaData
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final DateTime licenseExpiry;
 
   @override
   List<Object> get props => [
@@ -41,7 +44,10 @@ class CSUser extends Equatable {
         reservations,
         vehicles,
         dateCreated,
-        dateUpdated
+        dateUpdated,
+        isBlocked,
+        isRejected,
+        licenseExpiry,
       ];
 
   CSUser(
@@ -60,25 +66,10 @@ class CSUser extends Equatable {
       this.dateCreated,
       this.dateUpdated,
       this.currentVehicle,
-      this.currentReservation});
-
-  CSUser.fromJson(Map<String, dynamic> json)
-      : uid = json['uid'] as String,
-        displayName = json['displayName'] as String,
-        emailAddress = json['emailAddress'] as String,
-        currentReservation = json['currentReservation'] ==null ?  null : json['currentReservation'],
-        firstName = json['firstName'] as String,
-        lastName = json['lastName'] as String,
-        phoneNumber = json['phoneNumber'] == null ? null : json['phoneNumber'].toString(),
-        photoUrl = json['photoUrl'] as String,
-        partnerAccess = json['partnerAccess'] as int,
-        userAccess = json['userAccess'] as int,
-        subscriptionType = json['subscriptionType'] as String,
-        reservations = json['reservations'] as List<dynamic>,
-        vehicles = json['vehicles'] as List<dynamic>,
-        currentVehicle = json['currentVehicle'] as String,
-        dateUpdated =  DateTime.fromMillisecondsSinceEpoch(json["dateCreated"]["seconds"]),
-        dateCreated = DateTime.fromMillisecondsSinceEpoch(json["dateUpdated"]["seconds"]);
+      this.currentReservation,
+      this.isBlocked,
+      this.isRejected,
+      this.licenseExpiry});
 
   CSUser.fromDoc(DocumentSnapshot doc)
       : uid = doc.data()['uid'] as String,
@@ -95,8 +86,11 @@ class CSUser extends Equatable {
         reservations = doc.data()['reservations'] as List<dynamic>,
         vehicles = doc.data()['vehicles'] as List<dynamic>,
         currentVehicle = doc.data()['currentVehicle'] as String,
-        dateUpdated =  doc.data()['dateCreated'].toDate(),
-        dateCreated = doc.data()['dateUpdated'].toDate();
+        dateUpdated = doc.data()['dateCreated'].toDate(),
+        dateCreated = doc.data()['dateUpdated'].toDate(),
+        licenseExpiry = doc.data()['licenseExpiry']!=null ? doc.data()['licenseExpiry'].toDate() : null,
+        isBlocked = doc.data()['isBlocked'] as bool,
+        isRejected = doc.data()['isRejected'] as bool;
 
   Map<String, dynamic> toJson() {
     return {
@@ -113,6 +107,9 @@ class CSUser extends Equatable {
       "currentReservation": this.currentReservation,
       "reservations": this.reservations,
       "vehicles": this.vehicles,
+      "isBlocked": this.isBlocked,
+      "isRejected": this.isRejected,
+      "licenseExpiry": this.licenseExpiry?.toString(),
     };
   }
 }
