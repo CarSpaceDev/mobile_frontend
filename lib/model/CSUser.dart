@@ -25,6 +25,7 @@ class CSUser extends Equatable {
   //metaData
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final DateTime licenseExpiry;
 
   @override
   List<Object> get props => [
@@ -45,7 +46,8 @@ class CSUser extends Equatable {
         dateCreated,
         dateUpdated,
         isBlocked,
-        isRejected
+        isRejected,
+        licenseExpiry,
       ];
 
   CSUser(
@@ -66,7 +68,8 @@ class CSUser extends Equatable {
       this.currentVehicle,
       this.currentReservation,
       this.isBlocked,
-      this.isRejected});
+      this.isRejected,
+      this.licenseExpiry});
 
   CSUser.fromDoc(DocumentSnapshot doc)
       : uid = doc.data()['uid'] as String,
@@ -85,6 +88,7 @@ class CSUser extends Equatable {
         currentVehicle = doc.data()['currentVehicle'] as String,
         dateUpdated = doc.data()['dateCreated'].toDate(),
         dateCreated = doc.data()['dateUpdated'].toDate(),
+        licenseExpiry = doc.data()['licenseExpiry']!=null ? doc.data()['licenseExpiry'].toDate() : null,
         isBlocked = doc.data()['isBlocked'] as bool,
         isRejected = doc.data()['isRejected'] as bool;
 
@@ -104,7 +108,8 @@ class CSUser extends Equatable {
       "reservations": this.reservations,
       "vehicles": this.vehicles,
       "isBlocked": this.isBlocked,
-      "isRejected": this.isRejected
+      "isRejected": this.isRejected,
+      "licenseExpiry": this.licenseExpiry?.toString(),
     };
   }
 }

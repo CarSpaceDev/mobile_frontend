@@ -405,7 +405,6 @@ class ReservationTileWidget extends StatelessWidget {
               FlatButton(
                   onPressed: () {
                     locator<NavigationService>().goBack();
-                    locator<NavigationService>().pushNavigateTo(Reservations);
                   },
                   child: Text("Close"))
             ],
