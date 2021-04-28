@@ -18,6 +18,7 @@ import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,8 +70,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     if (userState is UserRepoReady && userState.user.isBlocked) {
                       return Container();
                     }
-                    if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
-                      return Container();
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
+                        return Container();
+                      }
                     }
                     if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return Container();
@@ -93,8 +96,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     if (userState is UserRepoReady && userState.user.isBlocked) {
                       return Container();
                     }
-                    if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
-                      return Container();
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
+                        return Container();
+                      }
                     }
                     if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return Container();
@@ -106,8 +111,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     if (userState is UserRepoReady && userState.user.isBlocked) {
                       return BlockedUserWidget(uid: userState.user.uid);
                     }
-                    if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
-                      return UpdateLicenseWidget();
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
+                        return UpdateLicenseWidget();
+                      }
                     }
                     if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return NoLicenseWidget();
@@ -451,15 +458,15 @@ class CSMenuButton extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        Positioned(
-          right: 6,
-          top: 8,
-          child: Icon(
-            Icons.circle,
-            size: 8,
-            color: csStyle.csRed,
-          ),
-        ),
+        // Positioned(
+        //   right: 6,
+        //   top: 8,
+        //   child: Icon(
+        //     Icons.circle,
+        //     size: 8,
+        //     color: csStyle.csRed,
+        //   ),
+        // ),
       ]),
     );
   }

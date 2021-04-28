@@ -6,6 +6,7 @@ import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,7 +71,8 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
             "longitude": p.longitude,
             "latitude": p.latitude,
             "distance": Geolocator.distanceBetween(
-                p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude)
+                p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude),
+            "driverUid": locator<AuthService>().currentUser().uid
           });
           //mqtt broadcast
           locator<NavigationService>()

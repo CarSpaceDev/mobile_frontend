@@ -26,7 +26,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'LotReservation.dart';
-import 'SuggestedLocationCard.dart';
+import 'LotCard.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -563,7 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
               insetPadding: EdgeInsets.symmetric(horizontal: 8),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: SuggestedLocationCard(
+                child: LotCard(
                   lot: v,
                   callback: () {
                     _showReservationDialog(v.lotId);
@@ -764,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
       result.add(
-        SuggestedLocationCard(
+        LotCard(
           lot: lot,
           callback: () {
             _showReservationDialog(lot.lotId);

@@ -3,6 +3,7 @@ import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/lotGeoRepo/lot_geo_repo_bloc.dart';
@@ -24,7 +25,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
-enum ParkingType { Booking, Reservation, Both }
 
 class DestinationPicker extends StatefulWidget {
   final ParkingType mode;

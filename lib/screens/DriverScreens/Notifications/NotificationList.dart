@@ -1,4 +1,3 @@
-import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
@@ -35,19 +34,18 @@ class _NotificationListState extends State<NotificationList> {
                   if (state.notifications.isEmpty)
                     return Text("No notifications at the moment");
                   else
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for (CSNotification notification in state.notifications)
-                            NotificationWidget(
-                                notification: notification,
-                                onTap: () {
-                                  if(!notification.opened)
-                                  context.bloc<NotificationBloc>().add(NotificationOpened(uid: notification.uid));
-                                })
-                        ],
-                      ),
-                    );
+                    return ListView.builder(
+                        itemCount: state.notifications.length,
+                        itemBuilder: (BuildContext context, index) {
+                          return NotificationWidget(
+                              notification: state.notifications[index],
+                              onTap: () {
+                                if (!state.notifications[index].opened)
+                                  context
+                                      .bloc<NotificationBloc>()
+                                      .add(NotificationOpened(uid: state.notifications[index].uid));
+                              });
+                        });
                 } else
                   return Text("Getting notifications ... ");
               },

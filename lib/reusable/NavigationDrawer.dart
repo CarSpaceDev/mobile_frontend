@@ -5,7 +5,9 @@ import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
+import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
 import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
+import 'package:carspace/screens/PartnerScreens/PartnerDashboard.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -14,8 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-
 class HomeNavigationDrawer extends StatefulWidget {
+  final bool isPartner;
+  HomeNavigationDrawer({this.isPartner = false});
   @override
   _HomeNavigationDrawerState createState() => _HomeNavigationDrawerState();
 }
@@ -92,23 +95,25 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                   },
                   child: Text("Notifications")),
             ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(VehicleManagement);
-                  },
-                  child: Text("Vehicles")),
-            ),
-            ListTile(
-              title: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    locator<NavigationService>().pushNavigateTo(Reservations);
-                  },
-                  child: Text("Reservations")),
-            ),
-            if (state is UserRepoReady && state.user.partnerAccess > 200)
+            if (!widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateTo(VehicleManagement);
+                    },
+                    child: Text("Vehicles")),
+              ),
+            if (!widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateTo(Reservations);
+                    },
+                    child: Text("Reservations")),
+              ),
+            if (state is UserRepoReady && state.user.partnerAccess > 200 && widget.isPartner)
               ListTile(
                 title: InkWell(
                     onTap: () {
@@ -116,6 +121,34 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                       locator<NavigationService>().pushNavigateTo(PartnerReservations);
                     },
                     child: Text("Partner Reservations")),
+              ),
+            if (widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          HomeDashboard(),
+                          RouteSettings(name: "DRIVER DASHBOARD"),
+                        ),
+                      );
+                    },
+                    child: Text("Driver DashBoard")),
+              ),
+            if (state is UserRepoReady && state.user.partnerAccess > 200 && !widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          PartnerDashboard(),
+                          RouteSettings(name: "PARTNER DASHBOARD"),
+                        ),
+                      );
+                    },
+                    child: Text("Partner DashBoard")),
               ),
             ListTile(
               title: InkWell(
@@ -141,8 +174,8 @@ class BackgroundImage extends StatelessWidget {
   BackgroundImage(
       {this.child,
       this.padding = EdgeInsets.zero,
-        this.blur = 0.0,
-        this.opacity = 0.6,
+      this.blur = 0.0,
+      this.opacity = 0.6,
       this.background = const AssetImage("assets/login_screen_assets/bg.png")});
   @override
   Widget build(BuildContext context) {
@@ -157,7 +190,7 @@ class BackgroundImage extends StatelessWidget {
         ),
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10*blur, sigmaY: 10*blur),
+        filter: ImageFilter.blur(sigmaX: 10 * blur, sigmaY: 10 * blur),
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,

@@ -1,5 +1,6 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';

@@ -3,10 +3,10 @@ import 'package:carspace/model/Lot.dart';
 import "package:flutter/material.dart";
 import 'package:photo_view/photo_view.dart';
 
-class SuggestedLocationCard extends StatelessWidget {
+class LotCard extends StatelessWidget {
   final Lot lot;
   final Function callback;
-  SuggestedLocationCard({Key key, this.lot, this.callback}) : super(key: key);
+  LotCard({Key key, this.lot, this.callback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
