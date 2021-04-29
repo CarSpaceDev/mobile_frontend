@@ -76,14 +76,14 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                     ),
                   if (header.isNotEmpty)
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           header = '';
-                          tapped=false;
+                          tapped = false;
                         });
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(right:8.0),
+                        padding: const EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.close),
                       ),
                     )
@@ -249,7 +249,11 @@ class CurrentVehicleCard extends StatelessWidget {
         : InkWell(
             onTap: vehiclesAvailable ? onTap : null,
             child: Padding(
-                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable, darkMode: true,)),
+                padding: EdgeInsets.only(bottom: 8),
+                child: ActionVehicleIcon(
+                  selectVehicle: vehiclesAvailable,
+                  darkMode: true,
+                )),
           );
   }
 }
@@ -369,11 +373,11 @@ class ActionVehicleIcon extends StatelessWidget {
           Icon(
             selectVehicle ? CupertinoIcons.car_detailed : CupertinoIcons.add_circled_solid,
             size: 50,
-            color:  this.darkMode ? Colors.white: csStyle.primary,
+            color: this.darkMode ? Colors.white : csStyle.primary,
           ),
           CSText(
             selectVehicle ? "Select a Vehicle" : "Add a Vehicle",
-            textColor: this.darkMode ? TextColor.White :TextColor.Primary,
+            textColor: this.darkMode ? TextColor.White : TextColor.Primary,
             textType: TextType.Button,
             textAlign: TextAlign.center,
             padding: EdgeInsets.only(top: 8),
