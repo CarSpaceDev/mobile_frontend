@@ -236,8 +236,7 @@ class PartnerReservationTileWidget extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    rating(context, reservation,
-                        locator<AuthService>().currentUser().uid);
+                    rating(context, reservation, reservation.userId);
                   },
                   icon: Icon(
                     Icons.car_repair,
