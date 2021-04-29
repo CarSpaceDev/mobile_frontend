@@ -1,4 +1,7 @@
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/services/DevTools.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -29,14 +32,15 @@ class AuthService {
 
   Future signInWithEmail(String email, String password) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       // final token = await _getJWT(result.user);
       // print(token);
       final User currentUser = result.user;
       return currentUser;
     } catch (e) {
       print(e.message);
+      PopUp.showError(
+          context: locator<NavigationService>().navigatorKey.currentContext, title: "Login Error", body: e.message);
       return null;
     }
   }
@@ -46,23 +50,22 @@ class AuthService {
     try {
       //trigger the login dialog
       final GoogleSignIn _googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
       //sign in to firebase auth
-      final UserCredential result =
-          await _auth.signInWithCredential(credential);
+      final UserCredential result = await _auth.signInWithCredential(credential);
       final token = await _getJWT(result.user);
       // print(token);
       final User currentUser = result.user;
       return currentUser;
     } catch (e) {
       print(e.toString());
+      PopUp.showError(
+          context: locator<NavigationService>().navigatorKey.currentContext, title: "Login Error", body: e.toString());
       return null;
     }
   }

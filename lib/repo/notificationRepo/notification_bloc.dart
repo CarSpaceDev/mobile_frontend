@@ -69,6 +69,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
                             .currentContext
                             .read<NotificationBloc>()
                             .add(NotificationOpened(uid: nRepo.first.uid));
+                      locator<NavigationService>().goBack();
                     }),
               ));
           break;

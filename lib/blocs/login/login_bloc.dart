@@ -135,18 +135,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoggedOut();
       }
     } else if (event is LogInEmailEvent) {
-
       yield LoginInProgress();
-      User user = await _authService.signInWithEmail(event.email, event.password);
-      if (user != null) {
-        DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
-        if (userFromApi.exists) {
-          yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
-        } else {
-          yield ShowEulaScreen();
-        }
-      } else
-        yield LoggedOut();
+      try {
+        User user = await _authService.signInWithEmail(event.email, event.password);
+        if (user != null) {
+          DocumentSnapshot userFromApi = await _firebase.collection("users").doc(user.uid).get();
+          if (userFromApi.exists) {
+            yield checkUserDataForMissingInfo(user: CSUser.fromDoc(userFromApi));
+          } else {
+            yield ShowEulaScreen();
+          }
+        } else
+          yield LoggedOut();
+      }catch (e){
+        print("catch");
+        print(e);
+      }
     } else if (event is SubmitRegistrationEvent) {
       yield WaitingLogin(message: "Creating your account");
       var result = await _apiService.registerUser(event.payload.toJson());
@@ -189,8 +193,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     // }
     else {
       setPushTokenCache();
-      startRepos(user:user);
-      if(user.partnerAccess > 110)
+      startRepos(user: user);
+      if (user.partnerAccess > 110)
         _navService.pushReplaceNavigateToWidget(
           getPageRoute(
             PartnerDashboard(),
@@ -198,7 +202,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           ),
         );
       else
-      _navService.pushReplaceNavigateTo(DashboardRoute);
+        _navService.pushReplaceNavigateTo(DashboardRoute);
     }
     return result;
   }
@@ -251,11 +255,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<UserRepoBloc>().add(InitializeUserRepo(uid: user.uid));
     _navService.navigatorKey.currentContext.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: user.uid));
     _navService.navigatorKey.currentContext.bloc<NotificationBloc>().add(InitializeNotificationRepo(uid: user.uid));
-    _navService.navigatorKey.currentContext.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(uid: user.uid, isPartner: user.partnerAccess>110));
+    _navService.navigatorKey.currentContext
+        .bloc<ReservationRepoBloc>()
+        .add(InitializeReservationRepo(uid: user.uid, isPartner: user.partnerAccess > 110));
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: user.uid));
     _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(InitializeMqtt());
-    if(user.partnerAccess>110)
-    _navService.navigatorKey.currentContext.bloc<LotRepoBloc>().add(InitializeLotRepo(uid: user.uid));
+    if (user.partnerAccess > 110)
+      _navService.navigatorKey.currentContext.bloc<LotRepoBloc>().add(InitializeLotRepo(uid: user.uid));
   }
 
   stopRepos() {
