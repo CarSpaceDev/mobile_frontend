@@ -112,7 +112,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                             vehiclesAvailable: vehiclesAvailable,
                             onTap: () {
                               setState(() {
-                                header = "${selectedVehicle.make} ${selectedVehicle.model}";
+                                header = "${vehicleState.vehicles.first.make} ${vehicleState.vehicles.first.model}";
                                 tapped = true;
                               });
                             });
@@ -122,6 +122,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                             vehiclesAvailable: vehiclesAvailable,
                             onTap: () {
                               setState(() {
+                                if(selectedVehicle!=null)
                                 header = "${selectedVehicle.make} ${selectedVehicle.model}";
                                 tapped = true;
                               });
@@ -133,6 +134,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                           margin: EdgeInsets.zero,
                           onTap: () {
                             setState(() {
+                              if(selectedVehicle!=null)
                               header = "${selectedVehicle.make} ${selectedVehicle.model}";
                               tapped = true;
                             });
