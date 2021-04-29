@@ -295,6 +295,7 @@ class DriverReservationTileWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextButton.icon(
                       onPressed: () {
+                        Navigator.of(context).pop();
                         rating(context, reservation, locator<AuthService>().currentUser().uid);
                       },
                       icon: Icon(

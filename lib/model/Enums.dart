@@ -1,4 +1,4 @@
-enum ReservationStatus { Completed, Active, Reserved }
+enum ReservationStatus { Reserved, Active, Completed }
 
 enum ReservationType { Booking, Reservation }
 

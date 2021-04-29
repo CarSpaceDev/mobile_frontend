@@ -10,6 +10,7 @@ import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
+import 'package:carspace/screens/Notifications/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Reservations/DriverReservationScreen.dart';
 import 'package:carspace/screens/Vehicles/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
@@ -19,7 +20,6 @@ import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,21 +35,13 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
-    locator<NavigationService>()
-        .navigatorKey
-        .currentContext
-        .read<GeolocationBloc>()
-        .add(InitializeGeolocator());
+    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
     super.initState();
   }
 
   @override
   void dispose() {
-    locator<NavigationService>()
-        .navigatorKey
-        .currentContext
-        .read<GeolocationBloc>()
-        .add(CloseGeolocationStream());
+    locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
     super.dispose();
   }
 
@@ -60,12 +52,14 @@ class _HomeDashboardState extends State<HomeDashboard> {
       appBar: AppBar(
         brightness: Brightness.dark,
         centerTitle: true,
-        title: CSText("Dashboard",
-            textType: TextType.H4, textColor: TextColor.White),
-        actions: [
-          WalletInfoWidget(),
-        ],
+        title: CSText(
+          "Driver Dashboard",
+          textType: TextType.H5Bold,
+          textColor: TextColor.White,
+          padding: EdgeInsets.only(top: 4),
+        ),
         leading: CSMenuButton(),
+        actions: [NotificationLinkWidget()],
       ),
       drawer: HomeNavigationDrawer(),
       body: SafeArea(
@@ -76,108 +70,108 @@ class _HomeDashboardState extends State<HomeDashboard> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  BlocBuilder<UserRepoBloc, UserRepoState>(
-                      builder: (BuildContext context, UserRepoState userState) {
-                    if (userState is UserRepoReady &&
-                        userState.user.isBlocked) {
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.isBlocked) {
                       return Container();
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry != null) {
-                      if (userState is UserRepoReady &&
-                          userState.user.licenseExpiry
-                              .isBefore(DateTime.now())) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
                         return Container();
                       }
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry == null) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return Container();
                     }
                     if (userState is UserRepoReady &&
-                        userState.user.userAccess > 110 && userState.user.currentReservation!=null) {
-                      context.bloc<CurrentReservationBloc>().add(
-                          InitCurrentReservationRepo(
-                              uid: userState.user.currentReservation));
-                      return BlocBuilder<CurrentReservationBloc,
-                              CurrentReservationState>(
-                          builder: (BuildContext context,
-                              CurrentReservationState state) {
+                        userState.user.userAccess > 110 &&
+                        userState.user.currentReservation != null) {
+                      context
+                          .bloc<CurrentReservationBloc>()
+                          .add(InitCurrentReservationRepo(uid: userState.user.currentReservation));
+                      return BlocBuilder<CurrentReservationBloc, CurrentReservationState>(
+                          builder: (BuildContext context, CurrentReservationState state) {
                         if (state is UpdatedCurrentReservation) {
-                          return DriverReservationTileWidget(
-                              reservation: state.reservation);
+                          return DriverReservationTileWidget(reservation: state.reservation);
                         }
                         return Container();
                       });
                     } else
                       return Container();
                   }),
-                  BlocBuilder<UserRepoBloc, UserRepoState>(
-                      builder: (BuildContext context, UserRepoState userState) {
-                    if (userState is UserRepoReady &&
-                        userState.user.isBlocked) {
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.isBlocked) {
                       return Container();
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry != null) {
-                      if (userState is UserRepoReady &&
-                          userState.user.licenseExpiry
-                              .isBefore(DateTime.now())) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
                         return Container();
                       }
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry == null) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return Container();
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.currentReservation != null)
-                      return Container();
+                    if (userState is UserRepoReady && userState.user.currentReservation != null) return Container();
                     return VehicleSelectorWidget();
                   }),
-                  BlocBuilder<UserRepoBloc, UserRepoState>(
-                      builder: (BuildContext context, UserRepoState userState) {
-                    if (userState is UserRepoReady &&
-                        userState.user.isBlocked) {
+                  CSTile(
+                    margin: EdgeInsets.only(top: 16, bottom: 8),
+                    color: TileColor.Primary,
+                    onTap: () {
+                      locator<NavigationService>().pushNavigateTo(WalletRoute);
+                    },
+                    borderRadius: 8,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CSText(
+                          "Your Wallet",
+                          textType: TextType.H3Bold,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          textAlign: TextAlign.center,
+                          textColor: TextColor.Green,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: WalletInfoWidget(
+                            textColor: TextColor.White,
+                            textType: TextType.H2,
+                            noRedirect: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.isBlocked) {
                       return BlockedUserWidget(uid: userState.user.uid);
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.creditTransactionId != null) {
+                    if (userState is UserRepoReady && userState.user.creditTransactionId != null) {
                       return UserHasCreditWidget(
-                          uid: userState.user.uid,
-                          transactionId: userState.user.creditTransactionId);
+                          uid: userState.user.uid, transactionId: userState.user.creditTransactionId);
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry != null) {
-                      if (userState is UserRepoReady &&
-                          userState.user.licenseExpiry
-                              .isBefore(DateTime.now())) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
                         return UpdateLicenseWidget();
                       }
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.licenseExpiry == null) {
+                    if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return NoLicenseWidget();
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.userAccess < 200) {
+                    if (userState is UserRepoReady && userState.user.userAccess < 200) {
                       return WaitForVerification();
                     }
                     if (userState is UserRepoReady &&
                         userState.user.currentVehicle != null &&
                         userState.user.currentReservation == null)
                       return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                          builder: (BuildContext context,
-                              VehicleRepoState vehicleState) {
+                          builder: (BuildContext context, VehicleRepoState vehicleState) {
                         if (vehicleState is VehicleRepoReady) {
                           return BlocBuilder<GeolocationBloc, GeolocationState>(
-                              builder: (BuildContext context,
-                                  GeolocationState state) {
+                              builder: (BuildContext context, GeolocationState state) {
                             Vehicle vehicle;
                             try {
-                              vehicle = vehicleState.vehicles.firstWhere((v) =>
-                                  v.plateNumber ==
-                                  userState.user.currentVehicle);
+                              vehicle = vehicleState.vehicles
+                                  .firstWhere((v) => v.plateNumber == userState.user.currentVehicle);
                             } catch (e) {}
                             if (state is GeolocatorReady &&
                                 vehicle != null &&
@@ -223,15 +217,9 @@ class _BlockedUserWidgetState extends State<BlockedUserWidget> {
   DateTime releaseDate;
   @override
   void initState() {
-    FirebaseFirestore.instance
-        .collection("blockedDrivers")
-        .doc(widget.uid)
-        .get()
-        .then((doc) {
+    FirebaseFirestore.instance.collection("blockedDrivers").doc(widget.uid).get().then((doc) {
       if (doc.exists) {
-        DateTime temp = doc.data()["dateCreated"] != null
-            ? doc.data()["dateCreated"].toDate()
-            : null;
+        DateTime temp = doc.data()["dateCreated"] != null ? doc.data()["dateCreated"].toDate() : null;
         if (temp != null) {
           temp.add(Duration(days: 3));
           setState(() {
@@ -293,24 +281,16 @@ class _UserHasCreditWidgetState extends State<UserHasCreditWidget> {
   double userBalance;
   @override
   void initState() {
-    FirebaseFirestore.instance
-        .collection("transactions")
-        .doc(widget.transactionId)
-        .get()
-        .then((doc) {
+    FirebaseFirestore.instance.collection("transactions").doc(widget.transactionId).get().then((doc) {
       if (doc.exists) {
-        double temp = doc.data()["balance"] != null
-            ? doc.data()["balance"].toDouble()
-            : null;
+        double temp = doc.data()["balance"] != null ? doc.data()["balance"].toDouble() : null;
         if (temp != null) {
           setState(() {
             creditBalance = temp;
           });
         }
       }
-      locator<ApiService>()
-          .getWalletStatus(uid: locator<AuthService>().currentUser().uid)
-          .then((value) {
+      locator<ApiService>().getWalletStatus(uid: locator<AuthService>().currentUser().uid).then((value) {
         if (value.statusCode == 200)
           setState(() {
             userBalance = double.parse("${value.body["balance"]}");
@@ -522,8 +502,7 @@ class _UploadLicensePopupState extends State<UploadLicensePopup> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate:
-                          new DateTime.now().add(Duration(days: 365 * 10)))
+                      lastDate: new DateTime.now().add(Duration(days: 365 * 10)))
                   .then((value) {
                 setState(() {
                   licenseExpiry = value;
@@ -532,8 +511,7 @@ class _UploadLicensePopupState extends State<UploadLicensePopup> {
             },
             borderRadius: 8,
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            color:
-                licenseExpiry != null ? TileColor.Primary : TileColor.DarkGrey,
+            color: licenseExpiry != null ? TileColor.Primary : TileColor.DarkGrey,
             child: CSText(
               licenseExpiry != null
                   ? "${formatDate(licenseExpiry, [
@@ -545,8 +523,7 @@ class _UploadLicensePopupState extends State<UploadLicensePopup> {
                     ])}"
                   : "Set license expiry date",
               textType: TextType.Button,
-              textColor:
-                  licenseExpiry != null ? TextColor.White : TextColor.Grey,
+              textColor: licenseExpiry != null ? TextColor.White : TextColor.Grey,
             ),
           ),
           if (licenseExpiry != null && licenseImage != null)
@@ -556,17 +533,9 @@ class _UploadLicensePopupState extends State<UploadLicensePopup> {
                   locator<NavigationService>().goBack();
                   showDialog(
                       context: context,
-                      builder: (context) => Material(
-                          color: Colors.transparent,
-                          child: LoadingFullScreenWidget()));
-                  FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(locator<AuthService>().currentUser().uid)
-                      .update({
-                    "licenseExpiry": licenseExpiry,
-                    "licenseImage": licenseImage,
-                    "userAccess": 200
-                  }).then((e) {
+                      builder: (context) => Material(color: Colors.transparent, child: LoadingFullScreenWidget()));
+                  FirebaseFirestore.instance.collection("users").doc(locator<AuthService>().currentUser().uid).update(
+                      {"licenseExpiry": licenseExpiry, "licenseImage": licenseImage, "userAccess": 200}).then((e) {
                     locator<NavigationService>().goBack();
                   });
                 } catch (e) {

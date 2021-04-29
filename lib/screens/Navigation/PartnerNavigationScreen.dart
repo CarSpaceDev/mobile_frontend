@@ -251,7 +251,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
     });
     await locator<ApiService>().markAsComplete(body).then((data) {
       locator<NavigationService>().goBack();
-      showMessage(data.body);
+      // showMessage(data.body);
     });
   }
 
@@ -267,7 +267,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
     });
     await locator<ApiService>().markAsCompleteV2(body).then((data) {
       locator<NavigationService>().goBack();
-      showMessage(data.body);
+      // showMessage(data.body);
     });
   }
 

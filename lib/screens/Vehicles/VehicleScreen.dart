@@ -447,7 +447,7 @@ class VehicleListTile extends StatelessWidget {
       onTap: onTap,
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       padding: EdgeInsets.all(8),
-      borderRadius: 16,
+      borderRadius: 8,
       color: vehicle.status == VehicleStatus.Blocked
           ? TileColor.Red
           : vehicle.status == VehicleStatus.Available

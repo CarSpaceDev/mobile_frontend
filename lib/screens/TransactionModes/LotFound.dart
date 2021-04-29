@@ -243,6 +243,7 @@ class _LotFoundState extends State<LotFound> {
   successfulBooking(Reservation v) {
     PopupNotifications.showNotificationDialog(
       context,
+      barrierDismissible: true,
       child: CSTile(
         child: Column(
           mainAxisSize: MainAxisSize.min,

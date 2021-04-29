@@ -1,6 +1,11 @@
 import 'dart:async';
 
+import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'NotificationList.dart';
 
 class NotificationLinkWidget extends StatefulWidget {
   @override
@@ -9,91 +14,46 @@ class NotificationLinkWidget extends StatefulWidget {
 
 class _NotificationLinkWidgetState extends State<NotificationLinkWidget> {
   bool newNotification = false;
-  StreamSubscription notificationSubscription;
 
   @override
   void initState() {
-    // locator<ApiService>().getNotifications(uid: locator<AuthService>().currentUser().uid).then((v) {
-    //   if (v.statusCode == 200) {
-    //     List<Map<String, dynamic>>.from(v.body).forEach((v) {
-    //       NotificationFromApi temp = NotificationFromApi.fromDoc(v);
-    //       if (temp.opened == false) {
-    //         setState(() {
-    //           newNotification = true;
-    //         });
-    //       }
-    //     });
-    //   } else {
-    //     print(v.error);
-    //   }
-    // }).catchError((err) {
-    //   print(err);
-    // });
-    // notificationSubscription = locator<PushMessagingService>().notificationStream.listen((event) {
-    //   setState(() {
-    //     newNotification = true;
-    //   });
-    //   // _showToast();
-    // });
     super.initState();
   }
 
   @override
   void dispose() {
-    notificationSubscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return newNotification
-        ? IconButton(
-            color: Colors.redAccent, onPressed: showNotificationDialog, icon: Icon(Icons.notification_important))
-        : IconButton(color: Colors.white, onPressed: showNotificationDialog, icon: Icon(Icons.notifications));
-  }
-
-  showNotificationDialog() {
-    // setState(() {
-    //   newNotification = false;
-    // });
-    // return showDialog(
-    //   barrierDismissible: false,
-    //   context: context,
-    //   builder: (_) => Dialog(
-    //     insetPadding: EdgeInsets.all(16),
-    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-    //     child: NotificationList(),
-    //   ),
-    // ).then((value) => locator<ApiService>().getNotifications(uid: locator<AuthService>().currentUser().uid).then((v) {
-    //       if (v.statusCode == 200) {
-    //         List<Map<String, dynamic>>.from(v.body).forEach((v) {
-    //           NotificationFromApi temp = NotificationFromApi.fromDoc(v);
-    //           if (temp.opened == false) {
-    //             setState(() {
-    //               newNotification = true;
-    //             });
-    //           }
-    //         });
-    //       } else {
-    //         print(v.error);
-    //       }
-    //     }).catchError((err) {
-    //       print(err);
-    //     }));
-  }
-
-  _showToast() {
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('New Notification'),
-        action: SnackBarAction(
-            label: 'OK',
-            textColor: Colors.white,
+    return BlocBuilder<NotificationBloc, NotificationState>(
+      builder: (BuildContext context, state) {
+        if (state is NotificationsReady) {
+          for (var i = 0; i < state.notifications.length; i++) {
+            if (state.notifications[i].opened != true)
+              return IconButton(
+                  color: Colors.redAccent,
+                  onPressed: () {
+                    PopupNotifications.showNotificationDialog(context,
+                        child: NotificationList(), barrierDismissible: true);
+                  },
+                  icon: Icon(Icons.notification_important));
+          }
+          return IconButton(
+              color: Colors.white,
+              onPressed: () {
+                PopupNotifications.showNotificationDialog(context, child: NotificationList(), barrierDismissible: true);
+              },
+              icon: Icon(Icons.notifications));
+        }
+        return IconButton(
+            color: Colors.white,
             onPressed: () {
-              Scaffold.of(context).hideCurrentSnackBar();
-              showNotificationDialog();
-            }),
-      ),
+              PopupNotifications.showNotificationDialog(context, child: NotificationList(), barrierDismissible: true);
+            },
+            icon: Icon(Icons.notifications));
+      },
     );
   }
 }

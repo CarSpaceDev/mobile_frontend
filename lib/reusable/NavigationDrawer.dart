@@ -6,7 +6,7 @@ import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/Dashboard/HomeDashboard.dart';
+import 'package:carspace/screens/Dashboard/DriverDashboard.dart';
 import 'package:carspace/screens/Dashboard/PartnerDashboard.dart';
 import 'package:carspace/screens/Lots/LotsScreen.dart';
 import 'package:carspace/screens/Notifications/NotificationList.dart';
@@ -108,7 +108,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
               title: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    PopupNotifications.showNotificationDialog(context, child: NotificationList());
+                    PopupNotifications.showNotificationDialog(context, child: NotificationList(), barrierDismissible: true);
                   },
                   child: Text("Notifications")),
             ),

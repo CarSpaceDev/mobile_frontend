@@ -80,6 +80,7 @@ class PartnerReservationTileWidget extends StatelessWidget {
   PartnerReservationTileWidget({@required this.reservation});
   @override
   Widget build(BuildContext context) {
+    print(reservation.reservationStatus);
     return CSTile(
       onTap: () {
         _showActionsDialog(context, reservation: reservation);
@@ -212,6 +213,7 @@ class PartnerReservationTileWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextButton.icon(
                   onPressed: () {
+                    Navigator.of(context).pop();
                     rating(context, reservation, locator<AuthService>().currentUser().uid);
                   },
                   icon: Icon(
@@ -309,33 +311,5 @@ class PartnerReservationTileWidget extends StatelessWidget {
     //     });
   }
 
-  void showError({@required String error}) {
-    showDialog(
-        context: locator<NavigationService>().navigatorKey.currentContext,
-        builder: (_) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.announcement,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
-                    ),
-                    Text(
-                      error,
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
+
 }
