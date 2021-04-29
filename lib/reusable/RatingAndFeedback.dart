@@ -56,7 +56,8 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
             padding: EdgeInsets.zero,
             child: TextField(
               controller: searchController,
-              decoration: InputDecoration(border: OutlineInputBorder(), hintText: 'Enter Feedback'),
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Enter Feedback'),
             ),
           ),
           CSTile(
@@ -64,7 +65,8 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
             borderRadius: 8,
             color: TileColor.Green,
             onTap: callToAction,
-            child: CSText("SUBMIT", textType: TextType.Button, textColor: TextColor.White),
+            child: CSText("SUBMIT",
+                textType: TextType.Button, textColor: TextColor.White),
           ),
         ],
       ),
@@ -82,6 +84,7 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
         "feedback": searchController.text
       };
       print(ratingBody);
+      print(widget.user);
       await locator<ApiService>().rateLot(ratingBody).then((data) {
         showMessage(data.body);
       });
@@ -93,7 +96,7 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
         "rating": rating,
         "feedback": searchController.text
       };
-      print(ratingBody);
+      print(widget.user);
       await locator<ApiService>().rateDriver(ratingBody).then((data) {
         showMessage(data.body);
       });
@@ -101,6 +104,9 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
   }
 
   showMessage(String v) {
-    PopUp.showInfo(context: locator<NavigationService>().navigatorKey.currentContext, title: "Thank you!", body: v);
+    PopUp.showInfo(
+        context: locator<NavigationService>().navigatorKey.currentContext,
+        title: "Thank you!",
+        body: v);
   }
 }
