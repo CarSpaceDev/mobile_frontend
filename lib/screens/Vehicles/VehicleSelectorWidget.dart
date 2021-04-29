@@ -249,7 +249,7 @@ class CurrentVehicleCard extends StatelessWidget {
         : InkWell(
             onTap: vehiclesAvailable ? onTap : null,
             child: Padding(
-                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable)),
+                padding: EdgeInsets.only(bottom: 8), child: ActionVehicleIcon(selectVehicle: vehiclesAvailable, darkMode: true,)),
           );
   }
 }
@@ -315,7 +315,8 @@ class VehicleCard extends StatelessWidget {
 
 class ActionVehicleIcon extends StatelessWidget {
   final bool selectVehicle;
-  ActionVehicleIcon({this.selectVehicle = false});
+  final bool darkMode;
+  ActionVehicleIcon({this.selectVehicle = false, this.darkMode = false});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -368,11 +369,11 @@ class ActionVehicleIcon extends StatelessWidget {
           Icon(
             selectVehicle ? CupertinoIcons.car_detailed : CupertinoIcons.add_circled_solid,
             size: 50,
-            color: csStyle.primary,
+            color:  this.darkMode ? Colors.white: csStyle.primary,
           ),
           CSText(
             selectVehicle ? "Select a Vehicle" : "Add a Vehicle",
-            textColor: TextColor.Primary,
+            textColor: this.darkMode ? TextColor.White :TextColor.Primary,
             textType: TextType.Button,
             textAlign: TextAlign.center,
             padding: EdgeInsets.only(top: 8),
