@@ -8,6 +8,7 @@ import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/Dashboard/DriverDashboard.dart';
 import 'package:carspace/screens/Lots/LotTileWidget.dart';
+import 'package:carspace/screens/Notifications/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Notifications/NotificationWidget.dart';
 import 'package:carspace/screens/Reservations/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
@@ -64,6 +65,7 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
           padding: EdgeInsets.only(top: 4),
         ),
         leading: CSMenuButton(),
+        actions: [NotificationLinkWidget()],
       ),
       drawer: HomeNavigationDrawer(
         isPartner: true,
