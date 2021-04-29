@@ -130,7 +130,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                     },
                     child: Text("Reservations")),
               ),
-            if (state is UserRepoReady && state.user.partnerAccess > 200 && widget.isPartner)
+            if (state is UserRepoReady && widget.isPartner)
               ListTile(
                 title: InkWell(
                     onTap: () {
@@ -169,7 +169,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                     },
                     child: Text("Switch to Driver")),
               ),
-            if (state is UserRepoReady && state.user.partnerAccess > 200 && !widget.isPartner)
+            if (state is UserRepoReady  && !widget.isPartner && state.user.partnerAccess>110)
               ListTile(
                 title: InkWell(
                     onTap: () {

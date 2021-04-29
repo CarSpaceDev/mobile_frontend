@@ -1,8 +1,14 @@
+import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/Reservations/PartnerReservationScreen.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -11,6 +17,7 @@ import 'package:provider/provider.dart';
 class LotTileWidget extends StatelessWidget {
   final Lot lot;
   final Function callback;
+  final List<String> days = ["M", "T", "W", "T", "F", "S", "S"];
   LotTileWidget({Key key, this.lot, this.callback}) : super(key: key);
 
   @override
@@ -33,25 +40,42 @@ class LotTileWidget extends StatelessWidget {
             margin: EdgeInsets.zero,
             padding: EdgeInsets.only(right: 16),
             child: LotImageWidget(
-              url: lot.lotImage[0],
+              url: lot.lotImage,
             ),
           ),
           if (lot.rating != null)
             CSTile(
               color: TileColor.None,
               margin: EdgeInsets.zero,
-              padding: EdgeInsets.only(top: 4),
-              child: SmoothStarRating(
-                rating: lot.rating,
-                isReadOnly: true,
-                size: 32,
-                filledIconData: Icons.star,
-                halfFilledIconData: Icons.star_half,
-                defaultIconData: Icons.star_border,
-                starCount: 5,
-                allowHalfRating: true,
-                spacing: 2.0,
-                onRated: null,
+              padding: EdgeInsets.only(top: 4, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (lot.parkingType == ParkingType.Both)
+                    CSText(
+                      "Php ${lot.pricing.toStringAsFixed(2)}/hr ${lot.pricePerDay.toStringAsFixed(2)}/day",
+                    ),
+                  if (lot.parkingType == ParkingType.Booking)
+                    CSText(
+                      "Php ${lot.pricing.toStringAsFixed(2)}/hr",
+                    ),
+                  if (lot.parkingType == ParkingType.Reservation)
+                    CSText(
+                      "Php ${lot.pricePerDay.toStringAsFixed(2)}/day",
+                    ),
+                  SmoothStarRating(
+                    rating: lot.rating,
+                    isReadOnly: true,
+                    size: 16,
+                    filledIconData: Icons.star,
+                    halfFilledIconData: Icons.star_half,
+                    defaultIconData: Icons.star_border,
+                    starCount: 5,
+                    allowHalfRating: true,
+                    spacing: 2.0,
+                    onRated: null,
+                  ),
+                ],
               ),
             ),
           CSTile(
@@ -62,10 +86,39 @@ class LotTileWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 CSText(
-                  "Available hours ${lot.availableFrom} - ${lot.availableTo}",
+                  "${formatDate(DateTime(2020, 1, 1, lot.availableFrom ~/ 100, lot.availableFrom % 100), [
+                    H,
+                    ":",
+                    nn,
+                    " ",
+                    am
+                  ])} to ${formatDate(DateTime(2020, 1, 1, lot.availableTo ~/ 100, lot.availableTo % 100), [
+                    H,
+                    ":",
+                    nn,
+                    " ",
+                    am
+                  ])}",
+                  padding: EdgeInsets.only(top: 2),
                 ),
-                CSText(
-                  "${lot.pricing.toStringAsFixed(2)}/hour",
+                Row(
+                  children: [
+                    for (var i = 0; i < 7; i++)
+                      Container(
+                        margin: EdgeInsets.only(left: 2),
+                        width: 16,
+                        height: 16,
+                        color: lot.availableDays.contains(i) ? Theme.of(context).primaryColor : Colors.grey,
+                        child: Center(
+                          child: CSText(
+                            "${days[i]}",
+                            padding: EdgeInsets.only(left: 1, top: 1),
+                            textColor: TextColor.White,
+                            textType: TextType.Caption,
+                          ),
+                        ),
+                      )
+                  ],
                 )
               ],
             ),
@@ -73,12 +126,12 @@ class LotTileWidget extends StatelessWidget {
           CSTile(
             color: TileColor.None,
             margin: EdgeInsets.zero,
-            padding: EdgeInsets.only(top: 8, right: 16),
+            padding: EdgeInsets.only(top: 16, right: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 CSText(
-                  "Slots occupied ${lot.capacity-lot.availableSlots}/${lot.capacity}",
+                  "Slots occupied ${lot.capacity - lot.availableSlots}/${lot.capacity}",
                 ),
                 Row(
                   children: [
@@ -86,7 +139,7 @@ class LotTileWidget extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Icon(CupertinoIcons.car_detailed,
-                            color: i < lot.availableSlots ? Theme.of(context).primaryColor : Colors.grey),
+                            color: i < lot.availableSlots ? Colors.grey : Theme.of(context).primaryColor),
                       ),
                   ],
                 )
@@ -120,7 +173,66 @@ class LotTileWidget extends StatelessWidget {
                       })
                 ],
               ),
-            )
+            ),
+          if (lot.status != LotStatus.Active && lot.status != LotStatus.Inactive)
+            CSTile(
+              color: TileColor.None,
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.only(right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  CSText(
+                    "Status",
+                  ),
+                  IconButton(icon: Icon(Icons.info, color: Colors.transparent), onPressed: null),
+                  InkWell(
+                    onTap: () {
+                      if (lot.status == LotStatus.Unverified)
+                        PopUp.showInfo(
+                            context: context,
+                            title: "${lot.status}".replaceAll("LotStatus.", ''),
+                            body:
+                                "It can take up to 45 minutes for a lot to be verified. Please bear with us while we check the documents submitted");
+                      if (lot.status == LotStatus.Blocked)
+                        PopUp.showInfo(
+                            context: context,
+                            title: "${lot.status}".replaceAll("LotStatus.", ''),
+                            body:
+                                "Your lot has dropped below the threshold for ratings. Please contact support at support@carspace.com in order to have it unblocked.");
+                    },
+                    child: Row(
+                      children: [
+                        CSText(
+                          "${lot.status}".replaceAll("LotStatus.", ''),
+                          padding: EdgeInsets.only(top: 2, right: 4),
+                        ),
+                        Icon(
+                          CupertinoIcons.info,
+                          size: 16,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (lot.availableSlots < lot.capacity)
+            InkWell(
+                onTap: () {
+                  locator<NavigationService>().pushNavigateToWidget(
+                    getPageRoute(
+                      PartnerReservationScreen(),
+                      RouteSettings(name: "PARTNER-RESERVATIONS"),
+                    ),
+                  );
+                },
+                child: CSText(
+                  "RESERVATIONS",
+                  textType: TextType.Button,
+                  textColor: TextColor.Green,
+                  padding: EdgeInsets.only(right: 16),
+                ))
         ],
       ),
     );

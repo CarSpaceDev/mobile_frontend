@@ -38,7 +38,7 @@ class _CSMapState extends State<CSMap> {
         }),
         BlocListener<MapBloc, MapState>(listener: (BuildContext context, state) {
           if (state is MapSettingsReady) {
-            mapController.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+            mapController?.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
             setState(() {
             });
           }
@@ -57,14 +57,14 @@ class _CSMapState extends State<CSMap> {
               onCameraMove: (CameraPosition camera) {
                 zoom = camera.zoom;
               },
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
+              myLocationEnabled: state.settings.showSelfLocation,
+              myLocationButtonEnabled: state.settings.showSelfLocation,
               scrollGesturesEnabled: state.settings.scrollEnabled,
               mapToolbarEnabled: false,
               zoomControlsEnabled: true,
               onMapCreated: (GoogleMapController controller) async {
                 mapController = controller;
-                mapController.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+                mapController?.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
               },
               initialCameraPosition: CameraPosition(
                 target: LatLng(context.bloc<GeolocationBloc>().lastKnownPosition.latitude, context.bloc<GeolocationBloc>().lastKnownPosition.longitude),

@@ -1,3 +1,6 @@
+import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +13,16 @@ class PopupNotifications {
         insetPadding: EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         child: child,
+      ),
+    );
+  }
+  static showFullScreenLoading({bool barrierDismissible=false}) {
+    return showDialog(
+      barrierDismissible: barrierDismissible,
+      context: locator<NavigationService>().navigatorKey.currentContext,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: LoadingFullScreenWidget(),
       ),
     );
   }

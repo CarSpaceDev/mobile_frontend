@@ -5,6 +5,7 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
 import 'package:carspace/screens/Navigation/DriverNavigationService.dart';
@@ -63,7 +64,7 @@ class _DriverReservationScreenState extends State<DriverReservationScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               itemCount: state.reservations.length,
               itemBuilder: (BuildContext context, index) {
-                return ReservationTileWidget(reservation: state.reservations[index]);
+                return DriverReservationTileWidget(reservation: state.reservations[index]);
               },
             );
           }
@@ -74,9 +75,9 @@ class _DriverReservationScreenState extends State<DriverReservationScreen> {
   }
 }
 
-class ReservationTileWidget extends StatelessWidget {
+class DriverReservationTileWidget extends StatelessWidget {
   final Reservation reservation;
-  ReservationTileWidget({@required this.reservation});
+  DriverReservationTileWidget({@required this.reservation});
   @override
   Widget build(BuildContext context) {
     return CSTile(
@@ -206,6 +207,13 @@ class ReservationTileWidget extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () {
                       locator<NavigationService>().goBack();
+                      locator<ApiService>().notifyOnTheWay({
+                        "userId": locator<AuthService>().currentUser().uid,
+                        "driverName": locator<AuthService>().currentUser().displayName,
+                        "vehicleId": reservation.vehicleId,
+                        "lotAddress": reservation.lotAddress,
+                        "partnerId": reservation.partnerId
+                      });
                       DriverNavigationService(reservation: reservation).navigateViaMapBox();
                     },
                     icon: Icon(
@@ -215,37 +223,39 @@ class ReservationTileWidget extends StatelessWidget {
                     label: Text('Navigate to Lot', style: TextStyle(color: Colors.blueAccent)),
                   ),
                 ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                //   child: TextButton.icon(
+                //     onPressed: () {
+                //       locator<ApiService>().notifyOnTheWay({
+                //         "userId": locator<AuthService>().currentUser().uid,
+                //         "driverName": locator<AuthService>().currentUser().displayName,
+                //         "vehicleId": reservation.vehicleId,
+                //         "lotAddress": reservation.lotAddress,
+                //         "partnerId": reservation.partnerId
+                //       });
+                //     },
+                //     icon: Icon(
+                //       Icons.chat,
+                //       color: Colors.blueAccent,
+                //     ),
+                //     label: Text(
+                //       'Notify on the way',
+                //       style: TextStyle(color: Colors.blueAccent),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextButton.icon(
                     onPressed: () {
-                      onTheWay(
-                          locator<AuthService>().currentUser().uid,
-                          locator<AuthService>().currentUser().displayName,
-                          reservation.vehicleId,
-                          reservation.lotAddress,
-                          reservation.partnerId);
-                    },
-                    icon: Icon(
-                      Icons.chat,
-                      color: Colors.blueAccent,
-                    ),
-                    label: Text(
-                      'Notify on the way',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      arrived(
-                          locator<AuthService>().currentUser().uid,
-                          locator<AuthService>().currentUser().displayName,
-                          reservation.vehicleId,
-                          reservation.lotAddress,
-                          reservation.partnerId);
+                      locator<ApiService>().notifyArrived({
+                        "userId": locator<AuthService>().currentUser().uid,
+                        "driverName": locator<AuthService>().currentUser().displayName,
+                        "vehicleId": reservation.vehicleId,
+                        "lotAddress": reservation.lotAddress,
+                        "partnerId": reservation.partnerId
+                      });
                     },
                     icon: Icon(
                       Icons.car_repair,
@@ -268,9 +278,9 @@ class ReservationTileWidget extends StatelessWidget {
                         markAsCompleteV2(locator<AuthService>().currentUser().uid, reservation.lotId,
                             reservation.vehicleId, reservation.uid, reservation.lotAddress, reservation.partnerId);
                     },
-                    icon: Icon(Icons.check, color: Colors.redAccent),
+                    icon: Icon(CupertinoIcons.xmark, color: Colors.redAccent),
                     label: Text(
-                      'Mark as Complete',
+                      'End Booking',
                       style: TextStyle(color: Colors.redAccent),
                     ),
                   ),
@@ -311,6 +321,7 @@ class ReservationTileWidget extends StatelessWidget {
 
   markAsComplete(
       String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+    locator<NavigationService>().goBack();
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -319,13 +330,14 @@ class ReservationTileWidget extends StatelessWidget {
       "lotAddress": lotAddress,
       "partnerId": partnerId
     });
-    await locator<ApiService>().markAsComplete(body).then((data) {
-      showMessage(data.body);
+    locator<ApiService>().markAsComplete(body).then((value) {
+      locator<NavigationService>().goBack();
     });
   }
 
   markAsCompleteV2(
       String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
+    locator<NavigationService>().goBack();
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -334,34 +346,8 @@ class ReservationTileWidget extends StatelessWidget {
       "lotAddress": lotAddress,
       "partnerId": partnerId
     });
-    await locator<ApiService>().markAsCompleteV2(body).then((data) {
-      showMessage(data.body);
-    });
-  }
-
-  onTheWay(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({
-      "userId": userId,
-      "driverName": driverName,
-      "vehicleId": vehicleId,
-      "lotAddress": lotAddress,
-      "partnerId": partnerId
-    });
-    await locator<ApiService>().notifyOnTheWay(body).then((data) {
-      showMessage("Lot owner notified");
-    });
-  }
-
-  arrived(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({
-      "userId": userId,
-      "driverName": driverName,
-      "vehicleId": vehicleId,
-      "lotAddress": lotAddress,
-      "partnerId": partnerId
-    });
-    await locator<ApiService>().notifyArrived(body).then((data) {
-      showMessage("Lot owner notified");
+    locator<ApiService>().markAsCompleteV2(body).then((value) {
+      locator<NavigationService>().goBack();
     });
   }
 
@@ -370,71 +356,7 @@ class ReservationTileWidget extends StatelessWidget {
         child: RatingAndFeedback(reservationData, userId, 0), barrierDismissible: true);
   }
 
-  showMessage(String v) {
-    showDialog(
-        context: locator<NavigationService>().navigatorKey.currentContext,
-        builder: (_) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.info_outline,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
-                    ),
-                    Text(
-                      "$v",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(height: 5, fontSize: 20),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              FlatButton(
-                  onPressed: () {
-                    locator<NavigationService>().goBack();
-                  },
-                  child: Text("Close"))
-            ],
-          );
-        });
-  }
-
-  void showError({@required String error}) {
-    showDialog(
-        context: locator<NavigationService>().navigatorKey.currentContext,
-        builder: (_) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.announcement,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
-                    ),
-                    Text(
-                      error,
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
+  showMessage(BuildContext context, String v) {
+    PopUp.showInfo(context: locator<NavigationService>().navigatorKey.currentContext, title: '', body: v);
   }
 }

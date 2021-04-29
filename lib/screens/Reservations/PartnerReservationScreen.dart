@@ -5,6 +5,7 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
+import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
 import 'package:carspace/screens/Navigation/PartnerNavigationScreen.dart';
@@ -263,74 +264,49 @@ class PartnerReservationTileWidget extends StatelessWidget {
     });
   }
 
-  onTheWay(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({
-      "userId": userId,
-      "driverName": driverName,
-      "vehicleId": vehicleId,
-      "lotAddress": lotAddress,
-      "partnerId": partnerId
-    });
-    await locator<ApiService>().notifyOnTheWay(body).then((data) {
-      showMessage("Lot owner notified");
-    });
-  }
-
-  arrived(String userId, String driverName, String vehicleId, String lotAddress, String partnerId) async {
-    var body = ({
-      "userId": userId,
-      "driverName": driverName,
-      "vehicleId": vehicleId,
-      "lotAddress": lotAddress,
-      "partnerId": partnerId
-    });
-    await locator<ApiService>().notifyArrived(body).then((data) {
-      showMessage("Lot owner notified");
-    });
-  }
-
   rating(BuildContext context, Reservation reservationData, String userId) {
     PopupNotifications.showNotificationDialog(context,
         child: RatingAndFeedback(reservationData, userId, 0), barrierDismissible: true);
   }
 
   showMessage(String v) {
-    showDialog(
-        context: locator<NavigationService>().navigatorKey.currentContext,
-        builder: (_) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.info_outline,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
-                    ),
-                    Text(
-                      "$v",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(height: 5, fontSize: 20),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              FlatButton(
-                  onPressed: () {
-                    locator<NavigationService>().goBack();
-                    locator<NavigationService>().pushNavigateTo(Reservations);
-                  },
-                  child: Text("Close"))
-            ],
-          );
-        });
+    PopUp.showInfo(context: locator<NavigationService>().navigatorKey.currentContext, title: "INFO");
+    // showDialog(
+    //     context: locator<NavigationService>().navigatorKey.currentContext,
+    //     builder: (_) {
+    //       return AlertDialog(
+    //         content: SingleChildScrollView(
+    //           child: Container(
+    //             child: Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               children: <Widget>[
+    //                 Padding(
+    //                   padding: const EdgeInsets.all(16.0),
+    //                   child: Icon(
+    //                     Icons.info_outline,
+    //                     color: Colors.grey,
+    //                     size: 50,
+    //                   ),
+    //                 ),
+    //                 Text(
+    //                   "$v",
+    //                   textAlign: TextAlign.center,
+    //                   style: TextStyle(height: 5, fontSize: 20),
+    //                 )
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //         actions: [
+    //           FlatButton(
+    //               onPressed: () {
+    //                 locator<NavigationService>().goBack();
+    //                 locator<NavigationService>().pushNavigateTo(Reservations);
+    //               },
+    //               child: Text("Close"))
+    //         ],
+    //       );
+    //     });
   }
 
   void showError({@required String error}) {

@@ -104,7 +104,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                           builder: (BuildContext context,
                               CurrentReservationState state) {
                         if (state is UpdatedCurrentReservation) {
-                          return ReservationTileWidget(
+                          return DriverReservationTileWidget(
                               reservation: state.reservation);
                         }
                         return Container();
@@ -565,7 +565,7 @@ class _UploadLicensePopupState extends State<UploadLicensePopup> {
                       .update({
                     "licenseExpiry": licenseExpiry,
                     "licenseImage": licenseImage,
-                    "userAccess": 110
+                    "userAccess": 200
                   }).then((e) {
                     locator<NavigationService>().goBack();
                   });

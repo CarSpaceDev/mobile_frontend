@@ -56,25 +56,22 @@ class LotImageWidget extends StatelessWidget {
               })
           : InkWell(
               onTap: () {
-                PopupNotifications.showNotificationDialog(context,
-                    barrierDismissible: true,
-                    child: AspectRatio(
-                      aspectRatio: aspectRatio,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          color: Colors.black12,
-                          child: Center(
-                            child: CachedNetworkImage(
-                              imageUrl: url,
-                              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                  LinearProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
-                          ),
+                PopupNotifications.showNotificationDialog(
+                  context,
+                  barrierDismissible: true,
+                  child: AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: Container(
+                      color: Colors.black12,
+                      child: Center(
+                        child: PhotoView(
+                          backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                          imageProvider: CachedNetworkImageProvider(url),
                         ),
                       ),
-                    ));
+                    ),
+                  ),
+                );
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),

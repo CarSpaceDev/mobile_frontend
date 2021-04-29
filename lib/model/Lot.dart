@@ -5,11 +5,7 @@ import 'package:equatable/equatable.dart';
 
 import 'Vehicle.dart';
 
-enum LotStatus {
-  Active,
-  Inactive,
-  Disabled,
-}
+enum LotStatus { Active, Inactive, Blocked, Rejected, Unverified }
 
 class Lot extends Equatable {
   final String lotId;
@@ -54,12 +50,14 @@ class Lot extends Equatable {
   Lot.fromJson(Map<String, dynamic> json)
       : lotId = json["lotId"] as String,
         partnerId = json["partnerId"] as String,
-        status = json["isDisabled"]
-            ? LotStatus.Disabled
-            : json["isActive"]
-                ? LotStatus.Active
-                : LotStatus.Inactive,
-        lotImage = json["lotImage"].length==1 ? json["lotImage"][0]: json["lotImage"],
+        status = json["isBlocked"] == true
+            ? LotStatus.Blocked
+            : json["isVerified"] == false
+                ? LotStatus.Unverified
+                : json["isActive"]
+                    ? LotStatus.Active
+                    : LotStatus.Inactive,
+        lotImage = json["lotImage"].length == 1 ? json["lotImage"][0] : json["lotImage"],
         address = LotAddress.fromJson(json["address"]),
         pricing = json["pricing"] != null ? double.parse("${json['pricing']}") : null,
         pricePerDay = json["pricePerDay"] != null ? double.parse("${json['pricePerDay']}") : null,
@@ -77,11 +75,13 @@ class Lot extends Equatable {
   Lot.fromDoc(DocumentSnapshot doc)
       : lotId = doc.data()["lotId"],
         partnerId = doc.data()["partnerId"],
-        status = doc.data()["isDisabled"] == true
-            ? LotStatus.Disabled
-            : doc.data()["isActive"] == true
-                ? LotStatus.Active
-                : LotStatus.Inactive,
+        status = doc.data()["isBlocked"] == true
+            ? LotStatus.Blocked
+            : doc.data()["isVerified"] == false
+                ? LotStatus.Unverified
+                : doc.data()["isActive"]
+                    ? LotStatus.Active
+                    : LotStatus.Inactive,
         lotImage = doc.data()["lotImage"],
         address = LotAddress.fromJson(doc.data()),
         pricing = doc.data()["pricing"] != null ? double.parse("${doc.data()['pricing']}") : null,
@@ -98,29 +98,6 @@ class Lot extends Equatable {
         capacity = doc.data()["capacity"],
         coordinates = CSPosition.fromMap(
             {"latitude": doc.data()["coordinates"].latitude, "longitude": doc.data()["coordinates"].longitude});
-
-  Lot.fromDocTest(DocumentSnapshot doc)
-      : lotId = doc.data()["lotId"],
-        partnerId = doc.data()["partnerId"],
-        status = doc.data()["isDisabled"] == true
-            ? LotStatus.Disabled
-            : doc.data()["isActive"] == true
-                ? LotStatus.Active
-                : LotStatus.Inactive,
-        lotImage = null,
-        address = null,
-        pricing = null,
-        pricePerDay = null,
-        parkingType = null,
-        vehicleTypeAccepted = null,
-        rating = null,
-        numberOfRatings = null,
-        availableFrom = null,
-        availableTo = null,
-        availableDays = null,
-        availableSlots = null,
-        capacity = null,
-        coordinates = null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -168,13 +145,13 @@ class LotAddress extends Equatable {
 
   @override
   String toString() {
-    String result =  "" +
+    String result = "" +
         "${houseAndStreet != null ? " " + houseAndStreet + "," : ""}" +
-        "${brgy != null ? " $brgy,"  : ""}" +
-        "${municipality != null  ? " $municipality,"  : ""}" +
-        "${city != null  ? " $city," : ""}" +
-        "${province != null  ? " $province,": ""}" +
-        "${zipCode != null  ? " $zipCode" : ""}";
+        "${brgy != null ? " $brgy," : ""}" +
+        "${municipality != null ? " $municipality," : ""}" +
+        "${city != null ? " $city," : ""}" +
+        "${province != null ? " $province," : ""}" +
+        "${zipCode != null ? " $zipCode" : ""}";
     return result;
   }
 }

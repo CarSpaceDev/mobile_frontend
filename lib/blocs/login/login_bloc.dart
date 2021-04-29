@@ -255,7 +255,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     _navService.navigatorKey.currentContext.bloc<WalletBloc>().add(InitializeWallet(uid: user.uid));
     _navService.navigatorKey.currentContext.bloc<MqttBloc>().add(InitializeMqtt());
     if(user.partnerAccess>110)
-    _navService.navigatorKey.currentContext.bloc<LotRepoBloc>().add(InitializeLotRepo());
+    _navService.navigatorKey.currentContext.bloc<LotRepoBloc>().add(InitializeLotRepo(uid: user.uid));
   }
 
   stopRepos() {

@@ -14,7 +14,7 @@ import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/Home/LotFound.dart';
+import 'package:carspace/screens/TransactionModes/LotFound.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -216,23 +216,7 @@ class _DriveModeScreenState extends State<DriveModeScreen> {
       PopUp.showInfo(context: context, title: "Information", body: result.body['message']);
     } else {
       Lot lot = Lot.fromJson(result.body["returnPayLoad"][0]);
-      showDialog(
-          barrierDismissible: true,
-          context: context,
-          builder: (_) => Dialog(
-                insetPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * .1, horizontal: 32),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                child: new SizedBox(
-                  height: 700,
-                  width: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: LotFound(lot, userId, ReservationType.Booking.index),
-                    ),
-                  ),
-                ),
-              ));
+      PopupNotifications.showNotificationDialog(context, child: LotFound(lot, userId, ReservationType.Booking.index));
     }
   }
 

@@ -6,7 +6,6 @@ import 'package:carspace/CSMap/bloc/map_bloc.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
-import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/Lots/LotTileWidget.dart';
@@ -26,15 +25,17 @@ class _LotsScreenState extends State<LotsScreen> {
   MapBloc mapBloc;
   GeolocationBloc geoBloc;
   PageController controller;
+  int currPage = 0;
   List<Lot> lots = [];
   @override
   void initState() {
+    controller = PageController();
     super.initState();
   }
 
   @override
   void dispose() {
-    controller = PageController();
+    controller.dispose();
     mapBloc.close();
     geoBloc.add(CloseGeolocationStream());
     super.dispose();
@@ -93,9 +94,10 @@ class _LotsScreenState extends State<LotsScreen> {
                               position: lots[i].coordinates.toLatLng()));
                         }
                         mapBloc.add(
-                            UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false)));
+                            UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
+                        return CSMap();
                       }
-                      return CSMap();
+                      else return CSMap();
                     }),
                   );
                 }
@@ -103,7 +105,7 @@ class _LotsScreenState extends State<LotsScreen> {
               }),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: BlocBuilder<LotRepoBloc, LotRepoState>(
                     builder: (BuildContext context, state) {
                       if (state is LotsReady) {
@@ -121,7 +123,7 @@ class _LotsScreenState extends State<LotsScreen> {
                                 position: lots[i].coordinates.toLatLng()));
                           }
                           mapBloc.add(
-                              UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false)));
+                              UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
                         }
                         if (state.lots.isEmpty) {
                           return Center(
@@ -136,10 +138,18 @@ class _LotsScreenState extends State<LotsScreen> {
                           controller: controller,
                           itemCount: state.lots.length,
                           onPageChanged: (i) {
+                            print(state.lots[i].toJson());
                             geoBloc.add(UpdatePositionManual(position: state.lots[i].coordinates));
+                            setState(() {
+                                currPage = i;
+                            });
                           },
                           itemBuilder: (BuildContext context, index) {
-                            return LotTileWidget(lot: state.lots[index]);
+                            return Column(
+                              children: [
+                                Expanded(child: LotTileWidget(lot: state.lots[index])),
+                              ],
+                            );
                           },
                         );
                       } else
@@ -148,6 +158,21 @@ class _LotsScreenState extends State<LotsScreen> {
                   ),
                 ),
               ),
+              BlocBuilder<LotRepoBloc, LotRepoState>(builder: (BuildContext context, state) {
+                if (state is LotsReady && state.lots.isNotEmpty)
+                  return Container(
+                    height: 48,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var i = 0; i < state.lots.length; i++)
+                          Icon(Icons.circle, size: 16, color: currPage == i ? Theme.of(context).primaryColor: Colors.white),
+                      ],
+                    ),
+                  );
+                return Container(width: 0, height: 0);
+              }),
             ],
           ),
         ),

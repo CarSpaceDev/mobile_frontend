@@ -173,6 +173,7 @@ class MapSettings extends Equatable {
   final BitmapDescriptor driverIcon;
   final bool showPOI;
   final bool scrollEnabled;
+  final bool showSelfLocation;
   MapSettings(
       {@required this.markers,
       @required this.mapStylePOI,
@@ -181,17 +182,19 @@ class MapSettings extends Equatable {
         @required this.lotIconInactive,
       @required this.driverIcon,
       @required this.showPOI,
-      @required this.scrollEnabled});
+        @required this.scrollEnabled,
+        @required this.showSelfLocation});
   @override
-  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, lotIconInactive, driverIcon, showPOI, scrollEnabled];
+  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, lotIconInactive, driverIcon, showPOI, scrollEnabled, showSelfLocation];
 
-  copyWith({Set<Marker> markers, bool showPOI, bool scrollEnabled}) {
+  copyWith({Set<Marker> markers, bool showPOI, bool scrollEnabled, bool showSelfLocation}) {
     Set<Marker> m;
     bool sPOI;
     bool scroll;
     m = markers ?? this.markers;
     sPOI = showPOI ?? this.showPOI;
     scroll = scrollEnabled ?? this.scrollEnabled;
+    showSelfLocation = showSelfLocation ?? this.showSelfLocation;
     return new MapSettings(
         markers: m,
         showPOI: sPOI,
@@ -200,6 +203,7 @@ class MapSettings extends Equatable {
         mapStyle: this.mapStyle,
         lotIcon: this.lotIcon,
         lotIconInactive: this.lotIconInactive,
-        driverIcon: this.driverIcon);
+        driverIcon: this.driverIcon,
+    showSelfLocation: this.showSelfLocation);
   }
 }

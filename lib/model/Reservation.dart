@@ -80,4 +80,6 @@ class Reservation extends Equatable {
         "userRating": userRating,
         "vehicleId": vehicleId
       };
+
+
 }

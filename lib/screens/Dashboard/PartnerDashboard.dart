@@ -75,39 +75,19 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                   textColor: TextColor.Blue,
                 ),
               ),
-              Flexible(
-                child: PageView(
-                  onPageChanged: (i) {
-                    setState(() {
-                      page = i;
-                    });
-                  },
+              SingleChildScrollView(
+                child: Column(
                   children: [
-                    BlocBuilder<LotRepoBloc, LotRepoState>(
-                      builder: (BuildContext context, state) {
-                        if (state is LotsReady) {
-                          if (state.lots.isEmpty) {
-                            return Center(
-                              child: CSText("No lots at the moment, please head over to the partner dashboard website", textType: TextType.Button, textColor: TextColor.Black,),
-                            );
-                          }
-                          return ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: state.lots.length,
-                            itemBuilder: (BuildContext context, index) {
-                              return LotTileWidget(lot: state.lots[index]);
-                            },
-                          );
-                        }
-                        return LoadingFullScreenWidget();
-                      },
-                    ),
                     BlocBuilder<ReservationRepoBloc, ReservationRepoState>(
                       builder: (BuildContext context, state) {
                         if (state is ReservationRepoReady) {
                           if (state.reservations.isEmpty) {
                             return Center(
-                              child: CSText("No reservations at the moment", textType: TextType.Button, textColor: TextColor.Black,),
+                              child: CSText(
+                                "No reservations at the moment",
+                                textType: TextType.Button,
+                                textColor: TextColor.Black,
+                              ),
                             );
                           }
                           return ListView.builder(
@@ -118,29 +98,7 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                             },
                           );
                         }
-                        return LoadingFullScreenWidget();
-                      },
-                    ),
-                    BlocBuilder<NotificationBloc, NotificationState>(
-                      builder: (BuildContext context, state) {
-                        if (state is NotificationsReady) {
-                          if (state.notifications.isEmpty)
-                            return Center(child: CSText("No notifications at the moment", textType: TextType.Button,textColor: TextColor.Black,));
-                          else
-                            return ListView.builder(
-                                itemCount: state.notifications.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  return NotificationWidget(
-                                      notification: state.notifications[index],
-                                      onTap: () {
-                                        if (!state.notifications[index].opened)
-                                          context
-                                              .bloc<NotificationBloc>()
-                                              .add(NotificationOpened(uid: state.notifications[index].uid));
-                                      });
-                                });
-                        } else
-                          return Text("Getting notifications ... ");
+                        return Container();
                       },
                     ),
                   ],

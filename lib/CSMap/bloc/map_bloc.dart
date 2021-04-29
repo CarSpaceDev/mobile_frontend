@@ -21,6 +21,33 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   Stream<MapState> mapEventToState(
     MapEvent event,
   ) async* {
+    if (event is InitializeStaticMapSettings) {
+      List<dynamic> result = await Future.wait([
+        rootBundle.loadString('assets/mapPOI.txt'),
+        rootBundle.loadString('assets/mapStyle.txt'),
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin_red.png'),
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png'),
+        Geolocator.getCurrentPosition()
+      ]);
+
+      HashSet<Marker> markers = HashSet<Marker>();
+      markers.add(Marker(
+          markerId: MarkerId("DESTINATION"),
+          draggable: true,
+          position: event.position.toLatLng()));
+      settings = MapSettings(
+          mapStylePOI: result[0],
+          mapStyle: result[1],
+          lotIcon: result[2],
+          lotIconInactive: result[3],
+          driverIcon: result[4],
+          markers: markers,
+          showPOI: false,
+          scrollEnabled: false,
+          showSelfLocation: false);
+      add(UpdateMap(settings: settings));
+    }
     if (event is InitializeMapSettings) {
       List<dynamic> result = await Future.wait([
         rootBundle.loadString('assets/mapPOI.txt'),
@@ -48,7 +75,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           driverIcon: result[4],
           markers: markers,
           showPOI: false,
-          scrollEnabled: false);
+          scrollEnabled: false,
+          showSelfLocation: true);
       add(UpdateMap(settings: settings));
     }
     if (event is ShowDestinationMarker) {
@@ -65,6 +93,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       add(UpdateMap(settings: settings.copyWith(scrollEnabled: true)));
     }
     if (event is UpdateMap) {
+      yield MapInitial();
       yield MapSettingsReady(settings: event.settings);
     }
   }

@@ -8,6 +8,12 @@ class InitializeMapSettings extends MapEvent {
   @override
   List<Object> get props => [];
 }
+class InitializeStaticMapSettings extends MapEvent {
+  final CSPosition position;
+  InitializeStaticMapSettings({this.position});
+  @override
+  List<Object> get props => [position];
+}
 class UpdateMap extends MapEvent {
   final MapSettings settings;
   UpdateMap({@required this.settings});
