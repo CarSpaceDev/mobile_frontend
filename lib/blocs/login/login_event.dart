@@ -34,12 +34,6 @@ class RestartLoginEvent extends LoginEvent {
   List<Object> get props => [];
 }
 
-//used by v2
-class SkipVehicleAddEvent extends LoginEvent {
-  @override
-  List<Object> get props => [];
-}
-
 
 class LoginStartEvent extends LoginEvent {
   LoginStartEvent();
@@ -92,10 +86,6 @@ class NavigateToRegisterEvent extends LoginEvent {
   List<Object> get props => [];
 }
 
-class NavigateToVehicleAddEvent extends LoginEvent {
-  @override
-  List<Object> get props => [];
-}
 
 class NavigateToEulaEvent extends LoginEvent {
   @override

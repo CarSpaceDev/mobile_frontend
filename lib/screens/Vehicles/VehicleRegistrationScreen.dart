@@ -86,21 +86,6 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        actions: widget.fromHomeScreen
-            ? null
-            : [
-                Center(
-                  child: InkWell(
-                    onTap: () {
-                      showSkipDialog(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
-                      child: Text("Skip", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                )
-              ],
         centerTitle: true,
         title: Text(
           "Vehicle Registration",
@@ -486,35 +471,7 @@ class _VehicleRegistrationScreenState extends State<VehicleRegistrationScreen> {
     context.read<LoginBloc>().add(RestartLoginEvent());
   }
 
-  showSkipDialog(BuildContext context) async {
-    if (await showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Skip vehicle registration"),
-          content: new Text(
-              "Are you sure you want to skip vehicle registration? You cannot make reservations until you do."),
-          actions: <Widget>[
-            FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            FlatButton(
-              child: new Text("Sure"),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    )) {
-      context.read<LoginBloc>().add(SkipVehicleAddEvent());
-    }
-  }
+
 
   showCancelDialog(BuildContext context) async {
     if (await showDialog(

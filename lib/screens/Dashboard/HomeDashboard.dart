@@ -10,8 +10,8 @@ import 'package:carspace/reusable/ImageUploadWidget.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/DriverScreens/Reservations/DriverReservationScreen.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleSelectorWidget.dart';
+import 'package:carspace/screens/Reservations/DriverReservationScreen.dart';
+import 'package:carspace/screens/Vehicles/VehicleSelectorWidget.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -95,7 +95,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       return Container();
                     }
                     if (userState is UserRepoReady &&
-                        userState.user.userAccess > 110) {
+                        userState.user.userAccess > 110 && userState.user.currentReservation!=null) {
                       context.bloc<CurrentReservationBloc>().add(
                           InitCurrentReservationRepo(
                               uid: userState.user.currentReservation));

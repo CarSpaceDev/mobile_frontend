@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationWidget.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
-import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/screens/Notifications/NotificationWidget.dart';
+import 'package:carspace/screens/Vehicles/VehicleAddAuthDetails.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/src/widgets/basic.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 part 'notification_event.dart';
@@ -27,20 +26,25 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     NotificationEvent event,
   ) async* {
     if (event is InitializeNotificationRepo) {
-      repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
-      notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
-        List<CSNotification> temp = [];
-        for (QueryDocumentSnapshot r in result.docs) {
-          temp.add(CSNotification.fromDoc(r));
-        }
-        if (temp.length > nRepo.length && nRepo.isNotEmpty) {
-          nRepo = temp;
-          add(NewNotificationReceived());
-        } else {
-          nRepo = temp;
-          add(NotificationsUpdated(notifications: nRepo));
-        }
-      });
+      try {
+        repoReference = FirebaseFirestore.instance.collection("archive").doc(event.uid).collection("notifications");
+        notifications = repoReference.orderBy("dateCreated", descending: true).snapshots().listen((result) {
+          List<CSNotification> temp = [];
+          for (QueryDocumentSnapshot r in result.docs) {
+            temp.add(CSNotification.fromDoc(r));
+          }
+          if (temp.length > nRepo.length && nRepo.isNotEmpty) {
+            nRepo = temp;
+            add(NewNotificationReceived());
+          } else {
+            nRepo = temp;
+            add(NotificationsUpdated(notifications: nRepo));
+          }
+        });
+      } catch (e) {
+        print("Initialize Notification Repo Error");
+        print(e);
+      }
     }
     if (event is NewNotificationReceived) {
       print("New notification added to the collection");

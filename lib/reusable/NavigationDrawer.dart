@@ -1,20 +1,24 @@
 import 'dart:ui';
 
+import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
-import 'package:carspace/screens/PartnerScreens/PartnerDashboard.dart';
+import 'package:carspace/screens/Dashboard/HomeDashboard.dart';
+import 'package:carspace/screens/Dashboard/PartnerDashboard.dart';
+import 'package:carspace/screens/Lots/LotsScreen.dart';
+import 'package:carspace/screens/Notifications/NotificationList.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class HomeNavigationDrawer extends StatefulWidget {
   final bool isPartner;
@@ -49,14 +53,27 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                       child: Column(
                         children: [
                           Icon(
-                            CupertinoIcons.profile_circled,
+                            widget.isPartner ? FontAwesomeIcons.parking:CupertinoIcons.car_detailed ,
                             size: 45,
+                            color: Theme.of(context).primaryColor
                           ),
                           CSText(
                             state.user.displayName,
                             textType: TextType.H4,
-                            padding: EdgeInsets.only(top: 16),
+                            padding: EdgeInsets.only(top: 16, bottom: 16),
                           ),
+                          if(state.user.rating!=null) SmoothStarRating(
+                            rating: state.user.rating,
+                            isReadOnly: true,
+                            size: 32,
+                            filledIconData: Icons.star,
+                            halfFilledIconData: Icons.star_half,
+                            defaultIconData: Icons.star_border,
+                            starCount: 5,
+                            allowHalfRating: true,
+                            spacing: 2.0,
+                            onRated: null,
+                          )
                         ],
                       ),
                     ),
@@ -120,7 +137,23 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                       Navigator.pop(context);
                       locator<NavigationService>().pushNavigateTo(PartnerReservations);
                     },
-                    child: Text("Partner Reservations")),
+                    child: Text("Your Lot Reservations")),
+              ),
+            if (widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          LotsScreen(),
+                          RouteSettings(name: "LOTS"),
+                        ),
+                      );
+                    },
+                    child: Text("Your Lots")),
               ),
             if (widget.isPartner)
               ListTile(
@@ -134,7 +167,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                         ),
                       );
                     },
-                    child: Text("Driver DashBoard")),
+                    child: Text("Switch to Driver")),
               ),
             if (state is UserRepoReady && state.user.partnerAccess > 200 && !widget.isPartner)
               ListTile(
@@ -148,7 +181,7 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                         ),
                       );
                     },
-                    child: Text("Partner DashBoard")),
+                    child: Text("Switch to Partner")),
               ),
             ListTile(
               title: InkWell(

@@ -7,9 +7,8 @@ import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Login/RegistrationScreen.dart';
-import 'package:carspace/screens/PartnerScreens/PartnerDashboard.dart';
+import 'package:carspace/screens/Dashboard/PartnerDashboard.dart';
 import 'package:carspace/screens/Wallet/WalletBloc/wallet_bloc.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
@@ -118,17 +117,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else {
         yield LoginError(message: result.error.toString());
       }
-    }
-    //V2 Update
-    else if (event is NavigateToVehicleAddEvent) {
-      locator<NavigationService>().pushReplaceNavigateToWidget(
-        getPageRoute(
-          VehicleRegistrationScreen(
-            fromHomeScreen: true,
-          ),
-          RouteSettings(name: "CASH-IN"),
-        ),
-      );
     }
     //V2 Update
     else if (event is LoginGoogleEvent) {

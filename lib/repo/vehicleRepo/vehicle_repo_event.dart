@@ -18,6 +18,13 @@ class UpdateVehicleRepo extends VehicleRepoEvent {
   List<Object> get props => [vehicles];
 }
 
+class VehicleRepoError extends VehicleRepoEvent {
+  final dynamic error;
+  VehicleRepoError({this.error});
+  @override
+  List<Object> get props => [error];
+}
+
 class DisposeVehicleRepo extends VehicleRepoEvent {
   @override
   List<Object> get props => [];

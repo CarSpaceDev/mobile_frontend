@@ -169,6 +169,7 @@ class MapSettings extends Equatable {
   final String mapStyle;
   final String mapStylePOI;
   final BitmapDescriptor lotIcon;
+  final BitmapDescriptor lotIconInactive;
   final BitmapDescriptor driverIcon;
   final bool showPOI;
   final bool scrollEnabled;
@@ -176,12 +177,13 @@ class MapSettings extends Equatable {
       {@required this.markers,
       @required this.mapStylePOI,
       @required this.mapStyle,
-      @required this.lotIcon,
+        @required this.lotIcon,
+        @required this.lotIconInactive,
       @required this.driverIcon,
       @required this.showPOI,
       @required this.scrollEnabled});
   @override
-  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, driverIcon, showPOI, scrollEnabled];
+  List<Object> get props => [markers, mapStyle, mapStylePOI, lotIcon, lotIconInactive, driverIcon, showPOI, scrollEnabled];
 
   copyWith({Set<Marker> markers, bool showPOI, bool scrollEnabled}) {
     Set<Marker> m;
@@ -197,6 +199,7 @@ class MapSettings extends Equatable {
         mapStylePOI: this.mapStylePOI,
         mapStyle: this.mapStyle,
         lotIcon: this.lotIcon,
+        lotIconInactive: this.lotIconInactive,
         driverIcon: this.driverIcon);
   }
 }

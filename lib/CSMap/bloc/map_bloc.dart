@@ -26,6 +26,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         rootBundle.loadString('assets/mapPOI.txt'),
         rootBundle.loadString('assets/mapStyle.txt'),
         BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin.png'),
+        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/pushpin_red.png'),
         BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(10, 10)), 'assets/launcher_icon/driver.png'),
         Geolocator.getCurrentPosition()
       ]);
@@ -43,7 +44,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           mapStylePOI: result[0],
           mapStyle: result[1],
           lotIcon: result[2],
-          driverIcon: result[3],
+          lotIconInactive: result[3],
+          driverIcon: result[4],
           markers: markers,
           showPOI: false,
           scrollEnabled: false);

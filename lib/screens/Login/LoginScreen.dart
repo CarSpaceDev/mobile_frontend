@@ -5,7 +5,6 @@ import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/ErrorScreen.dart';
 import 'package:carspace/reusable/LoadingScreen.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/screens/Login/EulaScreen.dart';
 import 'package:carspace/screens/Login/PhoneNumberInputScreen.dart';
 import 'package:carspace/screens/Login/RegistrationScreen.dart';
@@ -80,10 +79,7 @@ class LoginBlocHandler extends StatelessWidget {
               ),
             );
           }
-          //V2 Update
-          else if (state is ShowVehicleRegistration) {
-            return VehicleRegistrationScreen(fromHomeScreen: state.fromHomeScreen);
-          } else if (state is NavToRegister)
+        else if (state is NavToRegister)
             return RegistrationScreen();
           else if (state is NavToLandingPage)
             return LoginScreen();

@@ -10,7 +10,6 @@ import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/UserDisplayNameWidget.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleRegistrationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
@@ -25,13 +24,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'VehicleEditScreen.dart';
 import 'VehicleQRCodeGeneration.dart';
+import 'VehicleRegistrationScreen.dart';
 
-class VehicleManagementScreen extends StatefulWidget {
+class VehicleScreen extends StatefulWidget {
   @override
-  _VehicleManagementScreenState createState() => _VehicleManagementScreenState();
+  _VehicleScreenState createState() => _VehicleScreenState();
 }
 
-class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
+class _VehicleScreenState extends State<VehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +43,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
+              print(locator<AuthService>().currentUser().uid);
               context.bloc<VehicleRepoBloc>().add(InitializeVehicleRepo(uid: locator<AuthService>().currentUser().uid));
             },
           )
@@ -90,25 +91,28 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                 ));
           },
           child: Icon(Icons.add)),
-      body: BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, state) {
-        if (state is VehicleRepoReady) {
-          if (state.vehicles.isEmpty)
-            return Center(child: Text("It's lonely here, lets's add a vehicle!"));
-          else
-            return ListView.builder(
-              itemCount: state.vehicles.length,
-              itemBuilder: (BuildContext context, index) {
-                return VehicleListTile(
-                    vehicle: state.vehicles[index],
-                    onTap: () {
-                      PopupNotifications.showNotificationDialog(context,
-                          barrierDismissible: true, child: VehicleOverview(vehicle: state.vehicles[index]));
-                    });
-              },
-            );
-        }
-        return VehicleManagementLoading();
-      }),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, state) {
+          if (state is VehicleRepoReady) {
+            if (state.vehicles.isEmpty)
+              return Center(child: Text("It's lonely here, lets's add a vehicle!"));
+            else
+              return ListView.builder(
+                itemCount: state.vehicles.length,
+                itemBuilder: (BuildContext context, index) {
+                  return VehicleListTile(
+                      vehicle: state.vehicles[index],
+                      onTap: () {
+                        PopupNotifications.showNotificationDialog(context,
+                            barrierDismissible: true, child: VehicleOverview(vehicle: state.vehicles[index]));
+                      });
+                },
+              );
+          }
+          else return Center(child: Text("It's lonely here, lets's add a vehicle!"));
+        }),
+      ),
     );
   }
 }
@@ -441,7 +445,7 @@ class VehicleListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return CSTile(
       onTap: onTap,
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       padding: EdgeInsets.all(8),
       borderRadius: 16,
       color: vehicle.status == VehicleStatus.Blocked

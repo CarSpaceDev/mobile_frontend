@@ -7,13 +7,13 @@ import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'VehicleScreen.dart';
 import 'VehicleRegistrationScreen.dart';
 
 class VehicleSelectorWidget extends StatefulWidget {
@@ -47,19 +47,49 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
       reverseDuration: Duration(milliseconds: 200),
       child: CSTile(
         margin: EdgeInsets.symmetric(vertical: 8),
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.zero,
         borderRadius: 10,
-        color: TileColor.Grey,
+        color: header.isEmpty ? TileColor.None : TileColor.Grey,
         child: Column(
           children: [
-            if (header.isNotEmpty)
-              CSText(
-                header,
-                textAlign: TextAlign.center,
-                textType: TextType.Button,
-                textColor: TextColor.Black,
-                padding: EdgeInsets.only(bottom: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (header.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  if (header.isNotEmpty)
+                    Expanded(
+                      child: CSText(
+                        header,
+                        textAlign: TextAlign.center,
+                        textType: TextType.Button,
+                        textColor: TextColor.Black,
+                      ),
+                    ),
+                  if (header.isNotEmpty)
+                    InkWell(
+                      onTap: (){
+                        setState(() {
+                          header = '';
+                          tapped=false;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right:8.0),
+                        child: Icon(Icons.close),
+                      ),
+                    )
+                ],
               ),
+            ),
             if (!tapped)
               BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (BuildContext context, vehicleState) {
                 if (vehicleState is VehicleRepoReady) {
@@ -82,6 +112,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                             vehiclesAvailable: vehiclesAvailable,
                             onTap: () {
                               setState(() {
+                                header = "${selectedVehicle.make} ${selectedVehicle.model}";
                                 tapped = true;
                               });
                             });
@@ -91,15 +122,18 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                             vehiclesAvailable: vehiclesAvailable,
                             onTap: () {
                               setState(() {
+                                header = "${selectedVehicle.make} ${selectedVehicle.model}";
                                 tapped = true;
                               });
                             });
                       else
                         return CSTile(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),
+                          borderRadius: 16,
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                           margin: EdgeInsets.zero,
                           onTap: () {
                             setState(() {
+                              header = "${selectedVehicle.make} ${selectedVehicle.model}";
                               tapped = true;
                             });
                           },
@@ -146,7 +180,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                                           .add(SetSelectedVehicle(vehicle: state.vehicles[index]));
                                       setState(() {
                                         tapped = !tapped;
-                                        header = "Selected Vehicle";
+                                        header = "";
                                         actualIndex = 0;
                                       });
                                     } else if (state.vehicles[index].status == VehicleStatus.Unavailable)
@@ -181,7 +215,7 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
             if (header != "ADD A VEHICLE" && header.isNotEmpty)
               CSText(
                 "Tap to ${tapped ? "select" : "change"}",
-                padding: EdgeInsets.only(top: 16),
+                padding: EdgeInsets.symmetric(vertical: 16),
               )
           ],
         ),

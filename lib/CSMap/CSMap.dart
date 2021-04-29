@@ -1,6 +1,7 @@
 
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -72,7 +73,7 @@ class _CSMapState extends State<CSMap> {
               markers: state.settings.markers,
             );
           }
-          else return Container();
+          else return LoadingFullScreenWidget(prompt:"LOADING MAP");
         },
       ),
     );

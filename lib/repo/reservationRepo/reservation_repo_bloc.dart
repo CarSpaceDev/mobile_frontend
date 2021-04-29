@@ -18,26 +18,38 @@ class ReservationRepoBloc extends Bloc<ReservationRepoEvent, ReservationRepoStat
     ReservationRepoEvent event,
   ) async* {
     if (event is InitializeReservationRepo) {
-      yield ReservationRepoInitial();
-      print("Initializing Reservations Repo - Partner: ${event.isPartner}");
-      var repoReference;
-      if (event.isPartner) {
-        repoReference = FirebaseFirestore.instance
-            .collection("reservations")
-            .where("partnerId", isEqualTo: locator<AuthService>().currentUser().uid);
-      } else {
-        repoReference = FirebaseFirestore.instance
-            .collection("reservations")
-            .where("userId", isEqualTo: locator<AuthService>().currentUser().uid);
-      }
-      reservations = repoReference.snapshots().listen((result) {
-        List<Reservation> temp = [];
-        for (QueryDocumentSnapshot doc in result.docs) {
-          temp.add(Reservation.fromDoc(doc));
+      try {
+        yield ReservationRepoInitial();
+        print("Initializing Reservations Repo - Partner: ${event.isPartner}");
+        var repoReference;
+        if (event.isPartner) {
+          repoReference = FirebaseFirestore.instance
+              .collection("reservations")
+              .where("partnerId", isEqualTo: locator<AuthService>()
+              .currentUser()
+              .uid);
+        } else {
+          repoReference = FirebaseFirestore.instance
+              .collection("reservations")
+              .where("userId", isEqualTo: locator<AuthService>()
+              .currentUser()
+              .uid);
         }
-        temp.sort((a,b) => a.dateCreated.isBefore(b.dateCreated) ? 1 : a.dateCreated.isAfter(b.dateCreated) ? -1 : 0);
-        add(ReservationsUpdated(reservations: temp));
-      });
+        reservations = repoReference.snapshots().listen((result) {
+          List<Reservation> temp = [];
+          for (QueryDocumentSnapshot doc in result.docs) {
+            temp.add(Reservation.fromDoc(doc));
+          }
+          temp.sort((a, b) =>
+          a.dateCreated.isBefore(b.dateCreated) ? 1 : a.dateCreated.isAfter(b.dateCreated)
+              ? -1
+              : 0);
+          add(ReservationsUpdated(reservations: temp));
+        });
+      }catch(e){
+        print("Initialize Reservation Repo Error");
+        print(e);
+      }
     }
     if (event is ReservationsUpdated) {
       print("ReservationRepoUpdated");

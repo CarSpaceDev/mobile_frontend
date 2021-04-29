@@ -5,16 +5,14 @@ import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
+import 'package:carspace/screens/TransactionModes/DestinationPicker.dart';
+import 'package:carspace/screens/TransactionModes/DriveModeScreen.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'TransactionModes/DestinationPicker.dart';
-import 'TransactionModes/DriveModeScreen.dart';
-
 class ParkNowWidget extends StatefulWidget {
   final Vehicle selectedVehicle;
   final bool enabled;

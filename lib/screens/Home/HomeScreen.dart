@@ -9,11 +9,10 @@ import 'package:carspace/model/CSUser.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/reusable/CustomSwitch.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
-import 'package:carspace/screens/DriverScreens/Navigation/DriverNavigationService.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationLinkWidget.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationList.dart';
 import 'package:carspace/screens/Home/LotFound.dart';
 import 'package:carspace/screens/Home/ReservedLot.dart';
+import 'package:carspace/screens/Notifications/NotificationLinkWidget.dart';
+import 'package:carspace/screens/Notifications/NotificationList.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -26,7 +25,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'LotReservation.dart';
-import 'LotCard.dart';
+import '../Lots/LotTileWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -563,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
               insetPadding: EdgeInsets.symmetric(horizontal: 8),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: LotCard(
+                child: LotTileWidget(
                   lot: v,
                   callback: () {
                     _showReservationDialog(v.lotId);
@@ -764,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> result = [];
     lotsInRadius.forEach((lot) {
       result.add(
-        LotCard(
+        LotTileWidget(
           lot: lot,
           callback: () {
             _showReservationDialog(lot.lotId);

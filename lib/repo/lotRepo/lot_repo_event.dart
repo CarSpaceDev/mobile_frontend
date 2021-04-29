@@ -16,6 +16,13 @@ class UpdateLotRepo extends LotRepoEvent {
   @override
   List<Object> get props => [lots];
 }
+class UpdateLotStatus extends LotRepoEvent {
+  final Lot lot;
+  final LotStatus status;
+  UpdateLotStatus({this.lot, this.status});
+  @override
+  List<Object> get props => [lot, status];
+}
 class DisposeLotRepo extends LotRepoEvent {
   DisposeLotRepo();
   @override

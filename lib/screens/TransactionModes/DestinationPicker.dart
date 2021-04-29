@@ -40,6 +40,7 @@ class _DestinationPickerState extends State<DestinationPicker> {
   Vehicle vehicle;
   @override
   void initState() {
+    getLocation();
     super.initState();
   }
 

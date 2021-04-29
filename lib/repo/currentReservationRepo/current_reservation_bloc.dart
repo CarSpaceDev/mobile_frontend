@@ -18,10 +18,15 @@ class CurrentReservationBloc extends Bloc<CurrentReservationEvent, CurrentReserv
   ) async* {
     if (event is InitCurrentReservationRepo) {
       print("Initializing UserRepo");
-      currentReservation =
-          FirebaseFirestore.instance.collection("reservations").doc(event.uid).snapshots().listen((result) {
-        if (result.exists) add(CurrentReservationUpdated(reservation: Reservation.fromDoc(result)));
-      });
+      try {
+        currentReservation =
+            FirebaseFirestore.instance.collection("reservations").doc(event.uid).snapshots().listen((result) {
+          if (result.exists) add(CurrentReservationUpdated(reservation: Reservation.fromDoc(result)));
+        });
+      } catch (e) {
+        print("Initialize Current Reservation Repo Error");
+        print(e);
+      }
     }
     if (event is CurrentReservationUpdated) {
       print("CurrentReservation Updated");

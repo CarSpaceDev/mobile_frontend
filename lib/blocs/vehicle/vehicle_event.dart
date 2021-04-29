@@ -45,3 +45,10 @@ class AddVehicle extends VehicleEvent {
   @override
   List<Object> get props => [vehicle];
 }
+
+class VehicleBlocError extends VehicleEvent {
+  final dynamic error;
+  VehicleBlocError({this.error});
+  @override
+  List<Object> get props => [error];
+}

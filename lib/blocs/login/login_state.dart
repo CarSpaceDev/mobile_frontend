@@ -28,14 +28,6 @@ class LoginError extends LoginState {
   List<Object> get props => [message];
 }
 
-//V2 Usage
-class ShowVehicleRegistration extends LoginState {
-  final bool fromHomeScreen;
-  ShowVehicleRegistration({this.fromHomeScreen});
-  @override
-  List<Object> get props => [];
-}
-
 class LoginInProgress extends LoginState {
   @override
   List<Object> get props => [];

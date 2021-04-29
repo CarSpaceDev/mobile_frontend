@@ -7,7 +7,7 @@ import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/LotImageWidget.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/reusable/RatingAndFeedback.dart';
-import 'package:carspace/screens/DriverScreens/Navigation/PartnerNavigationScreen.dart';
+import 'package:carspace/screens/Navigation/PartnerNavigationScreen.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
@@ -80,43 +80,64 @@ class PartnerReservationTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CSTile(
+      onTap: () {
+        _showActionsDialog(context, reservation: reservation);
+      },
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       shadow: true,
       borderRadius: 16,
-      child: InkWell(
-        onTap: () {
-          _showActionsDialog(context, reservation: reservation);
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Flexible(flex: 1, child: LotImageWidget(lotUid: reservation.lotId)),
+              Flexible(
+                flex: 2,
+                child: CSText(
+                  reservation.lotAddress,
+                  textType: TextType.H5Bold,
+                  padding: EdgeInsets.only(left: 8),
+                ),
+              ),
+            ],
+          ),
+          CSTile(
+            margin: EdgeInsets.symmetric(vertical: 8),
+            padding: EdgeInsets.zero,
+            color: TileColor.None,
+            child: Column(
               children: [
-                Flexible(flex: 1, child: LotImageWidget(lotUid: reservation.lotId)),
-                Flexible(
-                  flex: 2,
-                  child: CSText(
-                    reservation.lotAddress,
-                    textType: TextType.H5Bold,
-                    padding: EdgeInsets.only(left: 8),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: RichText(
+                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                      TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(
+                        text: "${formatDate(reservation.dateCreated, [
+                          MM,
+                          " ",
+                          dd,
+                          ", ",
+                          yyyy,
+                          " ",
+                          h,
+                          ":",
+                          nn
+                        ])} ${reservation.dateCreated.hour < 12 ? "AM" : "PM"}",
+                      )
+                    ]),
                   ),
                 ),
-              ],
-            ),
-            CSTile(
-              margin: EdgeInsets.symmetric(vertical: 8),
-              padding: EdgeInsets.zero,
-              color: TileColor.None,
-              child: Column(
-                children: [
+                if (reservation.dateUpdated != reservation.dateCreated)
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: RichText(
                       text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                        TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
+                        TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
                         TextSpan(
-                          text: "${formatDate(reservation.dateCreated, [
+                          text: "${formatDate(reservation.dateUpdated, [
                             MM,
                             " ",
                             dd,
@@ -126,70 +147,46 @@ class PartnerReservationTileWidget extends StatelessWidget {
                             h,
                             ":",
                             nn
-                          ])} ${reservation.dateCreated.hour < 12 ? "AM" : "PM"}",
+                          ])} ${reservation.dateUpdated.hour < 12 ? "AM" : "PM"}",
                         )
                       ]),
                     ),
                   ),
-                  if (reservation.dateUpdated != reservation.dateCreated)
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: RichText(
-                        text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                          TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
-                          TextSpan(
-                            text: "${formatDate(reservation.dateUpdated, [
-                              MM,
-                              " ",
-                              dd,
-                              ", ",
-                              yyyy,
-                              " ",
-                              h,
-                              ":",
-                              nn
-                            ])} ${reservation.dateUpdated.hour < 12 ? "AM" : "PM"}",
-                          )
-                        ]),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: RichText(
-                      text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
-                        TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
-                        TextSpan(text: reservation.vehicleId)
-                      ]),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: RichText(
+                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                      TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(text: reservation.vehicleId)
+                    ]),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            CSTile(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              margin: EdgeInsets.zero,
-              color: reservation.reservationStatus == ReservationStatus.Active ? TileColor.Green : TileColor.Secondary,
-              shadow: true,
-              borderRadius: 4,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CSText(
-                    "${reservation.reservationStatus == ReservationStatus.Active ? "Active" : "Completed"}"
-                        .toUpperCase(),
-                    textType: TextType.Caption,
-                    textColor: TextColor.White,
-                  ),
-                  CSText(
-                    " ${reservation.reservationType}".replaceAll("ReservationType.", '').toUpperCase(),
-                    textType: TextType.Caption,
-                    textColor: TextColor.White,
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
+          ),
+          CSTile(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            margin: EdgeInsets.zero,
+            color: reservation.reservationStatus == ReservationStatus.Active ? TileColor.Green : TileColor.Secondary,
+            shadow: true,
+            borderRadius: 4,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CSText(
+                  "${reservation.reservationStatus == ReservationStatus.Active ? "Active" : "Completed"}".toUpperCase(),
+                  textType: TextType.Caption,
+                  textColor: TextColor.White,
+                ),
+                CSText(
+                  " ${reservation.reservationType}".replaceAll("ReservationType.", '').toUpperCase(),
+                  textType: TextType.Caption,
+                  textColor: TextColor.White,
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

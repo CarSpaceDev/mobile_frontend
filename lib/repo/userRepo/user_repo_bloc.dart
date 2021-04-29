@@ -50,6 +50,7 @@ class UserRepoBloc extends Bloc<UserRepoEvent, UserRepoState> {
           if (result.exists) add(UpdateUserRepo(user: u));
         });
       } catch (e) {
+        print("Initialize User Repo Error");
         print(e);
       }
     }

@@ -1,13 +1,14 @@
-import 'package:carspace/model/CSNotification.dart';
+import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
-import 'package:carspace/screens/DriverScreens/HomeDashboard.dart';
-import 'package:carspace/screens/DriverScreens/Notifications/NotificationWidget.dart';
-import 'package:carspace/screens/DriverScreens/Reservations/PartnerReservationScreen.dart';
+import 'package:carspace/screens/Dashboard/HomeDashboard.dart';
+import 'package:carspace/screens/Lots/LotTileWidget.dart';
+import 'package:carspace/screens/Notifications/NotificationWidget.dart';
+import 'package:carspace/screens/Reservations/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,15 +83,24 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                     });
                   },
                   children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: Center(
-                        child: CSText(
-                          "2",
-                          textColor: TextColor.values[2],
-                        ),
-                      ),
+                    BlocBuilder<LotRepoBloc, LotRepoState>(
+                      builder: (BuildContext context, state) {
+                        if (state is LotsReady) {
+                          if (state.lots.isEmpty) {
+                            return Center(
+                              child: CSText("No lots at the moment, please head over to the partner dashboard website", textType: TextType.Button, textColor: TextColor.Black,),
+                            );
+                          }
+                          return ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: state.lots.length,
+                            itemBuilder: (BuildContext context, index) {
+                              return LotTileWidget(lot: state.lots[index]);
+                            },
+                          );
+                        }
+                        return LoadingFullScreenWidget();
+                      },
                     ),
                     BlocBuilder<ReservationRepoBloc, ReservationRepoState>(
                       builder: (BuildContext context, state) {

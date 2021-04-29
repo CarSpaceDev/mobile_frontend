@@ -45,8 +45,7 @@ class LotGeoRepoBloc extends Bloc<LotGeoRepoEvent, LotGeoRepoState> {
     }
     if (event is UpdateSearchTerms) {
       if (event.searchRadius != null) searchRadius = event.searchRadius;
-      if (event.vehicleSearchType != null)
-        vehicleSearchType = event.vehicleSearchType;
+      if (event.vehicleSearchType != null) vehicleSearchType = event.vehicleSearchType;
       if (event.searchType != null) searchType = event.searchType;
       if (lastPosition != null) {
         add(UpdateLotRepoCenter(position: lastPosition));

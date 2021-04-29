@@ -17,7 +17,8 @@ class LotRepoBloc extends Bloc<LotRepoEvent, LotRepoState> {
     LotRepoEvent event,
   ) async* {
     if (event is InitializeLotRepo) {
-      print("INITIALIZING LOT REPO");
+      yield(LotRepoInitial());
+      print("Initializing Lot Repo");
       lots = FirebaseFirestore.instance
           .collection("lots")
           .where("partnerId", isEqualTo: event.uid)
@@ -25,19 +26,28 @@ class LotRepoBloc extends Bloc<LotRepoEvent, LotRepoState> {
           .listen((result) {
         List<Lot> temp = [];
         for (QueryDocumentSnapshot r in result.docs) {
-          print(r.data());
-          temp.add(Lot.fromDoc(r));
+          if(r.exists)
+          try {
+            temp.add(Lot.fromDoc(r));
+          } catch (e){
+            print("LOT DOCUMENT ISSUE!!!! ${ r.id} $e");
+          }
         }
         add(UpdateLotRepo(lots: temp));
       });
     }
+    if (event is UpdateLotStatus){
+      print("UPDATING LOT ${event.lot.address.toString()} TO ${event.status}");
+      FirebaseFirestore.instance
+          .collection("lots").doc(event.lot.lotId).update({"isActive": event.status == LotStatus.Active});
+    }
     if (event is UpdateLotRepo) {
-      print("UPDATING LOTS");
+      print("UPDATING LOTS REPO");
       yield LotsReady(lots: event.lots);
     }
     if (event is DisposeLotRepo) {
       print("LotRepoCalledDispose");
-      await lots.cancel();
+      await lots?.cancel();
     }
   }
 }

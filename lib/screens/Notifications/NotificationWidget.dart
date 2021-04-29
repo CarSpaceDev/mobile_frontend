@@ -2,14 +2,14 @@ import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleAddAuthDetails.dart';
-import 'package:carspace/screens/DriverScreens/Vehicles/VehicleManagementScreen.dart';
+import 'package:carspace/screens/Dashboard/HomeDashboard.dart';
+import 'package:carspace/screens/Vehicles/VehicleAddAuthDetails.dart';
+import 'package:carspace/screens/Vehicles/VehicleScreen.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 
-import '../HomeDashboard.dart';
 
 class NotificationWidget extends StatelessWidget {
   final CSNotification notification;
@@ -198,7 +198,7 @@ class ExpiringVehicleWidget extends StatelessWidget {
         }
         locator<NavigationService>().pushNavigateToWidget(
           getPageRoute(
-            VehicleManagementScreen(),
+            VehicleScreen(),
             RouteSettings(name: "MANAGE-VEHICLE"),
           ),
         );

@@ -20,6 +20,8 @@ class CSUser extends Equatable {
   final String subscriptionType;
   final bool isBlocked;
   final bool isRejected;
+  final double rating;
+  final int numberOfRatings;
   //List Items
   final List<dynamic> reservations;
   final List<dynamic> vehicles;
@@ -49,6 +51,8 @@ class CSUser extends Equatable {
         isBlocked,
         isRejected,
         licenseExpiry,
+        rating,
+        numberOfRatings
       ];
 
   CSUser(
@@ -71,7 +75,9 @@ class CSUser extends Equatable {
       this.creditTransactionId,
       this.isBlocked,
       this.isRejected,
-      this.licenseExpiry});
+      this.licenseExpiry,
+      this.rating,
+      this.numberOfRatings});
 
   CSUser.fromDoc(DocumentSnapshot doc)
       : uid = doc.data()['uid'] as String,
@@ -81,9 +87,7 @@ class CSUser extends Equatable {
         creditTransactionId = doc.data()['creditTransactionId'] as String,
         firstName = doc.data()['firstName'] as String,
         lastName = doc.data()['lastName'] as String,
-        phoneNumber = doc.data()['phoneNumber'] != null
-            ? doc.data()['phoneNumber'].toString()
-            : null,
+        phoneNumber = doc.data()['phoneNumber'] != null ? doc.data()['phoneNumber'].toString() : null,
         photoUrl = doc.data()['photoUrl'] as String,
         partnerAccess = doc.data()['partnerAccess'] as int,
         userAccess = doc.data()['userAccess'] as int,
@@ -93,11 +97,11 @@ class CSUser extends Equatable {
         currentVehicle = doc.data()['currentVehicle'] as String,
         dateUpdated = doc.data()['dateCreated'].toDate(),
         dateCreated = doc.data()['dateUpdated'].toDate(),
-        licenseExpiry = doc.data()['licenseExpiry'] != null
-            ? doc.data()['licenseExpiry'].toDate()
-            : null,
+        licenseExpiry = doc.data()['licenseExpiry'] != null ? doc.data()['licenseExpiry'].toDate() : null,
         isBlocked = doc.data()['isBlocked'] as bool,
-        isRejected = doc.data()['isRejected'] as bool;
+        isRejected = doc.data()['isRejected'] as bool,
+        rating = doc.data()["rating"] != null ? double.parse("${doc.data()['rating']}") : null,
+        numberOfRatings = doc.data()["numberOfRatings"] != null ? int.parse("${doc.data()['numberOfRatings']}") : null;
 
   Map<String, dynamic> toJson() {
     return {

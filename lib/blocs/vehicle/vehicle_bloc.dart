@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -30,35 +32,77 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
             .doc(_authService.currentUser().uid)
             .update({"currentVehicle": event.vehicle.plateNumber});
       } catch (e) {
-        print(e);
+        add(VehicleBlocError(error: e));
       }
     }
     if (event is RevokeVehiclePermission) {
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
-        "currentUsers": FieldValue.arrayRemove([event.uid])
-      });
+      try {
+        await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
+          "currentUsers": FieldValue.arrayRemove([event.uid])
+        });
+      } catch (e) {
+        add(VehicleBlocError(error: e));
+      }
     }
     if (event is RemoveVehicle) {
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
-        "currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])
-      });
-      await _db.collection("users").doc(_authService.currentUser().uid).update({
-        "vehicles": FieldValue.arrayRemove([event.vehicle.plateNumber])
-      });
+      try {
+        await _db.collection("vehicles").doc(event.vehicle.plateNumber).update({
+          "currentUsers": FieldValue.arrayRemove([_authService.currentUser().uid])
+        });
+        await _db.collection("users").doc(_authService.currentUser().uid).update({
+          "vehicles": FieldValue.arrayRemove([event.vehicle.plateNumber])
+        });
+      } catch (e) {
+        add(VehicleBlocError(error: e));
+      }
     }
     if (event is UpdateVehicleDetails) {
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).update(event.vehicle.toJson());
-      _navService.goBack();
+      try {
+        await _db.collection("vehicles").doc(event.vehicle.plateNumber).update(event.vehicle.toJson());
+        _navService.goBack();
+      } catch (e) {
+        add(VehicleBlocError(error: e));
+      }
     }
     if (event is DeleteVehicle) {
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).delete();
+      try {
+        await _db.collection("vehicles").doc(event.vehicle.plateNumber).delete();
+      } catch (e) {
+        add(VehicleBlocError(error: e));
+      }
     }
     if (event is AddVehicle) {
-      await _db.collection("vehicles").doc(event.vehicle.plateNumber).set(event.vehicle.toJson());
-      await _db.collection("users").doc(_authService.currentUser().uid).update({
-        "vehicles": FieldValue.arrayUnion([event.vehicle.plateNumber])
-      });
-      _navService.goBack();
+      try {
+        await _db.collection("vehicles").doc(event.vehicle.plateNumber).set(event.vehicle.toJson());
+        await _db.collection("users").doc(_authService.currentUser().uid).update({
+          "vehicles": FieldValue.arrayUnion([event.vehicle.plateNumber])
+        });
+        FirebaseFirestore.instance
+            .collection("archive")
+            .doc(locator<AuthService>().currentUser().uid)
+            .collection("notifications")
+            .add(CSNotification(
+                opened: false,
+                title: "Vehicle Registration Successful",
+                dateCreated: DateTime.now(),
+                type: NotificationType.ExpiringVehicle,
+                data: {
+                  "message":
+                      "Your vehicle ${event.vehicle.plateNumber} with registration expiry ${formatDate(event.vehicle.expireDate, [
+                    MM,
+                    " ",
+                    dd,
+                    ", ",
+                    yyyy,
+                  ])} has been added. Please allow 15-45 minutes for verification.",
+                }).toJson());
+        _navService.goBack();
+      } catch (e) {
+        add(VehicleBlocError(error: e));
+      }
+    }
+    if (event is VehicleBlocError) {
+      print(event.error);
     }
   }
 }
