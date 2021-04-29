@@ -8,6 +8,7 @@ import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/Dashboard/DriverDashboard.dart';
 import 'package:carspace/screens/Lots/LotTileWidget.dart';
+import 'package:carspace/screens/Notifications/NotificationLinkWidget.dart';
 import 'package:carspace/screens/Notifications/NotificationWidget.dart';
 import 'package:carspace/screens/Reservations/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
@@ -64,6 +65,7 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
           padding: EdgeInsets.only(top: 4),
         ),
         leading: CSMenuButton(),
+        actions: [NotificationLinkWidget()],
       ),
       drawer: HomeNavigationDrawer(
         isPartner: true,
@@ -82,9 +84,12 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                         return Column(
                           children: [
                             for (var reservation in state.reservations)
-                              if (reservation.reservationStatus == ReservationStatus.Active ||
-                                  reservation.reservationStatus == ReservationStatus.Reserved)
-                                PartnerReservationTileWidget(reservation: reservation)
+                              if (reservation.reservationStatus ==
+                                      ReservationStatus.Active ||
+                                  reservation.reservationStatus ==
+                                      ReservationStatus.Reserved)
+                                PartnerReservationTileWidget(
+                                    reservation: reservation)
                           ],
                         );
                       }
@@ -146,7 +151,9 @@ class CustomTextWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label + ' :', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54)),
+          Text(label + ' :',
+              style: TextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.black54)),
           Text(
             name,
             style: TextStyle(fontWeight: FontWeight.w700),
