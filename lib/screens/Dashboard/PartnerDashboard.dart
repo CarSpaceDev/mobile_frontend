@@ -84,9 +84,12 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                         return Column(
                           children: [
                             for (var reservation in state.reservations)
-                              if (reservation.reservationStatus == ReservationStatus.Active ||
-                                  reservation.reservationStatus == ReservationStatus.Reserved)
-                                PartnerReservationTileWidget(reservation: reservation)
+                              if (reservation.reservationStatus ==
+                                      ReservationStatus.Active ||
+                                  reservation.reservationStatus ==
+                                      ReservationStatus.Reserved)
+                                PartnerReservationTileWidget(
+                                    reservation: reservation)
                           ],
                         );
                       }
@@ -148,7 +151,9 @@ class CustomTextWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label + ' :', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54)),
+          Text(label + ' :',
+              style: TextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.black54)),
           Text(
             name,
             style: TextStyle(fontWeight: FontWeight.w700),
