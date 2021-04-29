@@ -13,6 +13,7 @@ class CSUser extends Equatable {
   final String photoUrl;
   final String currentReservation;
   final String currentVehicle;
+  final String creditTransactionId;
   //internal attributes
   final int partnerAccess;
   final int userAccess;
@@ -67,6 +68,7 @@ class CSUser extends Equatable {
       this.dateUpdated,
       this.currentVehicle,
       this.currentReservation,
+      this.creditTransactionId,
       this.isBlocked,
       this.isRejected,
       this.licenseExpiry});
@@ -76,9 +78,12 @@ class CSUser extends Equatable {
         displayName = doc.data()['displayName'] as String,
         emailAddress = doc.data()['emailAddress'] as String,
         currentReservation = doc.data()['currentReservation'] as String,
+        creditTransactionId = doc.data()['creditTransactionId'] as String,
         firstName = doc.data()['firstName'] as String,
         lastName = doc.data()['lastName'] as String,
-        phoneNumber = doc.data()['phoneNumber'] != null ? doc.data()['phoneNumber'].toString() : null,
+        phoneNumber = doc.data()['phoneNumber'] != null
+            ? doc.data()['phoneNumber'].toString()
+            : null,
         photoUrl = doc.data()['photoUrl'] as String,
         partnerAccess = doc.data()['partnerAccess'] as int,
         userAccess = doc.data()['userAccess'] as int,
@@ -88,7 +93,9 @@ class CSUser extends Equatable {
         currentVehicle = doc.data()['currentVehicle'] as String,
         dateUpdated = doc.data()['dateCreated'].toDate(),
         dateCreated = doc.data()['dateUpdated'].toDate(),
-        licenseExpiry = doc.data()['licenseExpiry']!=null ? doc.data()['licenseExpiry'].toDate() : null,
+        licenseExpiry = doc.data()['licenseExpiry'] != null
+            ? doc.data()['licenseExpiry'].toDate()
+            : null,
         isBlocked = doc.data()['isBlocked'] as bool,
         isRejected = doc.data()['isRejected'] as bool;
 
@@ -109,6 +116,7 @@ class CSUser extends Equatable {
       "vehicles": this.vehicles,
       "isBlocked": this.isBlocked,
       "isRejected": this.isRejected,
+      "creditTransactionId": this.creditTransactionId,
       "licenseExpiry": this.licenseExpiry?.toString(),
     };
   }
