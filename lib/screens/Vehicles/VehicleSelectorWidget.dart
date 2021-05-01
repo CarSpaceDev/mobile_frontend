@@ -96,15 +96,16 @@ class _VehicleSelectorWidgetState extends State<VehicleSelectorWidget> with Tick
                   return BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, state) {
                     if (state is UserRepoReady) {
                       Vehicle selectedVehicle;
+                      selectedVehicle = vehicleState.vehiclesCollection[state.user.currentVehicle];
                       bool vehiclesAvailable = vehicleState.vehicles.isNotEmpty;
-                      try {
-                        selectedVehicle = vehicleState.vehicles.firstWhere((element) {
-                          return element.plateNumber == state.user.currentVehicle;
-                        });
-                      } catch (e) {
-                        selectedVehicle = null;
-                        header = "";
-                      }
+                      // try {
+                      //   selectedVehicle = vehicleState.vehicles.firstWhere((element) {
+                      //     return element.plateNumber == state.user.currentVehicle;
+                      //   });
+                      // } catch (e) {
+                      //   selectedVehicle = null;
+                      //   header = "";
+                      // }
                       // print(selectedVehicle?.plateNumber);
                       if (selectedVehicle == null)
                         return CurrentVehicleCard(
