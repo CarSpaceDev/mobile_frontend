@@ -1,7 +1,10 @@
 import 'package:carspace/CSMap/CSStaticMap.dart';
+import 'package:carspace/blocs/vehicle/vehicle_bloc.dart';
 import 'package:carspace/model/DriverReservation.dart';
 import 'package:carspace/model/Lot.dart';
 import 'package:carspace/model/Reservation.dart';
+import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
+import 'package:carspace/repo/vehicleRepo/vehicle_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
 import 'package:carspace/reusable/Popup.dart';
@@ -13,6 +16,7 @@ import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LotFound extends StatefulWidget {
   final Lot lot;
@@ -28,6 +32,7 @@ class _LotFoundState extends State<LotFound> {
   bool noVehicles = true;
   bool working = false;
   bool recurring = false;
+  bool isVehicleUsedOwner = false;
   @override
   void initState() {
     super.initState();
@@ -38,69 +43,134 @@ class _LotFoundState extends State<LotFound> {
     return CSTile(
       borderRadius: 16,
       margin: EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CSText(
-            widget.lot.address.toString(),
-            textType: TextType.H4,
-            textAlign: TextAlign.center,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        CSText(
+          widget.lot.address.toString(),
+          textType: TextType.H4,
+          textAlign: TextAlign.center,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: AspectRatio(aspectRatio: 2, child: CSStaticMap(position: widget.lot.coordinates)),
+        ),
+        // LotImageWidget(
+        //   url: widget.lot.lotImage,
+        // ),
+        CSTile(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.only(bottom: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, userState) {
+                    if (userState is UserRepoReady)
+                      return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, vehiclesState) {
+                        if (vehiclesState is VehicleRepoReady) {
+                          if (vehiclesState.vehiclesCollection[userState.user.currentVehicle].ownerId ==
+                              userState.user.uid)
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CSText(
+                                  widget.type == 0 ? "Price" : "Prices",
+                                ),
+                                if (widget.type == 0)
+                                  CSText(
+                                    "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
+                                  ),
+                                if (widget.type != 0)
+                                  CSText(
+                                    "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
+                                  ),
+                                if (widget.type != 0)
+                                  CSText(
+                                    "Php ${widget.lot.pricePerDay.toStringAsFixed(2)}/day (if recurring)",
+                                  ),
+                              ],
+                            );
+                          return Column(
+                            children: [
+                              if (widget.type == 0)
+                                CSText(
+                                  "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
+                                ),
+                              if (widget.type != 0)
+                                CSText(
+                                  "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
+                                ),
+                            ],
+                          );
+                        }
+                        return Container();
+                      });
+                    return Container();
+                  }),
+                  // widget.type == 0
+                  //     ? CSText(
+                  //         "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
+                  //       )
+                  //     : CSText(
+                  //         "Php ${widget.lot.pricePerDay.toStringAsFixed(2)}/day",
+                  //       ),
+                  Column(
+                    children: [
+                      CSText(
+                        "${formatDate(DateTime(2020, 1, 1, widget.lot.availableFrom ~/ 100, widget.lot.availableFrom % 100), [
+                          H,
+                          ":",
+                          nn,
+                          " ",
+                          am
+                        ])}",
+                      ),
+                      CSText(
+                        "to",
+                      ),
+                      CSText(
+                        "${formatDate(DateTime(2020, 1, 1, widget.lot.availableTo ~/ 100, widget.lot.availableTo % 100), [
+                          H,
+                          ":",
+                          nn,
+                          " ",
+                          am
+                        ])}",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              if (widget.type == 1)
+                BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, userState) {
+                  if (userState is UserRepoReady)
+                    return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, vehiclesState) {
+                      if (vehiclesState is VehicleRepoReady) {
+                        if (vehiclesState.vehiclesCollection[userState.user.currentVehicle].ownerId ==
+                            userState.user.uid)
+                          return CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              value: recurring,
+                              onChanged: _recurringChangeValue,
+                              title: new Text('Reserve as recurring reservation'),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              activeColor: Colors.blue);
+                        return Container();
+                      }
+                      return Container();
+                    });
+                  return Container();
+                }),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: AspectRatio(aspectRatio: 2, child: CSStaticMap(position: widget.lot.coordinates)),
-          ),
-          // LotImageWidget(
-          //   url: widget.lot.lotImage,
-          // ),
-          CSTile(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.only(bottom: 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    widget.type == 0
-                        ? CSText(
-                            "Php ${widget.lot.pricing.toStringAsFixed(2)}/hr",
-                          )
-                        : CSText(
-                            "Php ${widget.lot.pricePerDay.toStringAsFixed(2)}/day",
-                          ),
-                    CSText(
-                      "${formatDate(DateTime(2020, 1, 1, widget.lot.availableFrom ~/ 100, widget.lot.availableFrom % 100), [
-                        H,
-                        ":",
-                        nn,
-                        " ",
-                        am
-                      ])} to ${formatDate(DateTime(2020, 1, 1, widget.lot.availableTo ~/ 100, widget.lot.availableTo % 100), [
-                        H,
-                        ":",
-                        nn,
-                        " ",
-                        am
-                      ])}",
-                    )
-                  ],
-                ),
-                if (widget.type == 1)
-                  CheckboxListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: recurring,
-                      onChanged: _recurringChangeValue,
-                      title: new Text('Reserve as recurring reservation'),
-                      controlAffinity: ListTileControlAffinity.leading,
-                      activeColor: Colors.blue),
-              ],
-            ),
-          ),
+        ),
 
-          if (working) loading(),
-          if (!working)
-            Row(
+        if (working) loading(),
+        if (!working)
+          Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Row(
               children: [
                 Expanded(
                   child: CSTile(
@@ -134,7 +204,7 @@ class _LotFoundState extends State<LotFound> {
                     padding: EdgeInsets.symmetric(vertical: 12),
                     color: TileColor.Green,
                     child: CSText(
-                      widget.type == 0 ? 'BOOK' : 'RESERVE',
+                      "PARK HERE",
                       textType: TextType.Button,
                       textColor: TextColor.White,
                     ),
@@ -142,8 +212,8 @@ class _LotFoundState extends State<LotFound> {
                 ),
               ],
             ),
-        ],
-      ),
+          ),
+      ]),
     );
   }
 

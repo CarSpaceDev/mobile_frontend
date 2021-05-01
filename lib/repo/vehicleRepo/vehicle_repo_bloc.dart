@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
 import 'package:carspace/model/CSNotification.dart';
@@ -30,6 +31,7 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
             .snapshots()
             .listen((result) {
           List<Vehicle> vehicles = [];
+          HashMap<String,Vehicle> vehiclesMap = HashMap<String,Vehicle>();
           for (DocumentSnapshot doc in result.docs) {
             Vehicle v = Vehicle.fromDoc(doc);
             if (v.expireDate.isBefore(DateTime.now().add(Duration(days: 7)))) {
@@ -62,10 +64,12 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
                 }
               }
             }
+            vehiclesMap.putIfAbsent(v.plateNumber, () => v);
             vehicles.add(v);
           }
           print("Number of vehicles ${vehicles.length}");
-          add(UpdateVehicleRepo(vehicles: vehicles));
+          print(vehiclesMap.entries);
+          add(UpdateVehicleRepo(vehicles: vehicles, vehiclesCollection: vehiclesMap));
         });
       } catch (e) {
         print("Initialize VehicleRepo Error");
@@ -74,7 +78,7 @@ class VehicleRepoBloc extends Bloc<VehicleRepoEvent, VehicleRepoState> {
     }
     if (event is UpdateVehicleRepo) {
       print("New update to vehicles repo");
-      yield VehicleRepoReady(vehicles: event.vehicles);
+      yield VehicleRepoReady(vehicles: event.vehicles, vehiclesCollection: event.vehiclesCollection);
     }
     if (event is DisposeVehicleRepo) {
       print("VehicleRepoCalledDispose");

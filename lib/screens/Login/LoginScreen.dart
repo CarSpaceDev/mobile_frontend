@@ -68,18 +68,18 @@ class LoginBlocHandler extends StatelessWidget {
             return ErrorScreen(
               prompt: state.message,
               action: CSTile(
-                onTap: (){
+                onTap: () {
                   locator<NavigationService>().navigatorKey.currentContext.bloc<LoginBloc>().add(RestartLoginEvent());
                 },
                 borderRadius: 16,
                 margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 child: CSText(
-                  "OK", textType: TextType.Button,
+                  "OK",
+                  textType: TextType.Button,
                 ),
               ),
             );
-          }
-        else if (state is NavToRegister)
+          } else if (state is NavToRegister)
             return RegistrationScreen();
           else if (state is NavToLandingPage)
             return LoginScreen();
@@ -129,8 +129,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
             children: [
               if (MediaQuery.of(context).viewInsets.bottom > 0.0 == false)
                 Flexible(
-                child: Center(child: LoginIcon()),
-              ),
+                  child: Center(child: LoginIcon()),
+                ),
               Expanded(
                 child: Center(
                   child: Container(

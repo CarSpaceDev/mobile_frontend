@@ -11,7 +11,8 @@ class VehicleRepoInitial extends VehicleRepoState {
 
 class VehicleRepoReady extends VehicleRepoState {
   final List<Vehicle> vehicles;
-  VehicleRepoReady({this.vehicles});
+  final HashMap<String, Vehicle> vehiclesCollection;
+  VehicleRepoReady({this.vehicles, this.vehiclesCollection});
   @override
-  List<Object> get props => [vehicles];
+  List<Object> get props => [vehicles, vehiclesCollection];
 }

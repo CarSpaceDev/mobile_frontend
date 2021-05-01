@@ -13,9 +13,10 @@ class InitializeVehicleRepo extends VehicleRepoEvent {
 
 class UpdateVehicleRepo extends VehicleRepoEvent {
   final List<Vehicle> vehicles;
-  UpdateVehicleRepo({this.vehicles});
+  final HashMap<String, Vehicle> vehiclesCollection;
+  UpdateVehicleRepo({this.vehicles, this.vehiclesCollection});
   @override
-  List<Object> get props => [vehicles];
+  List<Object> get props => [vehicles, vehiclesCollection];
 }
 
 class VehicleRepoError extends VehicleRepoEvent {
@@ -29,4 +30,3 @@ class DisposeVehicleRepo extends VehicleRepoEvent {
   @override
   List<Object> get props => [];
 }
-

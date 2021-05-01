@@ -48,7 +48,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             yield ShowEulaScreen();
           }
         } catch (e) {
-          yield LoginError(message: "Error retrieving user data, please login");
+          print(e);
+          yield LoginError(message: "Error retrieving user data, please login again");
         }
       } else {
         //head to login screen
@@ -147,7 +148,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           }
         } else
           yield LoggedOut();
-      }catch (e){
+      } catch (e) {
         print("catch");
         print(e);
       }

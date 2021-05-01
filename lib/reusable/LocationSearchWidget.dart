@@ -16,8 +16,7 @@ class LocationSearchService {
     );
     if (result != null) {
       final LocationSearchResult placeDetails =
-          await PlaceApiProvider(sessionToken)
-              .getPlaceDetailFromId(result.placeId);
+          await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
       return placeDetails;
     } else
       return null;
@@ -65,10 +64,7 @@ class AddressSearch extends SearchDelegate<Suggestion> {
   @override
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder(
-      future: query == ""
-          ? null
-          : apiClient.fetchSuggestions(
-              query, Localizations.localeOf(context).languageCode),
+      future: query == "" ? null : apiClient.fetchSuggestions(query, Localizations.localeOf(context).languageCode),
       builder: (context, snapshot) => query == ''
           ? Container(
               padding: EdgeInsets.all(16.0),
@@ -77,8 +73,7 @@ class AddressSearch extends SearchDelegate<Suggestion> {
           : snapshot.hasData
               ? ListView.builder(
                   itemBuilder: (context, index) => ListTile(
-                    title:
-                        Text((snapshot.data[index] as Suggestion).description),
+                    title: Text((snapshot.data[index] as Suggestion).description),
                     onTap: () {
                       close(context, snapshot.data[index] as Suggestion);
                     },
@@ -101,7 +96,10 @@ class Place {
 
   @override
   String toString() {
-    return '${streetNumber!=null? streetNumber+', ':''}${street!=null? street+', ':''}${city!=null? city+', ':''}${zipCode!=null? zipCode:''}';
+    String result;
+    result =
+        '${streetNumber != null ? streetNumber + ', ' : ''}${street != null ? street + ', ' : ''}${city != null ? city + ', ' : ''}${zipCode != null ? zipCode : ''}';
+    return result.isNotEmpty ? result : null;
   }
 }
 
@@ -127,15 +125,13 @@ class PlaceApiProvider {
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
-    final response = await locator<ApiMapService>().getAutoComplete(
-        input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
+    final response = await locator<ApiMapService>()
+        .getAutoComplete(input: input, lang: lang, apiKey: apiKey, sessionToken: sessionToken);
     if (response.statusCode == 200) {
       final result = response.body;
       if (result['status'] == 'OK') {
         // compose suggestions in a list
-        return result['predictions']
-            .map<Suggestion>((p) => Suggestion(p['place_id'], p['description']))
-            .toList();
+        return result['predictions'].map<Suggestion>((p) => Suggestion(p['place_id'], p['description'])).toList();
       }
       if (result['status'] == 'ZERO_RESULTS') {
         return [];
@@ -149,8 +145,7 @@ class PlaceApiProvider {
   Future<LocationSearchResult> getPlaceDetailFromId(String placeId) async {
     if (placeId == "0") return null;
     final place = Place();
-    GoogleMapsPlaces _places =
-        new GoogleMapsPlaces(apiKey: apiKey); //Same API_KEY as above
+    GoogleMapsPlaces _places = new GoogleMapsPlaces(apiKey: apiKey); //Same API_KEY as above
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(placeId);
     double latitude = detail.result.geometry.location.lat;
     double longitude = detail.result.geometry.location.lng;
@@ -180,10 +175,9 @@ class LocationSearchResult {
   CSPosition location;
   CSPosition originalLocation;
 
-  LocationSearchResult(double latitude, double longitude,
-      {this.locationDetails}) {
-    this.location =  CSPosition.fromMap({"latitude":latitude, "longitude":longitude});
-    this.originalLocation =  CSPosition.fromMap({"latitude":latitude, "longitude":longitude});
+  LocationSearchResult(double latitude, double longitude, {this.locationDetails}) {
+    this.location = CSPosition.fromMap({"latitude": latitude, "longitude": longitude});
+    this.originalLocation = CSPosition.fromMap({"latitude": latitude, "longitude": longitude});
   }
 
   toJson() {
