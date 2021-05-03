@@ -356,7 +356,7 @@ class DriverReservationActions {
 
   markAsComplete(String userId, String lotId, String vehicleId, String reservationId, String lotAddress,
       String partnerId, bool noPop) async {
-    if(!noPop)locator<NavigationService>().goBack();
+    if (!noPop) locator<NavigationService>().goBack();
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -365,14 +365,15 @@ class DriverReservationActions {
       "lotAddress": lotAddress,
       "partnerId": partnerId
     });
+    PopupNotifications.showFullScreenLoading(prompt: "ENDING TRANSACTION", color: Colors.white);
     locator<ApiService>().markAsComplete(body).then((value) {
-      if (!noPop) locator<NavigationService>().goBack();
+      locator<NavigationService>().goBack();
     });
   }
 
   markAsCompleteV2(String userId, String lotId, String vehicleId, String reservationId, String lotAddress,
       String partnerId, bool noPop) async {
-    if(!noPop)locator<NavigationService>().goBack();
+    if (!noPop) locator<NavigationService>().goBack();
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -381,8 +382,9 @@ class DriverReservationActions {
       "lotAddress": lotAddress,
       "partnerId": partnerId
     });
+    PopupNotifications.showFullScreenLoading(prompt: "ENDING TRANSACTION", color: Colors.white);
     locator<ApiService>().markAsCompleteV2(body).then((value) {
-      if (!noPop) locator<NavigationService>().goBack();
+      locator<NavigationService>().goBack();
     });
   }
 
