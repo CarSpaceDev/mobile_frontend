@@ -157,7 +157,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return NoLicenseWidget();
                     }
-                    if (userState is UserRepoReady && userState.user.userAccess < 200) {
+                    if (userState is UserRepoReady && userState.user.userAccess < 210) {
                       return WaitForVerification();
                     }
                     if (userState is UserRepoReady &&

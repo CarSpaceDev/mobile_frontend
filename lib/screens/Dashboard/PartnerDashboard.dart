@@ -1,15 +1,10 @@
 import 'package:carspace/model/Enums.dart';
-import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
-import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
-import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:carspace/reusable/NavigationDrawer.dart';
 import 'package:carspace/screens/Dashboard/DriverDashboard.dart';
-import 'package:carspace/screens/Lots/LotTileWidget.dart';
 import 'package:carspace/screens/Notifications/NotificationLinkWidget.dart';
-import 'package:carspace/screens/Notifications/NotificationWidget.dart';
 import 'package:carspace/screens/Reservations/PartnerReservationScreen.dart';
 import 'package:carspace/screens/Wallet/WalletInfoWidget.dart';
 import 'package:carspace/services/navigation.dart';
@@ -74,9 +69,34 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: SafeArea(
           child: Column(
-            children: [
-              Flexible(
-                flex: 1,
+            children: [ CSTile(
+              color: TileColor.Primary,
+              onTap: () {
+                locator<NavigationService>().pushNavigateTo(WalletRoute);
+              },
+              borderRadius: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CSText(
+                    "Your Wallet",
+                    textType: TextType.H3Bold,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    textAlign: TextAlign.center,
+                    textColor: TextColor.Green,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: WalletInfoWidget(
+                      textColor: TextColor.White,
+                      textType: TextType.H2,
+                      noRedirect: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+              Expanded(
                 child: SingleChildScrollView(
                   child: BlocBuilder<ReservationRepoBloc, ReservationRepoState>(
                     builder: (BuildContext context, state) {
@@ -98,35 +118,7 @@ class _PartnerDashboardState extends State<PartnerDashboard> {
                   ),
                 ),
               ),
-              Flexible(
-                child: CSTile(
-                  color: TileColor.Primary,
-                  onTap: () {
-                    locator<NavigationService>().pushNavigateTo(WalletRoute);
-                  },
-                  borderRadius: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      CSText(
-                        "Your Wallet",
-                        textType: TextType.H3Bold,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        textAlign: TextAlign.center,
-                        textColor: TextColor.Green,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: WalletInfoWidget(
-                          textColor: TextColor.White,
-                          textType: TextType.H2,
-                          noRedirect: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+
             ],
           ),
         ),

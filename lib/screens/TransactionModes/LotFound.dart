@@ -229,7 +229,7 @@ class _LotFoundState extends State<LotFound> {
             height: 50,
             width: 50,
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
               backgroundColor: Colors.transparent,
             ),
           ),
