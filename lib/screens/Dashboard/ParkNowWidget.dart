@@ -13,6 +13,7 @@ import 'package:carspace/services/serviceLocator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 class ParkNowWidget extends StatefulWidget {
   final Vehicle selectedVehicle;
   final bool enabled;
@@ -44,7 +45,9 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
             InkWell(
               onTap: widget.enabled
                   ? () {
-                      _pageController.animateToPage(1, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                      _pageController.animateToPage(1,
+                          duration: Duration(milliseconds: 100),
+                          curve: Curves.easeIn);
                     }
                   : null,
               child: Container(
@@ -80,14 +83,18 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     label: "DRIVE\n(ON DEMAND)",
                     onTap: widget.enabled
                         ? () {
-                            context.read<GeolocationBloc>().add(StartGeolocation());
-                            nav.pushNavigateToWidget(
-                                FadeRoute(child: DriveModeScreen(), routeName: "TransactionDriveMode"));
+                            context
+                                .read<GeolocationBloc>()
+                                .add(StartGeolocation());
+                            nav.pushNavigateToWidget(FadeRoute(
+                                child: DriveModeScreen(),
+                                routeName: "TransactionDriveMode"));
                             _pageController.jumpToPage(0);
                           }
                         : () {
                             _pageController.animateToPage(0,
-                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                                duration: Duration(milliseconds: 100),
+                                curve: Curves.easeIn);
                           },
                   ),
                   DriverOptions(
@@ -100,8 +107,11 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     borderEnabled: true,
                     onTap: widget.enabled
                         ? () {
-                            if (widget.selectedVehicle.ownerId == locator<AuthService>().currentUser().uid) {
-                              context.read<GeolocationBloc>().add(StartGeolocation());
+                            if (widget.selectedVehicle.ownerId ==
+                                locator<AuthService>().currentUser().uid) {
+                              context
+                                  .read<GeolocationBloc>()
+                                  .add(StartGeolocation());
                               nav.pushNavigateToWidget(FadeRoute(
                                   child: DestinationPicker(
                                     mode: ParkingType.Reservation,
@@ -112,11 +122,13 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                               PopUp.showError(
                                   context: context,
                                   title: "UNAVAILABLE",
-                                  body: "Reservation mode is only available to the owner of the vehicle.");
+                                  body:
+                                      "Reservation mode is only available to the owner of the vehicle.");
                           }
                         : () {
                             _pageController.animateToPage(0,
-                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                                duration: Duration(milliseconds: 100),
+                                curve: Curves.easeIn);
                           },
                   ),
                   DriverOptions(
@@ -137,7 +149,8 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                           }
                         : () {
                             _pageController.animateToPage(0,
-                                duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+                                duration: Duration(milliseconds: 100),
+                                curve: Curves.easeIn);
                           },
                   ),
                 ],
@@ -155,7 +168,11 @@ class DriverOptions extends StatelessWidget {
   final Icon icon;
   final String label;
   final Function onTap;
-  DriverOptions({@required this.icon, @required this.label, this.borderEnabled = false, this.onTap});
+  DriverOptions(
+      {@required this.icon,
+      @required this.label,
+      this.borderEnabled = false,
+      this.onTap});
   @override
   Widget build(BuildContext context) {
     return Flexible(
