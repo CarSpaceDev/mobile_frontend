@@ -122,21 +122,26 @@ class InfoNotificationWidget extends StatelessWidget {
       borderRadius: 5,
       shadow: true,
       onTap: onTap,
-      color: notification.opened ? TileColor.DarkGrey : TileColor.Secondary,
+      color: notification.opened ? TileColor.DarkGrey : TileColor.White,
       title: CSText(
         notification.title,
         textAlign: TextAlign.center,
         textType: TextType.H5Bold,
+        textColor: TextColor.Blue,
       ),
-      body: Column(children: [
+      body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
         CSText(
           notification.data["message"],
-          textType: TextType.Caption,
+          textAlign: TextAlign.center,
+          textType: TextType.Body,
           padding: EdgeInsets.only(top: 8, bottom: 16),
         ),
         CSText(
           "${formatDate(notification.dateCreated, [MM, " ", dd, ", ", yyyy, " ", HH, ":", mm])}",
           textType: TextType.Caption,
+          textAlign: TextAlign.center,
         )
       ]),
     );
@@ -164,7 +169,7 @@ class ExpiringLicenseWidget extends StatelessWidget {
       padding: EdgeInsets.all(10),
       borderRadius: 5,
       shadow: true,
-      color: notification.opened ? TileColor.DarkGrey : TileColor.Secondary,
+      color: notification.opened ? TileColor.DarkGrey : TileColor.White,
       title: CSText(
         notification.title,
         textAlign: TextAlign.center,
@@ -207,7 +212,7 @@ class ExpiringVehicleWidget extends StatelessWidget {
       padding: EdgeInsets.all(10),
       borderRadius: 5,
       shadow: true,
-      color: notification.opened ? TileColor.DarkGrey : TileColor.Secondary,
+      color: notification.opened ? TileColor.DarkGrey : TileColor.White,
       title: CSText(
         notification.title,
         textAlign: TextAlign.center,

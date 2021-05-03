@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PopupNotifications {
-  static showNotificationDialog(BuildContext context, {@required Widget child, bool barrierDismissible=false}) {
+  static showNotificationDialog(BuildContext context, {@required Widget child, bool barrierDismissible = false}) {
     return showDialog(
       barrierDismissible: barrierDismissible,
       context: context,
@@ -16,13 +16,14 @@ class PopupNotifications {
       ),
     );
   }
-  static showFullScreenLoading({bool barrierDismissible=false}) {
+
+  static showFullScreenLoading({String prompt, Color color}) {
     return showDialog(
-      barrierDismissible: barrierDismissible,
+      barrierDismissible: false,
       context: locator<NavigationService>().navigatorKey.currentContext,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
-        child: LoadingFullScreenWidget(),
+        child: LoadingFullScreenWidget(prompt: prompt,color: color),
       ),
     );
   }

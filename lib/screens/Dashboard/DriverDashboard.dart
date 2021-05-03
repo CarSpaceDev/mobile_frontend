@@ -82,34 +82,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
                       return Container();
                     }
-                    if (userState is UserRepoReady &&
-                        userState.user.userAccess > 110 &&
-                        userState.user.currentReservation != null) {
-                      context
-                          .bloc<CurrentReservationBloc>()
-                          .add(InitCurrentReservationRepo(uid: userState.user.currentReservation));
-                      return BlocBuilder<CurrentReservationBloc, CurrentReservationState>(
-                          builder: (BuildContext context, CurrentReservationState state) {
-                        if (state is UpdatedCurrentReservation) {
-                          return DriverReservationTileWidget(reservation: state.reservation);
-                        }
-                        return Container();
-                      });
-                    } else
-                      return Container();
-                  }),
-                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
-                    if (userState is UserRepoReady && userState.user.isBlocked) {
-                      return Container();
-                    }
-                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
-                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
-                        return Container();
-                      }
-                    }
-                    if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
-                      return Container();
-                    }
                     if (userState is UserRepoReady && userState.user.currentReservation != null) return Container();
                     return VehicleSelectorWidget();
                   }),
@@ -141,6 +113,34 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       ],
                     ),
                   ),
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
+                    if (userState is UserRepoReady && userState.user.isBlocked) {
+                      return Container();
+                    }
+                    if (userState is UserRepoReady && userState.user.licenseExpiry != null) {
+                      if (userState is UserRepoReady && userState.user.licenseExpiry.isBefore(DateTime.now())) {
+                        return Container();
+                      }
+                    }
+                    if (userState is UserRepoReady && userState.user.licenseExpiry == null) {
+                      return Container();
+                    }
+                    if (userState is UserRepoReady &&
+                        userState.user.userAccess > 110 &&
+                        userState.user.currentReservation != null) {
+                      context
+                          .bloc<CurrentReservationBloc>()
+                          .add(InitCurrentReservationRepo(uid: userState.user.currentReservation));
+                      return BlocBuilder<CurrentReservationBloc, CurrentReservationState>(
+                          builder: (BuildContext context, CurrentReservationState state) {
+                            if (state is UpdatedCurrentReservation) {
+                              return DriverReservationTileWidget(reservation: state.reservation, disableActions: true,);
+                            }
+                            return Container();
+                          });
+                    } else
+                      return Container();
+                  }),
                   BlocBuilder<UserRepoBloc, UserRepoState>(builder: (BuildContext context, UserRepoState userState) {
                     if (userState is UserRepoReady && userState.user.isBlocked) {
                       return BlockedUserWidget(uid: userState.user.uid);
@@ -191,10 +191,23 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         );
                       });
                     else
-                      return ParkNowWidget(
-                        enabled: false,
-                      );
-                  }),
+                      return BlocBuilder<CurrentReservationBloc, CurrentReservationState>(
+                          builder: (BuildContext context, CurrentReservationState state) {
+                        if (state is UpdatedCurrentReservation) {
+                          return CSTile(
+                              borderRadius: 8,
+                              padding: EdgeInsets.only(bottom:8),
+                              child: Column(
+                                children: [
+                                  DriverReservationActions().actions(context: context, reservation: state.reservation, noPop: true),
+                                ],
+                              ));
+                        } else
+                          return ParkNowWidget(
+                            enabled: false,
+                          );
+                      });
+                  })
                 ],
               ),
             ),

@@ -1,5 +1,4 @@
 import 'package:carspace/CSMap/bloc/classes.dart';
-import 'package:carspace/model/Vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
@@ -8,17 +7,17 @@ import 'Enums.dart';
 class Reservation extends Equatable {
   final DateTime dateCreated;
   final DateTime dateUpdated;
-  final CSPosition position;
   final String lotAddress;
   final String lotId;
   final double lotPrice;
   final String partnerId;
   final bool partnerRating;
+  final CSPosition position;
   final bool recurring;
-  final String uid;
   final ReservationStatus reservationStatus;
   final ReservationType reservationType;
   final String transactionId;
+  final String reservationId;
   final String userId;
   final bool userRating;
   final String vehicleId;
@@ -34,7 +33,7 @@ class Reservation extends Equatable {
         partnerId = doc.data()["partnerId"] as String,
         partnerRating = doc.data()["partnerRating"] as bool,
         recurring = doc.data()["recurring"] as bool,
-        uid = doc.id,
+        reservationId = doc.id,
         reservationStatus = ReservationStatus.values[doc.data()["reservationStatus"]],
         reservationType = ReservationType.values[doc.data()["reservationType"]],
         transactionId = doc.data()["transactionId"] as String,
@@ -53,7 +52,7 @@ class Reservation extends Equatable {
         partnerId,
         partnerRating,
         recurring,
-        uid,
+        reservationId,
         reservationStatus,
         reservationType,
         transactionId,
@@ -72,7 +71,7 @@ class Reservation extends Equatable {
         "partnerId": partnerId,
         "partnerRating": partnerRating,
         "recurring": recurring,
-        "uid": uid,
+        "uid": reservationId,
         "reservationStatus": reservationStatus,
         "reservationType": reservationType,
         "transactionId": transactionId,

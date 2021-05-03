@@ -17,7 +17,7 @@ class _NotificationListState extends State<NotificationList> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.fromLTRB(16,0,16,8),
       child: Column(
         children: [
           Padding(
@@ -25,6 +25,7 @@ class _NotificationListState extends State<NotificationList> {
             child: CSText(
               "Notifications",
               textType: TextType.H4,
+              textColor: TextColor.Blue,
             ),
           ),
           Expanded(
@@ -32,7 +33,10 @@ class _NotificationListState extends State<NotificationList> {
               builder: (BuildContext context, state) {
                 if (state is NotificationsReady) {
                   if (state.notifications.isEmpty)
-                    return Text("No notifications at the moment");
+                    return CSText(
+                      "No notifications at the moment",
+                      textColor: TextColor.Grey,
+                    );
                   else
                     return ListView.builder(
                         itemCount: state.notifications.length,
@@ -51,10 +55,48 @@ class _NotificationListState extends State<NotificationList> {
               },
             ),
           ),
-          CSTile(
-            onTap: Navigator.of(context).pop,
-            child: Icon(CupertinoIcons.xmark),
-          )
+          BlocBuilder<NotificationBloc, NotificationState>(
+            builder: (BuildContext context, state) {
+              if (state is NotificationsReady && state.notifications.isNotEmpty) {
+                return Column(
+                  children: [
+                    TextButton.icon(
+                        icon: Icon(
+                          CupertinoIcons.eye,
+                          color: Colors.blueAccent,
+                        ),
+                        label: CSText(
+                          "MARK ALL AS SEEN",
+                          textColor: TextColor.Blue,
+                          textType: TextType.Button,
+                        ),
+                        onPressed: () {
+                          context.bloc<NotificationBloc>().add(MarkAllAsSeen());
+                        }),
+                    TextButton.icon(
+                        icon: Icon(CupertinoIcons.trash, color: Colors.redAccent),
+                        label: CSText(
+                          "DELETE ALL NOTIFICATIONS",
+                          textColor: TextColor.Red,
+                          textType: TextType.Button,
+                        ),
+                        onPressed: () {
+                          context.bloc<NotificationBloc>().add(ClearAllNotifications());
+                        }),
+                  ],
+                );
+              } else
+                return Container();
+            },
+          ),
+          TextButton.icon(
+              icon: Icon(CupertinoIcons.xmark),
+              label: CSText(
+                "BACK",
+                textColor: TextColor.Primary,
+                textType: TextType.Button,
+              ),
+              onPressed: Navigator.of(context).pop),
         ],
       ),
     );

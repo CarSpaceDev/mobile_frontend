@@ -78,7 +78,7 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
     if (this.widget.type == 0) {
       var ratingBody = {
         "userId": widget.user,
-        "reservationId": this.widget.reservation.uid,
+        "reservationId": this.widget.reservation.reservationId,
         "lotId": this.widget.reservation.lotId,
         "rating": rating,
         "feedback": searchController.text
@@ -91,7 +91,7 @@ class _RatingAndFeedbackState extends State<RatingAndFeedback> {
     } else {
       var ratingBody = {
         "userId": widget.user,
-        "reservationId": widget.reservation.uid,
+        "reservationId": widget.reservation.reservationId,
         "lotId": this.widget.reservation.lotId,
         "rating": rating,
         "feedback": searchController.text

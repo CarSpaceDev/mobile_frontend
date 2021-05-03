@@ -5,6 +5,7 @@ import 'package:carspace/model/CSNotification.dart';
 import 'package:carspace/reusable/PopupNotifications.dart';
 import 'package:carspace/screens/Notifications/NotificationWidget.dart';
 import 'package:carspace/screens/Vehicles/VehicleAddAuthDetails.dart';
+import 'package:carspace/services/AuthService.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,34 +47,50 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         print(e);
       }
     }
+    if(event is ClearAllNotifications){
+      var batch = FirebaseFirestore.instance.batch();
+      nRepo.forEach((element) {
+        batch.delete(FirebaseFirestore.instance.collection("archive").doc(locator<AuthService>().currentUser().uid).collection("notifications").doc(element.uid));
+      });
+      await batch.commit();
+    }
+
+    if(event is MarkAllAsSeen){
+      var batch = FirebaseFirestore.instance.batch();
+      nRepo.forEach((element) {
+        batch.update(FirebaseFirestore.instance.collection("archive").doc(locator<AuthService>().currentUser().uid).collection("notifications").doc(element.uid), {"opened": true});
+      });
+      await batch.commit();
+    }
     if (event is NewNotificationReceived) {
       print("New notification added to the collection");
-      switch (nRepo.first.type) {
-        case NotificationType.VerificationRequest:
-          PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
-              barrierDismissible: true, child: VehicleAddAuthDetails(code: nRepo.first.data["code"]));
-          break;
-        case NotificationType.Info:
-        case NotificationType.ExpiringVehicle:
-        case NotificationType.ExpiringLicense:
-          PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
-              barrierDismissible: true,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: NotificationWidget(
-                    notification: nRepo.first,
-                    onTap: () {
-                      if (!nRepo.first.opened)
-                        locator<NavigationService>()
-                            .navigatorKey
-                            .currentContext
-                            .read<NotificationBloc>()
-                            .add(NotificationOpened(uid: nRepo.first.uid));
-                      locator<NavigationService>().goBack();
-                    }),
-              ));
-          break;
-      }
+      if (!nRepo.first.opened)
+        switch (nRepo.first.type) {
+          case NotificationType.VerificationRequest:
+            PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+                barrierDismissible: true, child: VehicleAddAuthDetails(code: nRepo.first.data["code"]));
+            break;
+          case NotificationType.Info:
+          case NotificationType.ExpiringVehicle:
+          case NotificationType.ExpiringLicense:
+            PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext,
+                barrierDismissible: true,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: NotificationWidget(
+                      notification: nRepo.first,
+                      onTap: () {
+                        if (!nRepo.first.opened)
+                          locator<NavigationService>()
+                              .navigatorKey
+                              .currentContext
+                              .read<NotificationBloc>()
+                              .add(NotificationOpened(uid: nRepo.first.uid));
+                        locator<NavigationService>().goBack();
+                      }),
+                ));
+            break;
+        }
 
       add(NotificationsUpdated(notifications: nRepo));
     }

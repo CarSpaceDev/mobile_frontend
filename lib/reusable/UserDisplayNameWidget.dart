@@ -1,5 +1,4 @@
-import 'package:carspace/services/ApiService.dart';
-import 'package:carspace/services/serviceLocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'CSText.dart';
 
@@ -9,14 +8,16 @@ class UserDisplayNameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: locator<ApiService>().getUserData(uid: uid),
-        builder: (context, result) {
+        future: FirebaseFirestore.instance.collection("users").doc(uid).get(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> result) {
           if (result.hasData) {
+            if(result.data.exists)
             return CSText(
-              "${result.data.body["displayName"]}".toUpperCase(),
+              "${result.data.data()["displayName"]}".toUpperCase(),
               textType: TextType.Button,
               textColor: TextColor.Primary,
             );
+            else return CSText(". . .");
           }
           return CSText(". . .");
         },);

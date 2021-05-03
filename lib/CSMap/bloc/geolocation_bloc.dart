@@ -79,7 +79,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
               .navigatorKey
               .currentContext
               .read<MqttBloc>()
-              .add(SendMessageToTopic(topic: event.reservation.uid, message: payload));
+              .add(SendMessageToTopic(topic: event.reservation.reservationId, message: payload));
           //mqtt broadcast
           locator<NavigationService>()
               .navigatorKey
@@ -89,7 +89,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           //insert firestore session broadcast
           try {
             print("Saving position data to session FirestoreDocument");
-            FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.uid).set({
+            FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.reservationId).set({
               "longitude": p.longitude,
               "latitude": p.latitude,
               "distance": Geolocator.distanceBetween(

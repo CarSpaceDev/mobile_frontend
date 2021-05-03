@@ -241,13 +241,13 @@ class TransactionRecordDetailWidget extends StatelessWidget {
       trailing: CSTile(
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         margin: EdgeInsets.zero,
-        color: TileColor.Grey,
+        color: transaction.amount.isNegative ? TileColor.Red : TileColor.Green,
         shadow: true,
         borderRadius: 5,
         child: ConstrainedBox(
           constraints: BoxConstraints(minWidth: 60, maxWidth: 60),
           child: CSText(
-            "${transaction.amount}",
+            transaction.amount.isNegative ? "(${transaction.amount})".replaceAll("-", "") : "${transaction.amount}",
             textColor: TextColor.White,
             textType: TextType.H5Bold,
             textAlign: TextAlign.center,

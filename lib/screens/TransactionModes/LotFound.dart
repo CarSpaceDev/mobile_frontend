@@ -52,9 +52,7 @@ class _LotFoundState extends State<LotFound> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          child: AspectRatio(
-              aspectRatio: 2,
-              child: CSStaticMap(position: widget.lot.coordinates)),
+          child: AspectRatio(aspectRatio: 2, child: CSStaticMap(position: widget.lot.coordinates)),
         ),
         // LotImageWidget(
         //   url: widget.lot.lotImage,
@@ -68,16 +66,11 @@ class _LotFoundState extends State<LotFound> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BlocBuilder<UserRepoBloc, UserRepoState>(
-                      builder: (context, userState) {
+                  BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, userState) {
                     if (userState is UserRepoReady)
-                      return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                          builder: (context, vehiclesState) {
+                      return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, vehiclesState) {
                         if (vehiclesState is VehicleRepoReady) {
-                          if (vehiclesState
-                                  .vehiclesCollection[
-                                      userState.user.currentVehicle]
-                                  .ownerId ==
+                          if (vehiclesState.vehiclesCollection[userState.user.currentVehicle].ownerId ==
                               userState.user.uid)
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,23 +144,17 @@ class _LotFoundState extends State<LotFound> {
                 ],
               ),
               if (widget.type == 0)
-                BlocBuilder<UserRepoBloc, UserRepoState>(
-                    builder: (context, userState) {
+                BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, userState) {
                   if (userState is UserRepoReady)
-                    return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(
-                        builder: (context, vehiclesState) {
+                    return BlocBuilder<VehicleRepoBloc, VehicleRepoState>(builder: (context, vehiclesState) {
                       if (vehiclesState is VehicleRepoReady) {
-                        if (vehiclesState
-                                .vehiclesCollection[
-                                    userState.user.currentVehicle]
-                                .ownerId ==
+                        if (vehiclesState.vehiclesCollection[userState.user.currentVehicle].ownerId ==
                             userState.user.uid)
                           return CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
                               value: recurring,
                               onChanged: _recurringChangeValue,
-                              title:
-                                  new Text('Reserve as recurring reservation'),
+                              title: new Text('Reserve as recurring reservation'),
                               controlAffinity: ListTileControlAffinity.leading,
                               activeColor: Colors.blue);
                         return Container();
@@ -209,9 +196,9 @@ class _LotFoundState extends State<LotFound> {
                   child: CSTile(
                     onTap: () {
                       if (widget.type == 1)
-                        book();
+                        book(context: context);
                       else
-                        reserve();
+                        reserve(context: context);
                     },
                     borderRadius: 8,
                     margin: EdgeInsets.zero,
@@ -242,8 +229,7 @@ class _LotFoundState extends State<LotFound> {
             height: 50,
             width: 50,
             child: CircularProgressIndicator(
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
               backgroundColor: Colors.transparent,
             ),
           ),
@@ -254,7 +240,7 @@ class _LotFoundState extends State<LotFound> {
 
   void _recurringChangeValue(bool value) => setState(() => recurring = value);
 
-  book() async {
+  book({@required BuildContext context}) async {
     print(widget.lot.pricing);
     var body = ({
       "userId": widget.user,
@@ -270,28 +256,22 @@ class _LotFoundState extends State<LotFound> {
     locator<ApiService>().bookLot(body).then((value) {
       print(value.body);
       print(value.statusCode);
-      Navigator.of(context).pop();
+      locator<NavigationService>().goBack();
       if (value.body["code"] == 200) {
-        locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
-        DriverReservation dRes =
-            DriverReservation.fromJson(value.body["reservationData"]);
-        FirebaseFirestore.instance
-            .collection("reservations")
-            .doc(dRes.reservationId)
-            .get()
-            .then((doc) {
-          successfulBooking(Reservation.fromDoc(doc));
+        locator<NavigationService>().goBack();
+        DriverReservation dRes = DriverReservation.fromJson(value.body["reservationData"]);
+        FirebaseFirestore.instance.collection("reservations").doc(dRes.reservationId).get().then((doc) {
+          // successfulBooking(Reservation.fromDoc(doc));
         });
       } else {
-        PopUp.showError(
-            context: context, title: "INFO", body: "${value.body["message"]}");
+        PopUp.showError(context: context, title: "INFO", body: "${value.body["message"]}");
       }
     }).catchError((err) {
       print(err);
     });
   }
 
-  reserve() async {
+  reserve({@required BuildContext context}) async {
     var reserveType;
     if (recurring == false) {
       reserveType = 0;
@@ -313,24 +293,19 @@ class _LotFoundState extends State<LotFound> {
     await locator<ApiService>().reserveLot(reserveType, body).then((value) {
       print(value.body);
       print(value.statusCode);
+      locator<NavigationService>().goBack();
       setState(() {
         working = false;
       });
       // Navigator.of(context).pop();
       if (value.body["code"] == 200) {
-        locator<NavigationService>().pushReplaceNavigateTo(DashboardRoute);
-        DriverReservation dRes =
-            DriverReservation.fromJson(value.body["reservationData"]);
-        FirebaseFirestore.instance
-            .collection("reservations")
-            .doc(dRes.reservationId)
-            .get()
-            .then((doc) {
-          successfulBooking(Reservation.fromDoc(doc));
+        locator<NavigationService>().goBack();
+        DriverReservation dRes = DriverReservation.fromJson(value.body["reservationData"]);
+        FirebaseFirestore.instance.collection("reservations").doc(dRes.reservationId).get().then((doc) {
+          // successfulBooking(Reservation.fromDoc(doc));
         });
       } else {
-        PopUp.showError(
-            context: context, title: "INFO", body: "${value.body["message"]}");
+        PopUp.showError(context: context, title: "INFO", body: "${value.body["message"]}");
       }
     }).catchError((err) {
       print(err);
@@ -359,10 +334,7 @@ class _LotFoundState extends State<LotFound> {
             ),
             TextButton.icon(
                 onPressed: () {
-                  Navigator.of(locator<NavigationService>()
-                          .navigatorKey
-                          .currentContext)
-                      .pop(null);
+                  Navigator.of(locator<NavigationService>().navigatorKey.currentContext).pop(null);
                   locator<ApiService>().notifyOnTheWay({
                     "userId": widget.user,
                     "lotAddress": widget.lot.address.toString(),

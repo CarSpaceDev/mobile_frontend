@@ -3,12 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'Enums.dart';
 
 class DriverReservation {
-  String reservationId;
-  String lotId;
-  String partnerId;
-  String vehicleId;
   String dateCreated;
   String dateUpdated;
+  String lotId;
+  String reservationId;
+  String partnerId;
+  String vehicleId;
   String timeCreated;
   String timeUpdated;
   String lotImage;
@@ -36,8 +36,8 @@ class DriverReservation {
         partnerRating = json["partnerRating"] as bool,
         status = ReservationStatus.values[json['reservationStatus'] as int],
         type = ReservationType.values[json['reservationType'] as int],
-        coordinates = LatLng(json["g"]["geopoint"]["_latitude"] as double,
-            json["g"]["geopoint"]["_longitude"] as double);
+        coordinates =
+            LatLng(json["g"]["geopoint"]["_latitude"] as double, json["g"]["geopoint"]["_longitude"] as double);
 
   toJson() {
     return {

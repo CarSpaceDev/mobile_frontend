@@ -20,8 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PartnerReservationScreen extends StatefulWidget {
   @override
-  _PartnerReservationScreenState createState() =>
-      _PartnerReservationScreenState();
+  _PartnerReservationScreenState createState() => _PartnerReservationScreenState();
 }
 
 class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
@@ -31,8 +30,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
         .navigatorKey
         .currentContext
         .bloc<ReservationRepoBloc>()
-        .add(InitializeReservationRepo(
-            uid: locator<AuthService>().currentUser().uid, isPartner: true));
+        .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid, isPartner: true));
     super.initState();
   }
 
@@ -47,9 +45,9 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              context.bloc<ReservationRepoBloc>().add(InitializeReservationRepo(
-                  uid: locator<AuthService>().currentUser().uid,
-                  isPartner: true));
+              context
+                  .bloc<ReservationRepoBloc>()
+                  .add(InitializeReservationRepo(uid: locator<AuthService>().currentUser().uid, isPartner: true));
             },
           )
         ],
@@ -66,8 +64,7 @@ class _PartnerReservationScreenState extends State<PartnerReservationScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               itemCount: state.reservations.length,
               itemBuilder: (BuildContext context, index) {
-                return PartnerReservationTileWidget(
-                    reservation: state.reservations[index]);
+                return PartnerReservationTileWidget(reservation: state.reservations[index]);
               },
             );
           }
@@ -97,8 +94,7 @@ class PartnerReservationTileWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Flexible(
-                  flex: 1, child: LotImageWidget(lotUid: reservation.lotId)),
+              Flexible(flex: 1, child: LotImageWidget(lotUid: reservation.lotId)),
               Flexible(
                 flex: 2,
                 child: CSText(
@@ -118,104 +114,113 @@ class PartnerReservationTileWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: RichText(
-                    text: TextSpan(
-                        style: TextStyle(color: Colors.black),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: 'Date Placed: ',
-                              style: TextStyle(color: Colors.grey)),
-                          TextSpan(
-                            text: "${formatDate(reservation.dateCreated, [
-                              MM,
-                              " ",
-                              dd,
-                              ", ",
-                              yyyy,
-                              " ",
-                              h,
-                              ":",
-                              nn
-                            ])} ${reservation.dateCreated.hour < 12 ? "AM" : "PM"}",
-                          )
-                        ]),
+                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                      TextSpan(text: 'Date Placed: ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(
+                        text: "${formatDate(reservation.dateCreated, [
+                          MM,
+                          " ",
+                          dd,
+                          ", ",
+                          yyyy,
+                          " ",
+                          h,
+                          ":",
+                          nn
+                        ])} ${reservation.dateCreated.hour < 12 ? "AM" : "PM"}",
+                      )
+                    ]),
                   ),
                 ),
                 if (reservation.dateUpdated != reservation.dateCreated)
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: RichText(
-                      text: TextSpan(
-                          style: TextStyle(color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: 'Date Exited: ',
-                                style: TextStyle(color: Colors.grey)),
-                            TextSpan(
-                              text: "${formatDate(reservation.dateUpdated, [
-                                MM,
-                                " ",
-                                dd,
-                                ", ",
-                                yyyy,
-                                " ",
-                                h,
-                                ":",
-                                nn
-                              ])} ${reservation.dateUpdated.hour < 12 ? "AM" : "PM"}",
-                            )
-                          ]),
+                      text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                        TextSpan(text: 'Date Exited: ', style: TextStyle(color: Colors.grey)),
+                        TextSpan(
+                          text: "${formatDate(reservation.dateUpdated, [
+                            MM,
+                            " ",
+                            dd,
+                            ", ",
+                            yyyy,
+                            " ",
+                            h,
+                            ":",
+                            nn
+                          ])} ${reservation.dateUpdated.hour < 12 ? "AM" : "PM"}",
+                        )
+                      ]),
                     ),
                   ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: RichText(
-                    text: TextSpan(
-                        style: TextStyle(color: Colors.black),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: 'Vehicle: ',
-                              style: TextStyle(color: Colors.grey)),
-                          TextSpan(text: reservation.vehicleId)
-                        ]),
+                    text: TextSpan(style: TextStyle(color: Colors.black), children: <TextSpan>[
+                      TextSpan(text: 'Vehicle: ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(text: reservation.vehicleId)
+                    ]),
                   ),
                 ),
               ],
             ),
           ),
-          CSTile(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            margin: EdgeInsets.zero,
-            color: reservation.reservationStatus == ReservationStatus.Active
-                ? TileColor.Green
-                : TileColor.Secondary,
-            shadow: true,
-            borderRadius: 4,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CSText(
-                  "${reservation.reservationStatus == ReservationStatus.Active ? "Active" : "Completed"}"
-                      .toUpperCase(),
-                  textType: TextType.Caption,
-                  textColor: TextColor.White,
-                ),
-                CSText(
-                  " ${reservation.reservationType}"
-                      .replaceAll("ReservationType.", '')
-                      .toUpperCase(),
-                  textType: TextType.Caption,
-                  textColor: TextColor.White,
-                ),
-              ],
+          if (reservation.partnerRating == true)
+            CSTile(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              margin: EdgeInsets.zero,
+              color: reservation.reservationStatus == ReservationStatus.Active ? TileColor.Green : TileColor.Secondary,
+              shadow: true,
+              borderRadius: 4,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CSText(
+                    "${reservation.reservationStatus == ReservationStatus.Active ? "Active" : "Completed"}"
+                        .toUpperCase(),
+                    textType: TextType.Caption,
+                    textColor: TextColor.White,
+                  ),
+                ],
+              ),
             ),
-          )
+          if (reservation.partnerRating != true)
+            CSTile(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              margin: EdgeInsets.zero,
+              color: reservation.reservationStatus == ReservationStatus.Active ? TileColor.Green : TileColor.Secondary,
+              shadow: true,
+              borderRadius: 4,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CSText(
+                    "${reservation.reservationStatus == ReservationStatus.Active ? "Active" : "Completed"}"
+                        .toUpperCase(),
+                    textType: TextType.Caption,
+                    textColor: TextColor.White,
+                  ),
+                  CSText(
+                    " ${reservation.reservationType}".replaceAll("ReservationType.", '').toUpperCase(),
+                    textType: TextType.Caption,
+                    textColor: TextColor.White,
+                  ),
+                  if (reservation.reservationStatus == ReservationStatus.Completed)
+                  CSText(
+                    reservation.partnerRating ? '' : " (UNRATED)",
+                    textType: TextType.Caption,
+                    textColor: TextColor.White,
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );
   }
 
-  _showActionsDialog(BuildContext context,
-      {@required Reservation reservation}) {
+  _showActionsDialog(BuildContext context, {@required Reservation reservation}) {
     if (reservation.reservationStatus == ReservationStatus.Active)
       locator<NavigationService>().pushNavigateToWidget(
         getPageRoute(
@@ -251,16 +256,15 @@ class PartnerReservationTileWidget extends StatelessWidget {
             if (reservation.partnerRating)
               CSTile(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text('You have already rated this transaction',
-                    style: TextStyle(color: Colors.blueAccent)),
+                child: Text('You have already rated this transaction', style: TextStyle(color: Colors.blueAccent)),
               ),
           ],
         ),
       );
   }
 
-  markAsComplete(String userId, String lotId, String vehicleId,
-      String reservationId, String lotAddress, String partnerId) async {
+  markAsComplete(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -274,8 +278,8 @@ class PartnerReservationTileWidget extends StatelessWidget {
     });
   }
 
-  markAsCompleteV2(String userId, String lotId, String vehicleId,
-      String reservationId, String lotAddress, String partnerId) async {
+  markAsCompleteV2(
+      String userId, String lotId, String vehicleId, String reservationId, String lotAddress, String partnerId) async {
     var body = ({
       "userId": userId,
       "lotId": lotId,
@@ -291,14 +295,11 @@ class PartnerReservationTileWidget extends StatelessWidget {
 
   rating(BuildContext context, Reservation reservationData, String userId) {
     PopupNotifications.showNotificationDialog(context,
-        child: RatingAndFeedback(reservationData, userId, 1),
-        barrierDismissible: true);
+        child: RatingAndFeedback(reservationData, userId, 1), barrierDismissible: true);
   }
 
   showMessage(String v) {
-    PopUp.showInfo(
-        context: locator<NavigationService>().navigatorKey.currentContext,
-        title: "INFO");
+    PopUp.showInfo(context: locator<NavigationService>().navigatorKey.currentContext, title: "INFO");
     // showDialog(
     //     context: locator<NavigationService>().navigatorKey.currentContext,
     //     builder: (_) {

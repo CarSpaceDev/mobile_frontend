@@ -29,6 +29,16 @@ class NewNotificationReceived extends NotificationEvent {
   @override
   List<Object> get props => [];
 }
+class ClearAllNotifications extends NotificationEvent {
+  ClearAllNotifications();
+  @override
+  List<Object> get props => [];
+}
+class MarkAllAsSeen extends NotificationEvent {
+  MarkAllAsSeen();
+  @override
+  List<Object> get props => [];
+}
 
 
 class DisposeNotificationRepo extends NotificationEvent {

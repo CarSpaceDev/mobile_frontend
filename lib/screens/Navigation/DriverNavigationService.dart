@@ -45,7 +45,6 @@ class DriverNavigationService {
     switch (e.eventType) {
       case MapBoxEvent.navigation_running:
         print("Navigation has started");
-        locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(StartGeolocationBroadcast(reservation: reservation));
         break;
       case MapBoxEvent.navigation_finished:
       case MapBoxEvent.navigation_cancelled:

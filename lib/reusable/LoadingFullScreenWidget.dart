@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 
 class LoadingFullScreenWidget extends StatelessWidget {
   final String prompt;
-  LoadingFullScreenWidget({this.prompt = "LOADING"});
+  final Color color;
+  LoadingFullScreenWidget({this.prompt = "LOADING", this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +17,14 @@ class LoadingFullScreenWidget extends StatelessWidget {
               height: MediaQuery.of(context).size.width * .15,
               width: MediaQuery.of(context).size.width * .15,
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>( Theme.of(context).primaryColor),
+                valueColor: AlwaysStoppedAnimation<Color>(color != null ? color : Theme.of(context).primaryColor),
                 backgroundColor: Colors.transparent,
               ),
             ),
           ),
           Text(
             prompt,
-            style: TextStyle(color: Theme.of(context).primaryColor),
+            style: TextStyle(color: color != null ? color : Theme.of(context).primaryColor),
           )
         ],
       ),
