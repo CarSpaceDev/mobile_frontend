@@ -34,7 +34,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           for (QueryDocumentSnapshot r in result.docs) {
             temp.add(CSNotification.fromDoc(r));
           }
-          if (temp.length > nRepo.length && nRepo.isNotEmpty) {
+          if (temp.length > nRepo.length) {
             nRepo = temp;
             add(NewNotificationReceived());
           } else {
