@@ -32,10 +32,12 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: BlocBuilder<UserRepoBloc, UserRepoState>(builder: (context, state) {
-        return ListView(
+        if (state is UserRepoReady){
+          print("Updated User Rating");
+          print(state.user.rating);
+          return ListView(
           padding: EdgeInsets.zero,
           children: [
-            if (state is UserRepoReady)
               CSTile(
                 linePaddingLeft: 0,
                 linePaddingRight: 0,
@@ -53,9 +55,9 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                       child: Column(
                         children: [
                           Icon(
-                            widget.isPartner ? FontAwesomeIcons.parking:CupertinoIcons.car_detailed ,
-                            size: 45,
-                            color: Theme.of(context).primaryColor
+                              widget.isPartner ? FontAwesomeIcons.parking:CupertinoIcons.car_detailed ,
+                              size: 45,
+                              color: Theme.of(context).primaryColor
                           ),
                           CSText(
                             state.user.displayName,
@@ -83,7 +85,98 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                   ],
                 ),
               ),
-            if (!(state is UserRepoReady))
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    PopupNotifications.showNotificationDialog(context, child: NotificationList(), barrierDismissible: true);
+                  },
+                  child: Text("Notifications")),
+            ),
+            if (!widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateTo(VehicleManagement);
+                    },
+                    child: Text("Vehicles")),
+              ),
+            if (!widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateTo(Reservations);
+                    },
+                    child: Text("Reservations")),
+              ),
+            if (state is UserRepoReady && widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateTo(PartnerReservations);
+                    },
+                    child: Text("Your Lot Reservations")),
+              ),
+            if (widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          LotsScreen(),
+                          RouteSettings(name: "LOTS"),
+                        ),
+                      );
+                    },
+                    child: Text("Your Lots")),
+              ),
+            if (widget.isPartner)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          HomeDashboard(),
+                          RouteSettings(name: "DRIVER DASHBOARD"),
+                        ),
+                      );
+                    },
+                    child: Text("Switch to Driver")),
+              ),
+            if (state is UserRepoReady  && !widget.isPartner && state.user.partnerAccess>110)
+              ListTile(
+                title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      locator<NavigationService>().pushNavigateToWidget(
+                        getPageRoute(
+                          PartnerDashboard(),
+                          RouteSettings(name: "PARTNER DASHBOARD"),
+                        ),
+                      );
+                    },
+                    child: Text("Switch to Partner")),
+              ),
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    locator<NavigationService>().pushReplaceNavigateTo(LoginRoute);
+                    context.read<LoginBloc>().add(LogoutEvent());
+                  },
+                  child: Text("Sign Out")),
+            ),
+          ],
+        );}
+        return ListView(
+          padding: EdgeInsets.zero,
+          children: [
               Container(
                 child: Center(
                   child: Container(
