@@ -258,7 +258,7 @@ class _BlockedUserWidgetState extends State<BlockedUserWidget> {
             size: 45,
           ),
           CSText(
-            "Your driver account is currently blocked",
+            "Your driver account is currently blocked\n Please email support@carspace.com",
             textType: TextType.H4,
             padding: EdgeInsets.symmetric(vertical: 16),
             textAlign: TextAlign.center,

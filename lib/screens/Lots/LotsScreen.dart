@@ -93,11 +93,12 @@ class _LotsScreenState extends State<LotsScreen> {
                                   : mapBloc.settings.lotIconInactive,
                               position: lots[i].coordinates.toLatLng()));
                         }
-                        mapBloc.add(
-                            UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
+                        mapBloc.add(UpdateMap(
+                            settings: mapBloc.settings
+                                .copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
                         return CSMap();
-                      }
-                      else return CSMap();
+                      } else
+                        return CSMap();
                     }),
                   );
                 }
@@ -122,8 +123,9 @@ class _LotsScreenState extends State<LotsScreen> {
                                     : mapBloc.settings.lotIconInactive,
                                 position: lots[i].coordinates.toLatLng()));
                           }
-                          mapBloc.add(
-                              UpdateMap(settings: mapBloc.settings.copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
+                          mapBloc.add(UpdateMap(
+                              settings: mapBloc.settings
+                                  .copyWith(markers: markers, scrollEnabled: false, showSelfLocation: false)));
                         }
                         if (state.lots.isEmpty) {
                           return Center(
@@ -141,7 +143,7 @@ class _LotsScreenState extends State<LotsScreen> {
                             print(state.lots[i].toJson());
                             geoBloc.add(UpdatePositionManual(position: state.lots[i].coordinates));
                             setState(() {
-                                currPage = i;
+                              currPage = i;
                             });
                           },
                           itemBuilder: (BuildContext context, index) {
@@ -167,7 +169,8 @@ class _LotsScreenState extends State<LotsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         for (var i = 0; i < state.lots.length; i++)
-                          Icon(Icons.circle, size: 16, color: currPage == i ? Theme.of(context).primaryColor: Colors.white),
+                          Icon(Icons.circle,
+                              size: 16, color: currPage == i ? Theme.of(context).primaryColor : Colors.white),
                       ],
                     ),
                   );
