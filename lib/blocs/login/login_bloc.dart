@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/model/CSUser.dart';
 import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
@@ -21,6 +22,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -38,6 +40,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async* {
     //V2 Update
     if (event is LoginStartEvent) {
+      locator<NavigationService>()
+          .navigatorKey
+          .currentContext
+          .read<TimingsBloc>()
+          .add(StartTest(type: TimingsType.Login));
       User user = _authService.currentUser();
       if (user != null) {
         try {

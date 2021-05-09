@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/model/Wallet.dart';
 import 'package:carspace/services/ApiService.dart';
 import 'package:carspace/services/AuthService.dart';
+import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-
+import 'package:provider/provider.dart';
 part 'wallet_event.dart';
 part 'wallet_state.dart';
 
@@ -32,6 +34,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
     if (event is CashIn) {
       print("Cashing In ${event.amount}");
+      locator<NavigationService>()
+          .navigatorKey
+          .currentContext
+          .read<TimingsBloc>()
+          .add(StartTest(type: TimingsType.CashIn));
       await locator<ApiService>().walletCashIn(
           data: {"uid": locator<AuthService>().currentUser().uid, "amount": event.amount, "transactionId": "CASH-IN"});
     }
@@ -44,6 +51,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (event is UpdateWallet) {
       print("New update to wallet");
       walletData = event.wallet;
+      locator<NavigationService>()
+          .navigatorKey
+          .currentContext
+          .read<TimingsBloc>()
+          .add(EndTest(type: TimingsType.CashIn));
       yield WalletReady(wallet: event.wallet);
     }
     if (event is DisposeWallet) {

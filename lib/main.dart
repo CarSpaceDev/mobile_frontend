@@ -1,5 +1,6 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/blocs/mqtt/mqtt_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/repo/currentReservationRepo/current_reservation_bloc.dart';
 import 'package:carspace/repo/lotRepo/lot_repo_bloc.dart';
 import 'package:carspace/repo/notificationRepo/notification_bloc.dart';
@@ -45,6 +46,9 @@ class CarSpaceApp extends StatelessWidget {
         SizeConfig().init(constraints, orientation);
         return MultiBlocProvider(
           providers: [
+            BlocProvider(
+              create: (BuildContext context) => TimingsBloc(),
+            ),
             BlocProvider(
               create: (BuildContext context) => InitializationBloc(),
             ),

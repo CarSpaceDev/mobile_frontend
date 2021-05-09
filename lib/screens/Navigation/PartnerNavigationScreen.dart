@@ -56,7 +56,6 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
         .snapshots()
         .listen((doc) {
       if (doc.exists) {
-        print("Update on GEOSESSION from FireStore");
         setState(() {
           distance = doc.data()["distance"];
           driverLoc = LatLng(doc.data()["latitude"], doc.data()["longitude"]);
@@ -64,8 +63,7 @@ class _PartnerNavigationScreenState extends State<PartnerNavigationScreen> {
           _markers = Set.from([lotMarker, driverMarker]);
         });
         mapController.moveCamera(CameraUpdate.newLatLngBounds(_getMapBounds(), 90));
-      } else
-        print("GEOSESSION doc doesn't exist");
+      }
     });
     locator<NavigationService>()
         .navigatorKey

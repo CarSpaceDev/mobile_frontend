@@ -28,7 +28,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     GeolocationEvent event,
   ) async* {
     if (event is InitializeGeolocator) {
-      print("INITIALIZING GEOLOCATION");
       bool isEnabled = await Geolocator.isLocationServiceEnabled();
       LocationPermission currentPermission = await Geolocator.checkPermission();
       print(currentPermission);
@@ -41,7 +40,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
       } else {
         Position currPos = await Geolocator.getCurrentPosition();
         lastKnownPosition = CSPosition.fromMap(currPos.toJson());
-        print("Geolocator is ready");
         ready = true;
         yield GeolocatorReady();
       }
@@ -59,7 +57,6 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         });
     }
     if (event is StartGeolocationBroadcast) {
-      print("StartingGeolocationBroadcast");
       if (ready)
         positionStream = Geolocator.getPositionStream(
                 desiredAccuracy: LocationAccuracy.bestForNavigation,
@@ -74,21 +71,17 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
                 p.latitude, p.longitude, event.reservation.position.latitude, event.reservation.position.longitude),
             "driverUid": locator<AuthService>().currentUser().uid
           });
-          //mqtt broadcast
           locator<NavigationService>()
               .navigatorKey
               .currentContext
               .read<MqttBloc>()
               .add(SendMessageToTopic(topic: event.reservation.reservationId, message: payload));
-          //mqtt broadcast
           locator<NavigationService>()
               .navigatorKey
               .currentContext
               .read<MqttBloc>()
-              .add(SendMessageToTopic(topic: "receivedData", message: payload));
-          //insert firestore session broadcast
+              .add(SendMessageToTopic(topic: "geo-session", message: payload));
           try {
-            print("Saving position data to session FirestoreDocument");
             FirebaseFirestore.instance.collection("geo-session").doc(event.reservation.reservationId).set({
               "longitude": p.longitude,
               "latitude": p.latitude,

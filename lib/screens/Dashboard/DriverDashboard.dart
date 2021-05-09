@@ -1,4 +1,5 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Vehicle.dart';
 import 'package:carspace/repo/currentReservationRepo/current_reservation_bloc.dart';
@@ -36,6 +37,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
   @override
   void initState() {
     locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(InitializeGeolocator());
+    locator<NavigationService>()
+        .navigatorKey
+        .currentContext
+        .read<TimingsBloc>()
+        .add(EndTest(type: TimingsType.Login));
     super.initState();
   }
 

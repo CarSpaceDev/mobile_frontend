@@ -1,5 +1,6 @@
 
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
@@ -17,6 +18,11 @@ class DriverNavigationService {
   }
 
   navigateViaMapBox() async {
+    locator<NavigationService>()
+      .navigatorKey
+      .currentContext
+      .read<TimingsBloc>()
+      .add(StartTest(type: TimingsType.Navigation));
     Position currentPosition = await Geolocator.getCurrentPosition();
     _mapBoxOptions = _mapBoxOptions = MapBoxOptions(
         voiceInstructionsEnabled: true,
@@ -45,6 +51,11 @@ class DriverNavigationService {
     switch (e.eventType) {
       case MapBoxEvent.navigation_running:
         print("Navigation has started");
+        locator<NavigationService>()
+            .navigatorKey
+            .currentContext
+            .read<TimingsBloc>()
+            .add(EndTest(type: TimingsType.Navigation));
         break;
       case MapBoxEvent.navigation_finished:
       case MapBoxEvent.navigation_cancelled:

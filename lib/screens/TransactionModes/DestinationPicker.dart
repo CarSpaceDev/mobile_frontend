@@ -2,6 +2,7 @@ import 'package:carspace/CSMap/CSMap.dart';
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/CSMap/bloc/map_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Lot.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
 
 class DestinationPicker extends StatefulWidget {
   final ParkingType mode;
@@ -182,7 +184,11 @@ class _DestinationPickerState extends State<DestinationPicker> {
     );
   }
 
-  callToAction() async {
+  callToAction() async { locator<NavigationService>()
+      .navigatorKey
+      .currentContext
+      .read<TimingsBloc>()
+      .add(StartTest(type: TimingsType.Booking));
     var userId = locator<AuthService>().currentUser().uid;
     var body = ({
       "lat": destination.location.latitude,
@@ -208,6 +214,11 @@ class _DestinationPickerState extends State<DestinationPicker> {
           child: LotFound(lot, userId, widget.mode.index),
           barrierDismissible: true);
     }
+  locator<NavigationService>()
+      .navigatorKey
+      .currentContext
+      .read<TimingsBloc>()
+      .add(EndTest(type: TimingsType.Booking));
   }
 
   showMessage(String v) {

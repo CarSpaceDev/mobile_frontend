@@ -1,4 +1,5 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Vehicle.dart';
@@ -83,6 +84,8 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     label: "DRIVE\n(ON DEMAND)",
                     onTap: widget.enabled
                         ? () {
+
+
                             context
                                 .read<GeolocationBloc>()
                                 .add(StartGeolocation());
@@ -139,7 +142,11 @@ class _ParkNowWidgetState extends State<ParkNowWidget> {
                     ),
                     label: "PARK AT DESTINATION",
                     onTap: widget.enabled
-                        ? () {
+                        ? () { locator<NavigationService>()
+                        .navigatorKey
+                        .currentContext
+                        .read<TimingsBloc>()
+                        .add(StartTest(type: TimingsType.MapLoad));
                             nav.pushNavigateToWidget(FadeRoute(
                                 child: DestinationPicker(
                                   mode: ParkingType.Booking,

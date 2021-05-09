@@ -1,10 +1,12 @@
 
 import 'package:carspace/CSMap/bloc/classes.dart';
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/reusable/LoadingFullScreenWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'bloc/map_bloc.dart';
 
@@ -29,7 +31,6 @@ class _CSMapState extends State<CSMap> {
       listeners: [
         BlocListener<GeolocationBloc, GeolocationState>(listener: (BuildContext context, state) {
           if (state is PositionUpdated) {
-            print("Screen focus updated");
             mapController?.animateCamera(CameraUpdate.newCameraPosition(
                 CameraPosition(target: LatLng(state.position.latitude, state.position.longitude), zoom: zoom)));
             setState(() {
@@ -47,12 +48,9 @@ class _CSMapState extends State<CSMap> {
       child: BlocBuilder<MapBloc, MapState>(
         builder: (BuildContext context, state) {
           if (state is MapSettingsReady) {
-            // print("INTERNAL MARKER LIST");
-            // print(state.settings.markers);
             return GoogleMap(
               onCameraIdle: () {
                 setState(() {});
-                // print("CurrentZoomLevel: $zoom");
               },
               onCameraMove: (CameraPosition camera) {
                 zoom = camera.zoom;
@@ -65,6 +63,9 @@ class _CSMapState extends State<CSMap> {
               onMapCreated: (GoogleMapController controller) async {
                 mapController = controller;
                 mapController?.setMapStyle(state.settings.showPOI ? state.settings.mapStylePOI : state.settings.mapStyle);
+                context
+                    .read<TimingsBloc>()
+                    .add(EndTest(type: TimingsType.MapLoad));
               },
               initialCameraPosition: CameraPosition(
                 target: LatLng(context.bloc<GeolocationBloc>().lastKnownPosition.latitude, context.bloc<GeolocationBloc>().lastKnownPosition.longitude),

@@ -1,4 +1,5 @@
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/model/Enums.dart';
 import 'package:carspace/model/Reservation.dart';
 import 'package:carspace/repo/reservationRepo/reservation_repo_bloc.dart';
@@ -243,6 +244,11 @@ class DriverReservationActions {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: TextButton.icon(
                   onPressed: () {
+                    locator<NavigationService>()
+                        .navigatorKey
+                        .currentContext
+                        .read<TimingsBloc>()
+                        .add(StartTest(type: TimingsType.EndBooking));
                     if (reservation.reservationType == ReservationType.Booking)
                       markAsComplete(locator<AuthService>().currentUser().uid, reservation.lotId, reservation.vehicleId,
                           reservation.reservationId, reservation.lotAddress, reservation.partnerId, noPop);
@@ -367,6 +373,11 @@ class DriverReservationActions {
     });
     PopupNotifications.showFullScreenLoading(prompt: "ENDING TRANSACTION", color: Colors.white);
     locator<ApiService>().markAsComplete(body).then((value) {
+      locator<NavigationService>()
+          .navigatorKey
+          .currentContext
+          .read<TimingsBloc>()
+          .add(EndTest(type: TimingsType.EndBooking));
       locator<NavigationService>().goBack();
     });
   }
@@ -384,6 +395,11 @@ class DriverReservationActions {
     });
     PopupNotifications.showFullScreenLoading(prompt: "ENDING TRANSACTION", color: Colors.white);
     locator<ApiService>().markAsCompleteV2(body).then((value) {
+      locator<NavigationService>()
+          .navigatorKey
+          .currentContext
+          .read<TimingsBloc>()
+          .add(EndTest(type: TimingsType.EndBooking));
       locator<NavigationService>().goBack();
     });
   }
