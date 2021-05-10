@@ -1,7 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:carspace/reusable/CSTile.dart';
+import 'package:carspace/reusable/PopupNotifications.dart';
+import 'package:carspace/services/navigation.dart';
+import 'package:carspace/services/serviceLocator.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 part 'timings_event.dart';
 part 'timings_state.dart';
@@ -30,6 +35,11 @@ class TimingsBloc extends Bloc<TimingsEvent, TimingsState> {
       print("++++++++++++++++");
       print(result);
       print("++++++++++++++++");
+    }
+
+    if (event is GetResultsPopUp) {
+      PopupNotifications.showNotificationDialog(locator<NavigationService>().navigatorKey.currentContext, child: CSTile(child: Text("$result")), barrierDismissible: true);
+
     }
   }
 }

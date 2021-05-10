@@ -1,4 +1,3 @@
-
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/model/Reservation.dart';
@@ -19,10 +18,10 @@ class DriverNavigationService {
 
   navigateViaMapBox() async {
     locator<NavigationService>()
-      .navigatorKey
-      .currentContext
-      .read<TimingsBloc>()
-      .add(StartTest(type: TimingsType.Navigation));
+        .navigatorKey
+        .currentContext
+        .read<TimingsBloc>()
+        .add(StartTest(type: TimingsType.Navigation));
     Position currentPosition = await Geolocator.getCurrentPosition();
     _mapBoxOptions = _mapBoxOptions = MapBoxOptions(
         voiceInstructionsEnabled: true,
@@ -41,16 +40,19 @@ class DriverNavigationService {
         enableRefresh: true);
     List<WayPoint> wayPoints = [];
     wayPoints.add(WayPoint(name: "Start", latitude: currentPosition.latitude, longitude: currentPosition.longitude));
-    wayPoints.add(WayPoint(name: "Destination", latitude: reservation.position.latitude, longitude: reservation.position.longitude));
+    wayPoints.add(WayPoint(
+        name: "Destination", latitude: reservation.position.latitude, longitude: reservation.position.longitude));
     var result = await _directions.startNavigation(wayPoints: wayPoints, options: _mapBoxOptions);
   }
 
-
-
   routeEventHandler(RouteEvent e) async {
+    print(e.eventType);
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     switch (e.eventType) {
       case MapBoxEvent.navigation_running:
         print("Navigation has started");
+        break;
+      case MapBoxEvent.milestone_event:
         locator<NavigationService>()
             .navigatorKey
             .currentContext
@@ -59,13 +61,11 @@ class DriverNavigationService {
         break;
       case MapBoxEvent.navigation_finished:
       case MapBoxEvent.navigation_cancelled:
-      locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
+        locator<NavigationService>().navigatorKey.currentContext.read<GeolocationBloc>().add(CloseGeolocationStream());
         print("Navigation has ended");
         break;
       default:
         break;
     }
   }
-
-
 }

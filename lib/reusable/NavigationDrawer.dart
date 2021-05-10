@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:carspace/CSMap/bloc/geolocation_bloc.dart';
 import 'package:carspace/blocs/login/login_bloc.dart';
+import 'package:carspace/blocs/timings/timings_bloc.dart';
 import 'package:carspace/repo/userRepo/user_repo_bloc.dart';
 import 'package:carspace/reusable/CSText.dart';
 import 'package:carspace/reusable/CSTile.dart';
@@ -164,6 +165,13 @@ class _HomeNavigationDrawerState extends State<HomeNavigationDrawer> {
                     },
                     child: Text("Switch to Partner")),
               ),
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    context.read<TimingsBloc>().add(GetResultsPopUp());
+                  },
+                  child: Text("Show Test Results")),
+            ),
             ListTile(
               title: InkWell(
                   onTap: () {

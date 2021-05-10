@@ -25,3 +25,9 @@ class GetResults extends TimingsEvent {
   @override
   List<Object> get props => [];
 }
+
+class GetResultsPopUp extends TimingsEvent {
+  GetResultsPopUp();
+  @override
+  List<Object> get props => [];
+}
