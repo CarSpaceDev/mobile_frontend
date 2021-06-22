@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
+import 'package:carspace/constants/GlobalConstants.dart';
 import 'package:carspace/services/navigation.dart';
 import 'package:carspace/services/serviceLocator.dart';
 import 'package:equatable/equatable.dart';
@@ -26,7 +27,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
       print("Initializing MQTT");
       clientIdentifier = "zdg_${DateTime.now().millisecondsSinceEpoch}";
       print("MQTT ID: $clientIdentifier");
-      client = MqttServerClient('mqtt.zdgph.tech', clientIdentifier);
+      client = MqttServerClient(StringConstants.kMqttUrl, clientIdentifier);
       client.logging(on: false);
       client.port = 1883;
       client.keepAlivePeriod = 60;
@@ -53,7 +54,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
       };
       client.autoReconnect = true;
       client.connectionMessage = MqttConnectMessage()
-          .authenticateAs('zdgdev', 'zdgcs21!')
+          .authenticateAs(StringConstants.kMqttUser, StringConstants.kMqttPass)
           .withClientIdentifier(clientIdentifier)
           .startClean() // Non persistent session for testing
           .withWillQos(MqttQos.atLeastOnce);
