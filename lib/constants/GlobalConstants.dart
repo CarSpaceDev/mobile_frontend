@@ -7,6 +7,7 @@ class StringConstants {
   static const kMqttUrl = 'mqtt.zdgph.tech';
   static const kMqttUser = 'zdgdev';
   static const kMqttPass = 'zdgcs21!';
+  static const kMqttPort = 1883;
 }
 
 final csStyle = CSTheme();

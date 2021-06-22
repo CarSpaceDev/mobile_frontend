@@ -29,7 +29,7 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
       print("MQTT ID: $clientIdentifier");
       client = MqttServerClient(StringConstants.kMqttUrl, clientIdentifier);
       client.logging(on: false);
-      client.port = 1883;
+      client.port = StringConstants.kMqttPort;
       client.keepAlivePeriod = 60;
       client.onDisconnected = () {
         print('EXAMPLE::OnDisconnected client callback - Client disconnection');
